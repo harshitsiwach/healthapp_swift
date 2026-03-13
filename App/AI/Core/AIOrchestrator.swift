@@ -1,0 +1,129 @@
+import Foundation
+
+// MARK: - Orchestrator Protocol
+
+protocol AIOrchestrating {
+    func activeBackend(for task: AITask) async -> any AIBackend
+    func generate(_ request: AIRequest) async throws -> AIResponse
+    func stream(_ request: AIRequest) -> AsyncThrowingStream<AITokenEvent, Error>
+}
+
+// MARK: - AI Orchestrator
+
+@MainActor
+final class AIOrchestrator: ObservableObject, AIOrchestrating {
+    
+    @Published var currentBackendID: AIBackendID = .geminiRemote
+    @Published var isGenerating: Bool = false
+    
+    private let appleBackend: AppleFoundationBackend
+    private let qwenBackend: QwenLocalBackend
+    private let geminiService: GeminiService
+    private let safetyFilter: HealthSafetyFilter
+    private let telemetry: AITelemetry
+    
+    init(
+        appleBackend: AppleFoundationBackend? = nil,
+        qwenBackend: QwenLocalBackend? = nil,
+        geminiService: GeminiService? = nil,
+        safetyFilter: HealthSafetyFilter? = nil,
+        telemetry: AITelemetry? = nil
+    ) {
+        self.appleBackend = appleBackend ?? AppleFoundationBackend()
+        self.qwenBackend = qwenBackend ?? QwenLocalBackend()
+        self.geminiService = geminiService ?? GeminiService()
+        self.safetyFilter = safetyFilter ?? HealthSafetyFilter()
+        self.telemetry = telemetry ?? AITelemetry()
+    }
+    
+    // MARK: - Backend Selection
+    
+    nonisolated func activeBackend(for task: AITask) async -> any AIBackend {
+        // Priority 1: Qwen local if installed and healthy
+        let qwenHealth = await qwenBackend.healthCheck()
+        if case .healthy = qwenHealth {
+            return qwenBackend
+        }
+        
+        // Priority 2: Apple Foundation if capable
+        let appleHealth = await appleBackend.healthCheck()
+        if case .healthy = appleHealth {
+            return appleBackend
+        }
+        
+        // Priority 3: Gemini remote fallback
+        return geminiService
+    }
+    
+    // MARK: - Generate
+    
+    nonisolated func generate(_ request: AIRequest) async throws -> AIResponse {
+        // Pre-generation safety check
+        let safetyResult = await safetyFilter.checkInput(request.userPrompt, task: request.task)
+        if case .blocked(let category) = safetyResult {
+            throw AIError.safetyTriggered(category: category)
+        }
+        
+        let backend = await activeBackend(for: request.task)
+        let startTime = Date()
+        
+        do {
+            let response = try await backend.generate(request)
+            
+            // Post-generation safety check
+            let outputSafety = await safetyFilter.checkOutput(response.text, task: request.task)
+            if case .blocked(let category) = outputSafety {
+                throw AIError.safetyTriggered(category: category)
+            }
+            
+            // Log telemetry
+            let duration = Date().timeIntervalSince(startTime) * 1000
+            await telemetry.log(
+                backendID: backend.id,
+                task: request.task,
+                latencyMs: duration,
+                tokensIn: response.metadata.tokensIn,
+                tokensOut: response.metadata.tokensOut,
+                success: true
+            )
+            
+            return response
+        } catch {
+            let duration = Date().timeIntervalSince(startTime) * 1000
+            await telemetry.log(
+                backendID: backend.id,
+                task: request.task,
+                latencyMs: duration,
+                tokensIn: 0,
+                tokensOut: 0,
+                success: false,
+                failureReason: error.localizedDescription
+            )
+            throw error
+        }
+    }
+    
+    // MARK: - Stream
+    
+    nonisolated func stream(_ request: AIRequest) -> AsyncThrowingStream<AITokenEvent, Error> {
+        AsyncThrowingStream { continuation in
+            Task {
+                let backend = await activeBackend(for: request.task)
+                let stream = backend.stream(request)
+                
+                do {
+                    for try await event in stream {
+                        continuation.yield(event)
+                        if event.isComplete {
+                            continuation.finish()
+                            return
+                        }
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+}
