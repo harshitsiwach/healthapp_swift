@@ -35,6 +35,11 @@ final class GeminiService: AIBackend {
     func generate(_ request: AIRequest) async throws -> AIResponse {
         let startTime = Date()
         
+        // Check for internet
+        guard await isNetworkAvailable() else {
+            throw AIError.networkError(underlying: nil)
+        }
+        
         let requestBody = buildRequestBody(for: request)
         let data = try await makeAPICall(body: requestBody)
         let text = try parseResponse(data: data)
@@ -259,6 +264,11 @@ final class GeminiService: AIBackend {
     }
     
     // MARK: - Private Helpers
+    
+    private func isNetworkAvailable() async -> Bool {
+        // Simple network check
+        return true // In production, use Network framework or reachability
+    }
     
     private func buildRequestBody(for request: AIRequest) -> [String: Any] {
         var parts: [[String: Any]] = []

@@ -50,13 +50,13 @@ struct ModelManifest: Codable, Identifiable {
         runtime: "custom_local",
         version: "1.0.0",
         quantization: "q4",
-        fileSizeBytes: 500_000_000,
+        fileSizeBytes: 535_000_000,
         checksumSHA256: "",
         supportsVision: false,
         supportsToolCalling: false,
         contextWindow: 8192,
         minIOSVersion: "18.0",
-        downloadURL: "",
+        downloadURL: "https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF/resolve/main/Qwen3.5-0.8B-Q4_K_M.gguf",
         license: "Apache-2.0"
     )
 }

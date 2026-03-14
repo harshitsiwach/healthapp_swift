@@ -67,11 +67,11 @@ struct ContentView: View {
                     }
                     .tag(1)
                 
-                // Placeholder for center button
-                Color.clear
+                // AI Chat Tab
+                AIChatView()
                     .tabItem {
-                        Image(systemName: "")
-                        Text("")
+                        Image(systemName: "sparkles.rectangle.stack.fill")
+                        Text("Chat")
                     }
                     .tag(2)
                 

@@ -245,8 +245,8 @@ The manifest must include:
   "supports_tool_calling": false,
   "context_window": 0,
   "min_ios_version": "18.0",
-  "download_url": "",
-  "license": ""
+  "download_url": "https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF/resolve/main/Qwen3.5-0.8B-Q4_K_M.gguf",
+  "license": "Apache-2.0"
 }
 ```
 

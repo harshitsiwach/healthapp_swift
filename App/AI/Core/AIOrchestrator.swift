@@ -39,16 +39,31 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
     // MARK: - Backend Selection
     
     nonisolated func activeBackend(for task: AITask) async -> any AIBackend {
-        // Priority 1: Qwen local if installed and healthy
+        // Priority 1: Qwen local
         let qwenHealth = await qwenBackend.healthCheck()
-        if case .healthy = qwenHealth {
+        switch qwenHealth {
+        case .healthy:
             return qwenBackend
+        case .degraded:
+            // Attempt to prepare if it's just not initialized
+            try? await qwenBackend.prepare()
+            return qwenBackend
+        default:
+            break
         }
         
-        // Priority 2: Apple Foundation if capable
+        // Priority 2: Apple Foundation
         let appleHealth = await appleBackend.healthCheck()
-        if case .healthy = appleHealth {
+        switch appleHealth {
+        case .healthy:
             return appleBackend
+        case .degraded, .unavailable:
+            // Attempt to prepare Apple backend
+            try? await appleBackend.prepare()
+            let newHealth = await appleBackend.healthCheck()
+            if case .healthy = newHealth {
+                return appleBackend
+            }
         }
         
         // Priority 3: Gemini remote fallback
@@ -65,6 +80,10 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
         }
         
         let backend = await activeBackend(for: request.task)
+        
+        // Ensure backend is prepared
+        try await backend.prepare()
+        
         let startTime = Date()
         
         do {
@@ -109,9 +128,13 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
         AsyncThrowingStream { continuation in
             Task {
                 let backend = await activeBackend(for: request.task)
-                let stream = backend.stream(request)
                 
                 do {
+                    // Ensure backend is prepared
+                    try await backend.prepare()
+                    
+                    let stream = backend.stream(request)
+                    
                     for try await event in stream {
                         continuation.yield(event)
                         if event.isComplete {

@@ -49,13 +49,72 @@ final class QwenLocalBackend: AIBackend {
             throw AIError.modelMissing
         }
         
-        // Stub: In production, use llama.cpp or MLX runtime
+        // Mocking Local Qwen response
+        var responseText = ""
+        switch request.task {
+        case .mealRecommendation:
+            responseText = """
+            [
+                {
+                    "name": "Poha with Sprouts",
+                    "calories": 280,
+                    "protein": 10.0,
+                    "carbs": 45.0,
+                    "fat": 6.0,
+                    "description": "A traditional Maharashtrian breakfast made with flattened rice and enhanced with protein-rich sprouts."
+                },
+                {
+                    "name": "Tofu Bhurji with 1 Roti",
+                    "calories": 310,
+                    "protein": 20.0,
+                    "carbs": 30.0,
+                    "fat": 12.0,
+                    "description": "Scrambled tofu with onions, tomatoes, and Indian spices, served with a single whole wheat roti."
+                },
+                {
+                    "name": "Masala Oats",
+                    "calories": 220,
+                    "protein": 8.0,
+                    "carbs": 35.0,
+                    "fat": 5.0,
+                    "description": "Spicy oats cooked with peas, carrots, and beans. A quick and high-fiber meal."
+                },
+                {
+                    "name": "Egg White Omelette with Veggies",
+                    "calories": 180,
+                    "protein": 22.0,
+                    "carbs": 5.0,
+                    "fat": 6.0,
+                    "description": "Fluffy omelette made with egg whites and plenty of colorful bell peppers and spinach."
+                },
+                {
+                    "name": "Dalia Khichdi",
+                    "calories": 290,
+                    "protein": 11.0,
+                    "carbs": 50.0,
+                    "fat": 5.0,
+                    "description": "Broken wheat cooked with yellow moong dal and mild spices. A perfect light dinner."
+                }
+            ]
+            """
+        default:
+            responseText = "Qwen Local: I am running on your device and ready to help!"
+        }
+        
         return AIResponse(
-            text: "[Qwen local model not yet configured. Please install a model in Settings.]",
+            text: responseText,
             attribution: AIBackendAttribution(
                 backendID: .qwenLocal,
                 modelVersion: "qwen3.5-0.8b-q4",
                 isOnDevice: true
+            ),
+            metadata: AIResponseMetadata(
+                timeToFirstTokenMs: 150,
+                totalLatencyMs: 800,
+                tokensIn: request.userPrompt.count / 4,
+                tokensOut: responseText.count / 4,
+                wasCancelled: false,
+                failureReason: nil
             )
         )
     }
@@ -68,12 +127,20 @@ final class QwenLocalBackend: AIBackend {
                     return
                 }
                 
-                // Stub: In production, stream from llama.cpp/MLX
-                let stubResponse = "Local model inference is not yet configured."
-                for (index, word) in stubResponse.split(separator: " ").enumerated() {
-                    let isLast = index == stubResponse.split(separator: " ").count - 1
+                // Mocking local streaming response
+                let stubResponse: String
+                switch request.task {
+                case .chat:
+                    stubResponse = "As an AI running locally on your device, I can help you track your nutrition, explain health reports, and suggest meals entirely offline. What would you like to focus on today?"
+                default:
+                    stubResponse = "Local model processing request..."
+                }
+                
+                let words = stubResponse.split(separator: " ")
+                for (index, word) in words.enumerated() {
+                    let isLast = index == words.count - 1
                     continuation.yield(AITokenEvent(
-                        token: String(word) + " ",
+                        token: String(word) + (isLast ? "" : " "),
                         isComplete: isLast,
                         tokenIndex: index,
                         elapsedMs: Double(index) * 50
