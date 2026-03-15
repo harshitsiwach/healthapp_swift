@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "apple-intelligence": {
+      "source": "rshankras/claude-code-apple-skills",
+      "sourceType": "github",
+      "computedHash": "86787eff2e351561b5ca78c6c06a6f31d2c58447611f45a22c99ef3fea26b521"
+    },
+    "apple-on-device-ai": {
+      "source": "dpearson2699/swift-ios-skills",
+      "sourceType": "github",
+      "computedHash": "19c22d4931884eaa40610799f37a63dc10b1563728e42ed2ff47bd0ec29e4f10"
+    },
+    "healthkit": {
+      "source": "dpearson2699/swift-ios-skills",
+      "sourceType": "github",
+      "computedHash": "9813795fa5be092382f04a47f136c65718d442a8199172177afff93e4e85dc47"
+    },
+    "swiftui-expert-skill": {
+      "source": "avdlee/swiftui-agent-skill",
+      "sourceType": "github",
+      "computedHash": "f8f1a9994e0c22bd01e37369f192651819fce9a80ee21b4faff43b6710191943"
+    },
+    "swiftui-liquid-glass": {
+      "source": "dimillian/skills",
+      "sourceType": "github",
+      "computedHash": "6ca3eecfe3ebfa838adbbe3e547f6a6ff9284db05310ee7838e03fdf8937be66"
+    },
+    "swiftui-pro": {
+      "source": "twostraws/swiftui-agent-skill",
+      "sourceType": "github",
+      "computedHash": "ce653d19fd00a4874489003025e9235be542e7134ff3c543e20afeb53fc3bc9a"
+    }
+  }
+}

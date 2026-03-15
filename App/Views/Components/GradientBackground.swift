@@ -3,64 +3,79 @@ import SwiftUI
 struct GradientBackground: View {
     @Environment(\.colorScheme) var colorScheme
     
+    // Aesthetic Opacities
+    private var purpleOpacity: Double { colorScheme == .dark ? 0.45 : 0.25 }
+    private var blueOpacity: Double { colorScheme == .dark ? 0.35 : 0.20 }
+    private var mintOpacity: Double { colorScheme == .dark ? 0.30 : 0.15 }
+    private var orangeOpacity: Double { colorScheme == .dark ? 0.25 : 0.10 }
+    
+    // Base Color
+    private var baseColor: Color {
+        if colorScheme == .dark {
+            return Color(red: 0.05, green: 0.05, blue: 0.07)
+        } else {
+            return Color(red: 0.97, green: 0.97, blue: 0.99)
+        }
+    }
+    
     var body: some View {
         ZStack {
             // Base background
-            Color(colorScheme == .dark ? UIColor.systemGray6 : UIColor(red: 0.94, green: 0.95, blue: 0.96, alpha: 1.0))
+            baseColor
                 .ignoresSafeArea()
             
             // Gradient blobs
             Circle()
                 .fill(
                     RadialGradient(
-                        colors: [Color.purple.opacity(0.3), Color.purple.opacity(0)],
+                        colors: [Color.purple.opacity(purpleOpacity), Color.purple.opacity(0)],
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: 220
+                    )
+                )
+                .frame(width: 440, height: 440)
+                .offset(x: -100, y: -200)
+                .blur(radius: 90)
+            
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [Color.blue.opacity(blueOpacity), Color.blue.opacity(0)],
                         center: .center,
                         startRadius: 0,
                         endRadius: 200
                     )
                 )
                 .frame(width: 400, height: 400)
-                .offset(x: -100, y: -200)
-                .blur(radius: 80)
+                .offset(x: 180, y: 120)
+                .blur(radius: 100)
             
             Circle()
                 .fill(
                     RadialGradient(
-                        colors: [Color.blue.opacity(0.25), Color.blue.opacity(0)],
+                        colors: [Color.mint.opacity(mintOpacity), Color.mint.opacity(0)],
                         center: .center,
                         startRadius: 0,
                         endRadius: 180
                     )
                 )
-                .frame(width: 350, height: 350)
-                .offset(x: 150, y: 100)
-                .blur(radius: 90)
+                .frame(width: 360, height: 360)
+                .offset(x: -60, y: 420)
+                .blur(radius: 80)
             
             Circle()
                 .fill(
                     RadialGradient(
-                        colors: [Color.mint.opacity(0.2), Color.mint.opacity(0)],
+                        colors: [Color.orange.opacity(orangeOpacity), Color.orange.opacity(0)],
                         center: .center,
                         startRadius: 0,
                         endRadius: 150
                     )
                 )
                 .frame(width: 300, height: 300)
-                .offset(x: -50, y: 400)
+                .offset(x: 140, y: -380)
                 .blur(radius: 70)
-            
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [Color.orange.opacity(0.15), Color.orange.opacity(0)],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 120
-                    )
-                )
-                .frame(width: 250, height: 250)
-                .offset(x: 120, y: -350)
-                .blur(radius: 60)
         }
     }
 }

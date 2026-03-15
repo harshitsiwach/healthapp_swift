@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(FoundationModels)
+import FoundationModels
+#endif
 
 // MARK: - Apple Foundation Backend
 
@@ -11,6 +14,16 @@ final class AppleFoundationBackend: AIBackend {
     
     private var isAvailable: Bool = false
     
+    #if canImport(FoundationModels)
+    private var sessionAny: Any?
+    
+    @available(iOS 26, *)
+    private var session: LanguageModelSession? {
+        get { sessionAny as? LanguageModelSession }
+        set { sessionAny = newValue }
+    }
+    #endif
+    
     // MARK: - Capability Check
     
     struct AppleModelCapability {
@@ -21,22 +34,20 @@ final class AppleFoundationBackend: AIBackend {
     }
     
     func checkCapability() -> AppleModelCapability {
-        // Runtime capability detection
-        let isSupportedOS: Bool
+        #if canImport(FoundationModels)
         if #available(iOS 26, *) {
-            isSupportedOS = true
-        } else {
-            isSupportedOS = false
+            let availability = SystemLanguageModel.default.availability
+            switch availability {
+            case .available:
+                return AppleModelCapability(isSupportedOS: true, isAppleIntelligenceCapable: true, isAppleIntelligenceEnabled: true, canUseFoundationModels: true)
+            case .unavailable(.appleIntelligenceNotEnabled):
+                return AppleModelCapability(isSupportedOS: true, isAppleIntelligenceCapable: true, isAppleIntelligenceEnabled: false, canUseFoundationModels: false)
+            default:
+                return AppleModelCapability(isSupportedOS: true, isAppleIntelligenceCapable: true, isAppleIntelligenceEnabled: true, canUseFoundationModels: false)
+            }
         }
-        
-        // In a real implementation, check for Apple Intelligence entitlement
-        // For now, enable it if on supported OS for testing
-        return AppleModelCapability(
-            isSupportedOS: isSupportedOS,
-            isAppleIntelligenceCapable: isSupportedOS,
-            isAppleIntelligenceEnabled: isSupportedOS,
-            canUseFoundationModels: isSupportedOS
-        )
+        #endif
+        return AppleModelCapability(isSupportedOS: false, isAppleIntelligenceCapable: false, isAppleIntelligenceEnabled: false, canUseFoundationModels: false)
     }
     
     // MARK: - AIBackend Conformance
@@ -46,87 +57,76 @@ final class AppleFoundationBackend: AIBackend {
         guard capability.canUseFoundationModels else {
             throw AIError.noBackendAvailable
         }
-        isAvailable = true
-    }
-
-        func warmup() async {
-        // Apple models warm up automatically
+        
+        #if canImport(FoundationModels)
+        if #available(iOS 26, *) {
+            self.session = LanguageModelSession()
+            isAvailable = true
+        } else {
+            throw AIError.noBackendAvailable
         }
-
-        func generate(_ request: AIRequest) async throws -> AIResponse {
+        #else
+        throw AIError.noBackendAvailable
+        #endif
+    }
+    
+    func warmup() async {
+        #if canImport(FoundationModels)
+        if #available(iOS 26, *) {
+            guard let session = session else { return }
+            // Not awaiting since warmup shouldn't block initialization significantly
+            Task {
+                try? await session.prewarm()
+            }
+        }
+        #endif
+    }
+    
+    func generate(_ request: AIRequest) async throws -> AIResponse {
         guard isAvailable else {
             throw AIError.noBackendAvailable
         }
-
-        // Mocking Apple Intelligence response
-        var responseText = ""
-        switch request.task {
-        case .mealRecommendation:
-            responseText = """
-            [
-                {
-                    "name": "Moong Dal Khichdi",
-                    "calories": 320,
-                    "protein": 12.0,
-                    "carbs": 55.0,
-                    "fat": 8.0,
-                    "description": "A light and easily digestible one-pot meal made with rice and yellow moong dal, tempered with ghee and cumin."
-                },
-                {
-                    "name": "Grilled Paneer Salad",
-                    "calories": 280,
-                    "protein": 18.0,
-                    "carbs": 10.0,
-                    "fat": 18.0,
-                    "description": "Cubes of paneer grilled with Indian spices and tossed with fresh cucumber, tomatoes, and a lemon dressing."
-                },
-                {
-                    "name": "Oats Upma",
-                    "calories": 250,
-                    "protein": 9.0,
-                    "carbs": 40.0,
-                    "fat": 7.0,
-                    "description": "A savory South Indian breakfast made with roasted oats, mixed vegetables, and a tempering of mustard seeds and curry leaves."
-                },
-                {
-                    "name": "Chicken Tikka (Dry)",
-                    "calories": 350,
-                    "protein": 45.0,
-                    "carbs": 5.0,
-                    "fat": 15.0,
-                    "description": "Lean chicken pieces marinated in yogurt and spices, grilled to perfection. High in protein."
-                },
-                {
-                    "name": "Sprouted Moong Salad",
-                    "calories": 210,
-                    "protein": 14.0,
-                    "carbs": 35.0,
-                    "fat": 2.0,
-                    "description": "Nutritious sprouted green moong beans mixed with onions, green chilies, and tangy chaat masala."
-                }
-            ]
-            """
-        default:
-            responseText = "Apple Intelligence: I'm ready to help with your health and nutrition."
-        }
-
-        return AIResponse(
-            text: responseText,
-            attribution: AIBackendAttribution(
-                backendID: .appleFoundation,
-                modelVersion: "apple-fm-1.0",
-                isOnDevice: true
-            ),
-            metadata: AIResponseMetadata(
-                timeToFirstTokenMs: 50,
-                totalLatencyMs: 200,
-                tokensIn: request.userPrompt.count / 4,
-                tokensOut: responseText.count / 4,
-                wasCancelled: false,
-                failureReason: nil
+        
+        #if canImport(FoundationModels)
+        if #available(iOS 26, *) {
+            guard let session = session else { throw AIError.noBackendAvailable }
+            
+            // Note: Since FoundationModels strictly supports string outputs via respond(to:) and streaming,
+            // or specific @Generable schema for types, we will just pass the user prompt for standard tasks.
+            
+            let startTime = Date()
+            
+            let responseString: String
+            
+            // Simple string response
+            let response = try await session.respond(to: request.userPrompt)
+            responseString = response.content
+            
+            let endTime = Date()
+            let latencyMs = Double(endTime.timeIntervalSince(startTime) * 1000)
+            
+            return AIResponse(
+                text: responseString,
+                attribution: AIBackendAttribution(
+                    backendID: .appleFoundation,
+                    modelVersion: "SystemLanguageModel",
+                    isOnDevice: true
+                ),
+                metadata: AIResponseMetadata(
+                    timeToFirstTokenMs: latencyMs, // Approximate for non-streaming
+                    totalLatencyMs: latencyMs,
+                    tokensIn: 0, // Not explicitly tracked in simple response
+                    tokensOut: 0,
+                    wasCancelled: false,
+                    failureReason: nil
+                )
             )
-        )
+            
         }
+        #endif
+        
+        throw AIError.noBackendAvailable
+    }
     
     func stream(_ request: AIRequest) -> AsyncThrowingStream<AITokenEvent, Error> {
         AsyncThrowingStream { continuation in
@@ -136,32 +136,53 @@ final class AppleFoundationBackend: AIBackend {
                     return
                 }
                 
-                let stubResponse: String
-                switch request.task {
-                case .chat:
-                    stubResponse = "Using Apple Intelligence, I'm analyzing your health data right here on your device. Let me know if you need any meal ideas or help understanding your progress."
-                default:
-                    stubResponse = "Processing request on-device..."
+                #if canImport(FoundationModels)
+                if #available(iOS 26, *) {
+                    guard let session = session else {
+                        continuation.finish(throwing: AIError.noBackendAvailable)
+                        return
+                    }
+                    
+                    do {
+                        let stream = session.streamResponse(to: request.userPrompt)
+                        var index = 0
+                        for try await snapshot in stream {
+                            continuation.yield(AITokenEvent(
+                                token: snapshot.content,
+                                isComplete: false,
+                                tokenIndex: index,
+                                elapsedMs: 0
+                            ))
+                            index += 1
+                        }
+                        // Send final completion event
+                        continuation.yield(AITokenEvent(
+                            token: "",
+                            isComplete: true,
+                            tokenIndex: index,
+                            elapsedMs: 0
+                        ))
+                        continuation.finish()
+                    } catch {
+                        continuation.finish(throwing: error)
+                    }
+                } else {
+                    continuation.finish(throwing: AIError.noBackendAvailable)
                 }
-                
-                let words = stubResponse.split(separator: " ")
-                for (index, word) in words.enumerated() {
-                    let isLast = index == words.count - 1
-                    continuation.yield(AITokenEvent(
-                        token: String(word) + (isLast ? "" : " "),
-                        isComplete: isLast,
-                        tokenIndex: index,
-                        elapsedMs: Double(index) * 30
-                    ))
-                    try? await Task.sleep(nanoseconds: 30_000_000) // 30ms
-                }
-                continuation.finish()
+                #else
+                continuation.finish(throwing: AIError.noBackendAvailable)
+                #endif
             }
         }
     }
     
     func cancelCurrentGeneration() {
-        // Cancel any in-flight Foundation Models request
+        #if canImport(FoundationModels)
+        if #available(iOS 26, *) {
+            // Need a new session context to cancel or reliance on standard Task cancellation
+            // FoundationModels handles structured Task cancellation automatically
+        }
+        #endif
     }
     
     func healthCheck() async -> AIBackendHealth {
@@ -169,6 +190,9 @@ final class AppleFoundationBackend: AIBackend {
         if capability.canUseFoundationModels {
             return .healthy
         }
-        return .unavailable(reason: "Apple Intelligence not available on this device")
+        if !capability.isAppleIntelligenceEnabled && capability.isAppleIntelligenceCapable {
+            return .unavailable(reason: "Apple Intelligence is disabled in Settings")
+        }
+        return .unavailable(reason: "Apple Intelligence is not available on this device")
     }
 }

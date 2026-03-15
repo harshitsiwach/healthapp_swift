@@ -361,7 +361,18 @@ struct OnboardingView: View {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .fill(goal == value ? Color.blue.opacity(0.08) : .clear)
             )
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .background(
+                Group {
+                    if #available(iOS 26, *) {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(.clear)
+                            .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 16))
+                    } else {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(.ultraThinMaterial)
+                    }
+                }
+            )
             .overlay(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .stroke(goal == value ? Color.blue.opacity(0.3) : Color.gray.opacity(0.15), lineWidth: 1)
@@ -404,7 +415,18 @@ struct OnboardingView: View {
                 .font(.headline)
                 .foregroundStyle(.primary)
                 .frame(width: 56, height: 56)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .background(
+                    Group {
+                        if #available(iOS 26, *) {
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .fill(.clear)
+                                .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 16))
+                        } else {
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .fill(.ultraThinMaterial)
+                        }
+                    }
+                )
         }
         .buttonStyle(.plain)
     }

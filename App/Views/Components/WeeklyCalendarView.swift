@@ -49,8 +49,16 @@ struct WeeklyCalendarView: View {
                             }
                             .frame(width: 48, height: 76)
                             .background(
-                                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                    .fill(isSelected ? AnyShapeStyle(Color.blue.gradient) : AnyShapeStyle(.ultraThinMaterial))
+                                Group {
+                                    if #available(iOS 26, *) {
+                                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                            .fill(Color.clear)
+                                            .glassEffect(isSelected ? .regular.tint(Color.blue).interactive() : .regular.interactive(), in: .rect(cornerRadius: 16))
+                                    } else {
+                                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                            .fill(isSelected ? AnyShapeStyle(Color.blue.gradient) : AnyShapeStyle(.ultraThinMaterial))
+                                    }
+                                }
                             )
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16, style: .continuous)

@@ -7,17 +7,57 @@ struct ChipGroup: View {
     var accentColor: Color = .blue
     
     var body: some View {
-        if columns > 0 {
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: columns), spacing: 10) {
-                chipButtons
+        if #available(iOS 26, *) {
+            GlassEffectContainer {
+                if columns > 0 {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: columns), spacing: 10) {
+                        chipButtonsIOS26
+                    }
+                } else {
+                    FlowLayout(spacing: 10) {
+                        chipButtonsIOS26
+                    }
+                }
             }
         } else {
-            FlowLayout(spacing: 10) {
-                chipButtons
+            if columns > 0 {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: columns), spacing: 10) {
+                    chipButtons
+                }
+            } else {
+                FlowLayout(spacing: 10) {
+                    chipButtons
+                }
             }
         }
     }
     
+    @available(iOS 26, *)
+    @ViewBuilder
+    private var chipButtonsIOS26: some View {
+        ForEach(options, id: \.self) { option in
+            Button {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    selected = option
+                }
+            } label: {
+                Text(option)
+                    .font(.system(.subheadline, design: .rounded))
+                    .fontWeight(selected == option ? .bold : .medium)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 10)
+                    .glassEffect(selected == option ? .regular.tint(accentColor).interactive() : .regular.interactive(), in: .capsule)
+                    .foregroundStyle(selected == option ? .white : .primary)
+                    .overlay(
+                        Capsule()
+                            .stroke(selected == option ? Color.clear : Color.gray.opacity(0.2), lineWidth: 0.5)
+                    )
+            }
+            .buttonStyle(.plain)
+            .scaleEffect(selected == option ? 1.05 : 1.0)
+        }
+    }
+
     @ViewBuilder
     private var chipButtons: some View {
         ForEach(options, id: \.self) { option in
@@ -107,28 +147,63 @@ struct NumberChipGroup: View {
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
-                ForEach(Array(range), id: \.self) { number in
-                    Button {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            selected = number
-                        }
-                    } label: {
-                        Text("\(number)")
-                            .font(.system(.subheadline, design: .rounded))
-                            .fontWeight(selected == number ? .bold : .medium)
-                            .frame(width: 44, height: 44)
-                            .background(
-                                Circle()
-                                    .fill(selected == number ? AnyShapeStyle(accentColor.gradient) : AnyShapeStyle(.ultraThinMaterial))
-                            )
-                            .foregroundStyle(selected == number ? .white : .primary)
+            if #available(iOS 26, *) {
+                GlassEffectContainer {
+                    HStack(spacing: 10) {
+                        numberButtonsIOS26
                     }
-                    .buttonStyle(.plain)
-                    .scaleEffect(selected == number ? 1.1 : 1.0)
+                    .padding(.horizontal, 4)
                 }
+            } else {
+                HStack(spacing: 10) {
+                    numberButtons
+                }
+                .padding(.horizontal, 4)
             }
-            .padding(.horizontal, 4)
+        }
+    }
+    
+    @available(iOS 26, *)
+    @ViewBuilder
+    private var numberButtonsIOS26: some View {
+        ForEach(Array(range), id: \.self) { number in
+            Button {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    selected = number
+                }
+            } label: {
+                Text("\(number)")
+                    .font(.system(.subheadline, design: .rounded))
+                    .fontWeight(selected == number ? .bold : .medium)
+                    .frame(width: 44, height: 44)
+                    .glassEffect(selected == number ? .regular.tint(accentColor).interactive() : .regular.interactive(), in: .circle)
+                    .foregroundStyle(selected == number ? .white : .primary)
+            }
+            .buttonStyle(.plain)
+            .scaleEffect(selected == number ? 1.1 : 1.0)
+        }
+    }
+    
+    @ViewBuilder
+    private var numberButtons: some View {
+        ForEach(Array(range), id: \.self) { number in
+            Button {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    selected = number
+                }
+            } label: {
+                Text("\(number)")
+                    .font(.system(.subheadline, design: .rounded))
+                    .fontWeight(selected == number ? .bold : .medium)
+                    .frame(width: 44, height: 44)
+                    .background(
+                        Circle()
+                            .fill(selected == number ? AnyShapeStyle(accentColor.gradient) : AnyShapeStyle(.ultraThinMaterial))
+                    )
+                    .foregroundStyle(selected == number ? .white : .primary)
+            }
+            .buttonStyle(.plain)
+            .scaleEffect(selected == number ? 1.1 : 1.0)
         }
     }
 }

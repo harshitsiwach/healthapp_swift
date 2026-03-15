@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>CFBundlePackageType</key>
+	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>HealthApp reads your steps, heart rate, sleep, and weight to provide personalized AI nutrition feedback and contextual health summaries.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>HealthApp writes nutrition data to Apple Health to keep your daily macro and calorie logs synced across all your apps.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>HealthApp uses your camera to scan food and extract nutrition facts.</string>
+</dict>
+</plist>

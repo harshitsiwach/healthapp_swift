@@ -75,19 +75,28 @@ struct ContentView: View {
                     }
                     .tag(2)
                 
+                // Weekly Report Tab (Previously "Health")
                 HealthTabView()
                     .tabItem {
-                        Image(systemName: "heart.text.clipboard")
-                        Text("Health")
+                        Image(systemName: "doc.text.magnifyingglass")
+                        Text("Weekly Report")
                     }
                     .tag(3)
+                
+                // Apple Health Integration Tab
+                AppleHealthTabView()
+                    .tabItem {
+                        Image(systemName: "heart.text.square")
+                        Text("Apple Health")
+                    }
+                    .tag(4)
                 
                 SettingsView()
                     .tabItem {
                         Image(systemName: "gearshape.fill")
                         Text("Settings")
                     }
-                    .tag(4)
+                    .tag(5)
             }
             .tint(.blue)
             

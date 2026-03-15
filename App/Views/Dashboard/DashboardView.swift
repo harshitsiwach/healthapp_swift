@@ -129,7 +129,15 @@ struct DashboardView: View {
                 }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(.ultraThinMaterial, in: Capsule())
+                .background(
+                    Group {
+                        if #available(iOS 26, *) {
+                            Capsule().fill(.clear).glassEffect(.regular, in: .capsule)
+                        } else {
+                            Capsule().fill(.ultraThinMaterial)
+                        }
+                    }
+                )
             }
         }
         .padding(.top, 8)

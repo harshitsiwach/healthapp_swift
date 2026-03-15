@@ -109,7 +109,15 @@ struct MealIdeasView: View {
                 .fontWeight(selected ? .bold : .medium)
                 .padding(.horizontal, 18)
                 .padding(.vertical, 10)
-                .background(selected ? AnyShapeStyle(Color.blue.gradient) : AnyShapeStyle(.ultraThinMaterial), in: Capsule())
+                .background(
+                    Group {
+                        if #available(iOS 26, *) {
+                            Capsule().fill(.clear).glassEffect(selected ? .regular.tint(.blue).interactive() : .regular.interactive(), in: .capsule)
+                        } else {
+                            Capsule().fill(selected ? AnyShapeStyle(Color.blue.gradient) : AnyShapeStyle(.ultraThinMaterial))
+                        }
+                    }
+                )
                 .foregroundStyle(selected ? .white : .primary)
                 .overlay(Capsule().stroke(selected ? Color.clear : Color.gray.opacity(0.2), lineWidth: 0.5))
         }
