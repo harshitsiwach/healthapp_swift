@@ -15,6 +15,7 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
     
     @Published var currentBackendID: AIBackendID = .geminiRemote
     @Published var isGenerating: Bool = false
+    @Published var activeBackendOverride: AIBackendID? = nil
     
     private let appleBackend: AppleFoundationBackend
     private let qwenBackend: QwenLocalBackend
@@ -39,6 +40,25 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
     // MARK: - Backend Selection
     
     nonisolated func activeBackend(for task: AITask) async -> any AIBackend {
+        // Obey override if set
+        if let override = await MainActor.run(body: { activeBackendOverride }) {
+            switch override {
+            case .appleFoundation:
+                // Attempt to prepare if needed
+                if case .degraded = await appleBackend.healthCheck() {
+                    try? await appleBackend.prepare()
+                }
+                return appleBackend
+            case .qwenLocal:
+                if case .degraded = await qwenBackend.healthCheck() {
+                    try? await qwenBackend.prepare()
+                }
+                return qwenBackend
+            case .geminiRemote:
+                return geminiService
+            }
+        }
+        
         // Priority 1: Qwen local
         let qwenHealth = await qwenBackend.healthCheck()
         switch qwenHealth {

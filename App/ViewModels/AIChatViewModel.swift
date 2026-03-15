@@ -23,6 +23,11 @@ final class AIChatViewModel: ObservableObject {
     @Published var messages: [ChatMessage] = []
     @Published var currentInput: String = ""
     @Published var isGenerating: Bool = false
+    @Published var selectedBackend: AIBackendID = .geminiRemote {
+        didSet {
+            orchestrator.activeBackendOverride = selectedBackend
+        }
+    }
     
     private let orchestrator = AIOrchestrator()
     private var activeStreamTask: Task<Void, Never>?
@@ -34,6 +39,8 @@ final class AIChatViewModel: ObservableObject {
             isUser: false,
             backendName: "System"
         ))
+        // Set initial override based on the published state
+        self.orchestrator.activeBackendOverride = self.selectedBackend
     }
     
     func sendMessage() {

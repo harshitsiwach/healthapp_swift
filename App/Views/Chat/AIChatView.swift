@@ -7,7 +7,8 @@ struct AIChatView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color(uiColor: .systemGroupedBackground).ignoresSafeArea()
+                GradientBackground()
+                    .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
                     ScrollViewReader { proxy in
@@ -53,11 +54,18 @@ struct AIChatView: View {
                                 .focused($isInputFocused)
                                 .lineLimit(1...5)
                                 .padding(12)
-                                .background(Color(uiColor: .secondarySystemGroupedBackground))
+                                .background {
+                                    if #available(iOS 26, *) {
+                                        GlassEffectContainer { }
+                                    } else {
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .fill(.regularMaterial)
+                                    }
+                                }
                                 .cornerRadius(20)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 20)
-                                        .stroke(Color(uiColor: .separator), lineWidth: 0.5)
+                                        .stroke(Color.white.opacity(0.2), lineWidth: 0.5)
                                 )
                             
                             Button(action: {
@@ -70,21 +78,41 @@ struct AIChatView: View {
                                     
                                     Image(systemName: "arrow.up")
                                         .font(.system(size: 20, weight: .bold))
-                                        .foregroundColor(viewModel.currentInput.isEmpty ? .gray : .white)
+                                        .foregroundColor(viewModel.currentInput.isEmpty ? .white.opacity(0.5) : .white)
                                 }
+                                .scaleEffect(isInputFocused ? 1.05 : 1.0)
+                                .animation(.spring(), value: isInputFocused)
                             }
                             .disabled(viewModel.currentInput.isEmpty || viewModel.isGenerating)
                         }
                         .padding(.horizontal)
                         .padding(.bottom, 12)
                         .padding(.top, 8)
-                        .background(Color(uiColor: .systemGroupedBackground))
+                        .background {
+                            if #available(iOS 26, *) {
+                                Rectangle()
+                                    .fill(.ultraThinMaterial)
+                                    .ignoresSafeArea(edges: .bottom)
+                            } else {
+                                Color(uiColor: .systemBackground)
+                                    .ignoresSafeArea(edges: .bottom)
+                            }
+                        }
                     }
                 }
             }
             .navigationTitle("AI Assistant")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Picker("Model", selection: $viewModel.selectedBackend) {
+                        Text("Apple (Local)").tag(AIBackendID.appleFoundation)
+                        Text("Gemini (Cloud)").tag(AIBackendID.geminiRemote)
+                    }
+                    .pickerStyle(.menu)
+                    .tint(.primary)
+                }
+                
                 ToolbarItem(placement: .keyboard) {
                     Button("Done") {
                         isInputFocused = false
@@ -120,16 +148,43 @@ struct MessageBubble: View {
                     .font(.body)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
-                    .background(message.isUser ? Color.blue : Color(uiColor: .secondarySystemGroupedBackground))
+                    .background(MessageBubbleBackground(isUser: message.isUser))
                     .foregroundColor(message.isUser ? .white : .primary)
                     .cornerRadius(20)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(message.isUser ? Color.clear : Color(uiColor: .separator).opacity(0.5), lineWidth: 0.5)
-                    )
+                    .overlay(MessageBubbleOverlay(isUser: message.isUser))
+                    .shadow(color: Color.black.opacity(0.05), radius: 5, y: 2)
                 
                 if !message.isUser { Spacer(minLength: 40) }
             }
         }
+    }
+}
+
+struct MessageBubbleBackground: View {
+    let isUser: Bool
+    
+    var body: some View {
+        if #available(iOS 26, *) {
+            if isUser {
+                Color.blue.opacity(0.8)
+            } else {
+                GlassEffectContainer { }
+            }
+        } else {
+            if isUser {
+                Color.blue
+            } else {
+                Color(UIColor.secondarySystemGroupedBackground)
+            }
+        }
+    }
+}
+
+struct MessageBubbleOverlay: View {
+    let isUser: Bool
+    
+    var body: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .stroke(isUser ? Color.white.opacity(0.2) : Color.white.opacity(0.3), lineWidth: 0.5)
     }
 }
