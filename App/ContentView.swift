@@ -67,7 +67,13 @@ struct ContentView: View {
                     }
                     .tag(1)
                 
-                // AI Chat Tab
+                // Spacer for FAB
+                Color.clear
+                    .tabItem {
+                        Text("")
+                    }
+                    .tag(-1)
+                
                 AIChatView()
                     .tabItem {
                         Image(systemName: "sparkles.rectangle.stack.fill")
@@ -75,48 +81,35 @@ struct ContentView: View {
                     }
                     .tag(2)
                 
-                // Weekly Report Tab (Previously "Health")
-                HealthTabView()
+                HealthContainerView()
                     .tabItem {
-                        Image(systemName: "doc.text.magnifyingglass")
-                        Text("Weekly Report")
+                        Image(systemName: "heart.text.square.fill")
+                        Text("Health")
                     }
                     .tag(3)
-                
-                // Apple Health Integration Tab
-                AppleHealthTabView()
-                    .tabItem {
-                        Image(systemName: "heart.text.square")
-                        Text("Apple Health")
-                    }
-                    .tag(4)
-                
-                SettingsView()
-                    .tabItem {
-                        Image(systemName: "gearshape.fill")
-                        Text("Settings")
-                    }
-                    .tag(5)
             }
             .tint(.blue)
             
-            // Floating Action Button
-            Button {
-                showCamera = true
-            } label: {
-                ZStack {
-                    Circle()
-                        .fill(Color.blue.gradient)
-                        .frame(width: 60, height: 60)
-                        .shadow(color: Color.blue.opacity(0.4), radius: 12, x: 0, y: 4)
-                    
-                    Image(systemName: "plus")
-                        .font(.system(size: 24, weight: .bold))
-                        .foregroundStyle(.white)
+            // Floating Action Button (FAB)
+            VStack {
+                Spacer()
+                Button {
+                    showCamera = true
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(Color.blue.gradient)
+                            .frame(width: 56, height: 56)
+                            .shadow(color: Color.blue.opacity(0.3), radius: 10, x: 0, y: 5)
+                        
+                        Image(systemName: "plus")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundStyle(.white)
+                    }
                 }
+                .offset(y: -4) // Align with tab bar icons
             }
-            .offset(y: -24)
-            .buttonStyle(.plain)
+            .ignoresSafeArea(.keyboard)
         }
         .sheet(isPresented: $showCamera) {
             FoodLoggingSheet()

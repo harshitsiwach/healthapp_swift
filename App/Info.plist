@@ -24,5 +24,11 @@
 	<string>HealthApp writes nutrition data to Apple Health to keep your daily macro and calorie logs synced across all your apps.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>HealthApp uses your camera to scan food and extract nutrition facts.</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>HealthApp needs full access to your calendar to schedule appointments and display your upcoming health events.</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>HealthApp needs write access to your calendar to add doctor appointments and follow-up visits.</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>HealthApp needs access to your reminders to save and sync medication, hydration, and habit schedules.</string>
 </dict>
 </plist>

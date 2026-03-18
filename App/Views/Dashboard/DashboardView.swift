@@ -106,7 +106,9 @@ struct DashboardView: View {
     // MARK: - Header
     
     private var headerView: some View {
-        HStack {
+        HStack(spacing: 12) {
+            AppLogo(size: .small)
+            
             VStack(alignment: .leading, spacing: 4) {
                 Text(formattedDate)
                     .font(.system(.title2, design: .rounded))
@@ -118,26 +120,47 @@ struct DashboardView: View {
             
             Spacer()
             
-            // Streak Badge
-            if let profile = profile {
-                HStack(spacing: 4) {
-                    Image(systemName: "flame.fill")
-                        .foregroundStyle(.orange)
-                    Text("\(profile.streakCount)")
-                        .font(.system(.title3, design: .rounded))
-                        .fontWeight(.heavy)
-                }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .background(
-                    Group {
-                        if #available(iOS 26, *) {
-                            Capsule().fill(.clear).glassEffect(.regular, in: .capsule)
-                        } else {
-                            Capsule().fill(.ultraThinMaterial)
-                        }
+            // Streak & Settings
+            HStack(spacing: 8) {
+                // Streak Badge
+                if let profile = profile {
+                    HStack(spacing: 4) {
+                        Image(systemName: "flame.fill")
+                            .foregroundStyle(.orange)
+                        Text("\(profile.streakCount)")
+                            .font(.system(.subheadline, design: .rounded))
+                            .fontWeight(.heavy)
                     }
-                )
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(
+                        Group {
+                            if #available(iOS 26, *) {
+                                Capsule().fill(.clear).glassEffect(.regular, in: .capsule)
+                            } else {
+                                Capsule().fill(.ultraThinMaterial)
+                            }
+                        }
+                    )
+                }
+                
+                // Settings Button
+                NavigationLink(destination: SettingsView()) {
+                    Image(systemName: "gearshape.fill")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 36, height: 36)
+                        .background(
+                            Group {
+                                if #available(iOS 26, *) {
+                                    Circle().fill(.clear).glassEffect(.regular.interactive(), in: .circle)
+                                } else {
+                                    Circle().fill(.ultraThinMaterial)
+                                }
+                            }
+                        )
+                }
+                .buttonStyle(.plain)
             }
         }
         .padding(.top, 8)

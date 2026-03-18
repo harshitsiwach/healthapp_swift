@@ -60,6 +60,9 @@ struct OnboardingView: View {
     private var step1View: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 32) {
+                AppLogo(size: .large, showText: true)
+                    .padding(.bottom, 8)
+                
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Let's get started")
                         .font(.system(.largeTitle, design: .rounded))

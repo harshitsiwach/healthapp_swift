@@ -112,12 +112,6 @@ struct AIChatView: View {
                     .pickerStyle(.menu)
                     .tint(.primary)
                 }
-                
-                ToolbarItem(placement: .keyboard) {
-                    Button("Done") {
-                        isInputFocused = false
-                    }
-                }
             }
         }
     }

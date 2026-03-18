@@ -146,14 +146,23 @@ final class AppleFoundationBackend: AIBackend {
                     do {
                         let stream = session.streamResponse(to: request.userPrompt)
                         var index = 0
+                        var lastContent = ""
+                        
                         for try await snapshot in stream {
-                            continuation.yield(AITokenEvent(
-                                token: snapshot.content,
-                                isComplete: false,
-                                tokenIndex: index,
-                                elapsedMs: 0
-                            ))
-                            index += 1
+                            let fullContent = snapshot.content
+                            // Calculate delta
+                            let delta = String(fullContent.suffix(fullContent.count - lastContent.count))
+                            
+                            if !delta.isEmpty {
+                                continuation.yield(AITokenEvent(
+                                    token: delta,
+                                    isComplete: false,
+                                    tokenIndex: index,
+                                    elapsedMs: 0
+                                ))
+                                index += 1
+                                lastContent = fullContent
+                            }
                         }
                         // Send final completion event
                         continuation.yield(AITokenEvent(

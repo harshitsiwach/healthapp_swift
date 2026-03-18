@@ -1,10 +1,17 @@
 import SwiftUI
 import SwiftData
+import EventKit
 
 struct ProgressTabView: View {
     @Query(sort: \DailyLog.date) private var allLogs: [DailyLog]
     
     @State private var selectedMonth = Date()
+    @State private var selectedDate = Date()
+    @State private var nativeEvents: [EKEvent] = []
+    
+    @State private var showingAddOptions = false
+    @State private var showingEventEditor = false
+    @State private var newEventDraft: EKEvent? = nil
     
     private let calendar = Calendar.current
     
@@ -56,6 +63,64 @@ struct ProgressTabView: View {
                             calendarGrid
                         }
                         
+                        // Detail Section
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text(dateFormatter.string(from: selectedDate))
+                                .font(.system(.title3, design: .rounded))
+                                .fontWeight(.bold)
+                                .foregroundColor(.primary)
+                                .padding(.top, 8)
+                            
+                            // App Log
+                            if let log = logForSelectedDate {
+                                HStack(spacing: 12) {
+                                    Circle()
+                                        .fill(log.goalCompleted == 1 ? .green : .red)
+                                        .frame(width: 12, height: 12)
+                                    VStack(alignment: .leading) {
+                                        Text("Daily Goal")
+                                            .font(.body)
+                                            .fontWeight(.medium)
+                                        Text(log.goalCompleted == 1 ? "Completed" : "Missed")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    Spacer()
+                                }
+                                .padding()
+                                .background(Color(uiColor: .secondarySystemGroupedBackground).opacity(0.5))
+                                .cornerRadius(12)
+                            } else {
+                                Text("No app logs for this day.")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            // Native Events
+                            if PermissionsService.shared.hasCalendarFullAccess {
+                                if !nativeEvents.isEmpty {
+                                    Text("Calendar Events")
+                                        .font(.headline)
+                                        .padding(.top, 8)
+                                    
+                                    ForEach(nativeEvents, id: \.eventIdentifier) { event in
+                                        NativeCalendarEventView(event: event)
+                                    }
+                                }
+                            } else {
+                                Button("Sync Apple Calendar") {
+                                    Task {
+                                        if try await PermissionsService.shared.requestCalendarFullAccess() {
+                                            fetchEvents()
+                                        }
+                                    }
+                                }
+                                .font(.subheadline)
+                                .foregroundColor(.blue)
+                                .padding(.top, 4)
+                            }
+                        }
+                        
                         // Monthly Score
                         GlassCard(material: .regularMaterial, cornerRadius: 24) {
                             VStack(spacing: 12) {
@@ -96,6 +161,34 @@ struct ProgressTabView: View {
             }
             .navigationTitle("Progress")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showingAddOptions = true }) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                    }
+                }
+            }
+            .onAppear {
+                selectedDate = calendar.startOfDay(for: Date())
+                fetchEvents()
+            }
+            .onChange(of: selectedDate) { _, _ in
+                fetchEvents()
+            }
+            .sheet(isPresented: $showingAddOptions) {
+                AddIntegrationActionSheet(
+                    onAddAppointment: { openEventEditor() },
+                    onAddReminder: { createQuickReminder() }
+                )
+            }
+            .sheet(isPresented: $showingEventEditor) {
+                if let event = newEventDraft {
+                    CalendarEventEditor(event: event, eventStore: PermissionsService.shared.eventStore)
+                        .ignoresSafeArea()
+                }
+            }
         }
     }
     
@@ -146,17 +239,40 @@ struct ProgressTabView: View {
         let goalLog = allLogs.first { $0.date == dateStr && $0.goalCompleted != nil }
         let goalCompleted = goalLog?.goalCompleted
         let isPast = date < calendar.startOfDay(for: Date())
-        let isToday = calendar.isDateInToday(date)
         
-        return Text("\(day)")
-            .font(.system(.subheadline, design: .rounded))
-            .fontWeight(isToday ? .heavy : .medium)
-            .foregroundStyle(isToday ? .white : .primary)
-            .frame(maxWidth: .infinity, minHeight: 36)
-            .background(
-                Circle()
-                    .fill(cellColor(goalCompleted: goalCompleted, isPast: isPast, isToday: isToday))
-            )
+        let isToday = calendar.isDateInToday(date)
+        let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
+        
+        return Button(action: {
+            withAnimation {
+                selectedDate = date
+            }
+        }) {
+            ZStack {
+                if isSelected {
+                    Circle().fill(Color.blue)
+                } else if isToday {
+                    Circle().stroke(Color.blue, lineWidth: 2)
+                }
+                
+                VStack(spacing: 2) {
+                    Text("\(day)")
+                        .font(.system(.subheadline, design: .rounded))
+                        .fontWeight(isSelected ? .bold : .medium)
+                        .foregroundStyle(isSelected ? .white : (isToday ? .blue : .primary))
+                    
+                    if goalCompleted != nil {
+                        Circle()
+                            .fill(cellColor(goalCompleted: goalCompleted, isPast: isPast, isToday: false))
+                            .frame(width: 4, height: 4)
+                    } else if !isPast && !isToday {
+                        Circle().fill(Color.clear).frame(width: 4, height: 4)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, minHeight: 44)
+        .buttonStyle(.plain)
     }
     
     private func cellColor(goalCompleted: Int?, isPast: Bool, isToday: Bool) -> Color {
@@ -205,5 +321,64 @@ struct ProgressTabView: View {
         let daysElapsed = min(calendar.component(.day, from: Date()), datesInMonth.count)
         guard daysElapsed > 0 else { return 0 }
         return (Double(greenDays) / Double(daysElapsed)) * 10.0
+    }
+    
+    private var dateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .full
+        return formatter
+    }
+    
+    private var logForSelectedDate: DailyLog? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let dateStr = formatter.string(from: selectedDate)
+        return allLogs.first { $0.date == dateStr && $0.goalCompleted != nil }
+    }
+    
+    // MARK: - Integration Flow
+    
+    private func fetchEvents() {
+        guard PermissionsService.shared.hasCalendarFullAccess else { return }
+        do {
+            let allUpcoming = try CalendarService.shared.fetchUpcomingEvents(daysAhead: 30) // fetch a chunk
+            // filter dynamically for selected date
+            nativeEvents = allUpcoming.filter { calendar.isDate($0.startDate, inSameDayAs: selectedDate) }
+        } catch {
+            print("Could not fetch events: \(error)")
+        }
+    }
+    
+    private func openEventEditor() {
+        // Pre-fill a draft appointment on the selected date
+        let start = calendar.date(bySettingHour: 9, minute: 0, second: 0, of: selectedDate) ?? Date()
+        let end = calendar.date(byAdding: .hour, value: 1, to: start) ?? Date()
+        
+        newEventDraft = CalendarService.shared.draftEvent(
+            title: "Health Appointment",
+            startDate: start,
+            endDate: end,
+            notes: "Created via HealthApp"
+        )
+        
+        showingEventEditor = true
+    }
+    
+    private func createQuickReminder() {
+        Task {
+            do {
+                if try await PermissionsService.shared.requestRemindersAccess() {
+                    let due = calendar.date(bySettingHour: 20, minute: 0, second: 0, of: selectedDate)
+                    _ = try ReminderService.shared.createReminder(
+                        title: "Log Health Metrics",
+                        notes: "Reminder from HealthApp",
+                        dueDate: due
+                    )
+                    // Haptic feedback to show success on a real device
+                }
+            } catch {
+                print("Could not create reminder: \(error)")
+            }
+        }
     }
 }

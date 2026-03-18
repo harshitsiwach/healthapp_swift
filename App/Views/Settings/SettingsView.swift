@@ -111,10 +111,9 @@ struct SettingsView: View {
                         
                         // App Info
                         GlassCard {
-                            VStack(spacing: 8) {
-                                Text("HealthApp")
-                                    .font(.system(.headline, design: .rounded))
-                                    .fontWeight(.bold)
+                            VStack(spacing: 12) {
+                                AppLogo(size: .medium, showText: true)
+                                
                                 Text("Version 1.0.0")
                                     .font(.system(.caption, design: .rounded))
                                     .foregroundStyle(.secondary)
