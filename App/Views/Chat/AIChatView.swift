@@ -104,13 +104,8 @@ struct AIChatView: View {
             .navigationTitle("AI Assistant")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Picker("Model", selection: $viewModel.selectedBackend) {
-                        Text("Apple (Local)").tag(AIBackendID.appleFoundation)
-                        Text("Gemini (Cloud)").tag(AIBackendID.geminiRemote)
-                    }
-                    .pickerStyle(.menu)
-                    .tint(.primary)
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    BackendSelectorView(selection: $viewModel.selectedBackend)
                 }
             }
         }

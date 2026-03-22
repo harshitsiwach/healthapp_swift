@@ -71,6 +71,29 @@ struct SettingsView: View {
                         }
                         .buttonStyle(.plain)
                         
+                        // Perplexity Integration
+                        NavigationLink(destination: PerplexitySettingsView()) {
+                            GlassCard {
+                                HStack {
+                                    Image(systemName: "globe.americas.fill")
+                                        .foregroundStyle(.teal)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("Perplexity Integration")
+                                            .font(.system(.headline, design: .rounded))
+                                            .fontWeight(.bold)
+                                            .foregroundStyle(.primary)
+                                        Text("Manage API key for web-grounded health answers")
+                                            .font(.system(.caption, design: .rounded))
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        
                         // AI Data Management
                         GlassCard {
                             VStack(alignment: .leading, spacing: 12) {
@@ -247,6 +270,9 @@ struct SettingsView: View {
         }
         
         try? modelContext.save()
+        
+        // Reset onboarding flag so the user returns to onboarding
+        UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
         
         // Note: streak is preserved by storing separately if needed
         // For now, the user re-onboards fresh

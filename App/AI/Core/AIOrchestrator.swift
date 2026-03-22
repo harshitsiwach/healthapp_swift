@@ -20,6 +20,7 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
     private let appleBackend: AppleFoundationBackend
     private let qwenBackend: QwenLocalBackend
     private let geminiService: GeminiService
+    private let perplexityBackend: PerplexitySonarBackend
     private let safetyFilter: HealthSafetyFilter
     private let telemetry: AITelemetry
     
@@ -27,12 +28,14 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
         appleBackend: AppleFoundationBackend? = nil,
         qwenBackend: QwenLocalBackend? = nil,
         geminiService: GeminiService? = nil,
+        perplexityBackend: PerplexitySonarBackend? = nil,
         safetyFilter: HealthSafetyFilter? = nil,
         telemetry: AITelemetry? = nil
     ) {
         self.appleBackend = appleBackend ?? AppleFoundationBackend()
         self.qwenBackend = qwenBackend ?? QwenLocalBackend()
         self.geminiService = geminiService ?? GeminiService()
+        self.perplexityBackend = perplexityBackend ?? PerplexitySonarBackend()
         self.safetyFilter = safetyFilter ?? HealthSafetyFilter()
         self.telemetry = telemetry ?? AITelemetry()
     }
@@ -56,6 +59,11 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
                 return qwenBackend
             case .geminiRemote:
                 return geminiService
+            case .perplexitySonar:
+                if case .degraded = await perplexityBackend.healthCheck() {
+                    try? await perplexityBackend.prepare()
+                }
+                return perplexityBackend
             }
         }
         
@@ -86,7 +94,19 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
             }
         }
         
-        // Priority 3: Gemini remote fallback
+        // Priority 3: Task-specific Cloud Routing
+        // Use Perplexity for specific web-grounded or cloud-heavy tasks
+        switch task {
+        case .perplexityHealthQA, .perplexityFoodAnalysis, .perplexityTrendSummary,
+             .perplexityReportExplain, .perplexityCitedNutrition, .perplexityMedicalSearch:
+            if case .healthy = await perplexityBackend.healthCheck() {
+                return perplexityBackend
+            }
+        default:
+            break
+        }
+        
+        // Priority 4: Gemini remote fallback / standard cloud routing
         return geminiService
     }
     

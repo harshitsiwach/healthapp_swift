@@ -33,15 +33,27 @@ struct AIResponseMetadata {
     let tokensOut: Int
     let wasCancelled: Bool
     let failureReason: String?
+    let citations: [String]?
     
-    static let empty = AIResponseMetadata(
-        timeToFirstTokenMs: 0,
-        totalLatencyMs: 0,
-        tokensIn: 0,
-        tokensOut: 0,
-        wasCancelled: false,
-        failureReason: nil
-    )
+    init(
+        timeToFirstTokenMs: Double = 0,
+        totalLatencyMs: Double = 0,
+        tokensIn: Int = 0,
+        tokensOut: Int = 0,
+        wasCancelled: Bool = false,
+        failureReason: String? = nil,
+        citations: [String]? = nil
+    ) {
+        self.timeToFirstTokenMs = timeToFirstTokenMs
+        self.totalLatencyMs = totalLatencyMs
+        self.tokensIn = tokensIn
+        self.tokensOut = tokensOut
+        self.wasCancelled = wasCancelled
+        self.failureReason = failureReason
+        self.citations = citations
+    }
+    
+    static let empty = AIResponseMetadata()
 }
 
 // MARK: - AI Error

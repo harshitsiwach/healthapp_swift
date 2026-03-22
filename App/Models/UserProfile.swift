@@ -19,8 +19,14 @@ final class UserProfile {
     var streakCount: Int
     var lastOpenedDate: String // YYYY-MM-DD
     var notificationTime: String // HH:mm
+    var name: String
+    var waterGoalLiters: Double
+    var stepGoal: Int
     
     init(
+        name: String = "User",
+        waterGoalLiters: Double = 2.5,
+        stepGoal: Int = 10000,
         gender: String = "Male",
         dob: Date = Date(),
         heightCm: Double = 170,
@@ -53,5 +59,8 @@ final class UserProfile {
         self.streakCount = streakCount
         self.lastOpenedDate = lastOpenedDate
         self.notificationTime = notificationTime
+        self.name = name
+        self.waterGoalLiters = waterGoalLiters
+        self.stepGoal = stepGoal
     }
 }

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct OnboardingView: View {
     @Environment(\.modelContext) private var modelContext
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
     @State private var currentStep = 1
     
     // Step 1
@@ -483,5 +484,8 @@ struct OnboardingView: View {
         
         modelContext.insert(profile)
         try? modelContext.save()
+        
+        // Trigger the transition to the main app
+        hasCompletedOnboarding = true
     }
 }

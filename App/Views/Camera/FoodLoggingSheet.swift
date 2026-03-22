@@ -332,6 +332,12 @@ struct FoodLoggingSheet: View {
         )
         
         modelContext.insert(log)
+        
+        // Trigger gamification
+        // Simple logic: if protein > 30g, consider it "balanced" for XP bonus
+        let isBalanced = viewModel.proteinG > 30.0
+        GamificationEngine.shared.processDailyActivity(actionType: .mealLogged(isBalanced: isBalanced), context: modelContext)
+        
         try? modelContext.save()
         dismiss()
     }

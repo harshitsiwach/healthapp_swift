@@ -56,6 +56,10 @@ struct DashboardView: View {
                         // Weekly Calendar
                         WeeklyCalendarView(selectedDate: $selectedDate)
                         
+                        // Wellness Bar (Gamification)
+                        WellnessBarCard()
+                            .padding(.top, 4)
+                        
                         // Goal Prompt (if applicable)
                         if shouldShowGoalPrompt {
                             goalPromptCard
@@ -424,6 +428,12 @@ struct DashboardView: View {
     private func recordGoalCompletion(completed: Bool) {
         let log = DailyLog(date: selectedDateString, goalCompleted: completed ? 1 : 0)
         modelContext.insert(log)
+        
+        // Trigger gamification update
+        if completed {
+            GamificationEngine.shared.processDailyActivity(actionType: .stepGoalMet, context: modelContext) // Using stepGoalMet as generic 'goal met' trigger
+        }
+        
         try? modelContext.save()
     }
 }

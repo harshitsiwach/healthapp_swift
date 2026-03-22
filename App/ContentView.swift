@@ -3,10 +3,11 @@ import SwiftData
 
 struct RootView: View {
     @Query private var profiles: [UserProfile]
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
     
     var body: some View {
         Group {
-            if profiles.isEmpty {
+            if profiles.isEmpty || !hasCompletedOnboarding {
                 OnboardingView()
             } else {
                 ContentView()
@@ -81,12 +82,19 @@ struct ContentView: View {
                     }
                     .tag(2)
                 
+                SocialDashboardView()
+                    .tabItem {
+                        Image(systemName: "person.2.fill")
+                        Text("Community")
+                    }
+                    .tag(3)
+                
                 HealthContainerView()
                     .tabItem {
                         Image(systemName: "heart.text.square.fill")
                         Text("Health")
                     }
-                    .tag(3)
+                    .tag(4)
             }
             .tint(.blue)
             

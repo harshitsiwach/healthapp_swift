@@ -40,6 +40,7 @@ enum AIBackendID: String, Codable {
     case appleFoundation = "apple_foundation"
     case qwenLocal = "qwen_local"
     case geminiRemote = "gemini_remote"
+    case perplexitySonar = "perplexity_sonar"
 }
 
 // MARK: - Backend Attribution

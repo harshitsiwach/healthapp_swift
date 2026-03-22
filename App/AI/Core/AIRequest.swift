@@ -14,6 +14,12 @@ enum AITask: String, Codable {
     case ocrRewrite
     case mealRecommendation
     case weeklyReport
+    case perplexityHealthQA
+    case perplexityFoodAnalysis
+    case perplexityTrendSummary
+    case perplexityReportExplain
+    case perplexityCitedNutrition
+    case perplexityMedicalSearch
 }
 
 // MARK: - AI Request

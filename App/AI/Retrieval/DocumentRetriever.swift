@@ -50,6 +50,11 @@ final class DocumentRetriever {
         return Array(scoredChunks.prefix(topK).filter { $0.relevanceScore > 0 })
     }
     
+    func retrieveForPerplexity(query: String, maxTokens: Int = 100_000) -> [AIRetrievedChunk] {
+        let chunks = retrieve(query: query, topK: 15) // Fetch more context for Perplexity
+        return PerplexityDocumentBridge.bridgeChunks(chunks: chunks, maxTokens: maxTokens)
+    }
+    
     // MARK: - Chunking
     
     private func chunkText(
