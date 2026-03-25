@@ -67,46 +67,24 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
             }
         }
         
-        // Priority 1: Qwen local
+        // Priority 1: Perplexity Sonar (App Default)
+        if case .healthy = await perplexityBackend.healthCheck() {
+            return perplexityBackend
+        }
+        
+        // Priority 2: Qwen local (Privacy/Offline fallback)
         let qwenHealth = await qwenBackend.healthCheck()
-        switch qwenHealth {
-        case .healthy:
+        if case .healthy = qwenHealth {
             return qwenBackend
-        case .degraded:
-            // Attempt to prepare if it's just not initialized
-            try? await qwenBackend.prepare()
-            return qwenBackend
-        default:
-            break
         }
         
-        // Priority 2: Apple Foundation
+        // Priority 3: Apple Foundation
         let appleHealth = await appleBackend.healthCheck()
-        switch appleHealth {
-        case .healthy:
+        if case .healthy = appleHealth {
             return appleBackend
-        case .degraded, .unavailable:
-            // Attempt to prepare Apple backend
-            try? await appleBackend.prepare()
-            let newHealth = await appleBackend.healthCheck()
-            if case .healthy = newHealth {
-                return appleBackend
-            }
         }
         
-        // Priority 3: Task-specific Cloud Routing
-        // Use Perplexity for specific web-grounded or cloud-heavy tasks
-        switch task {
-        case .perplexityHealthQA, .perplexityFoodAnalysis, .perplexityTrendSummary,
-             .perplexityReportExplain, .perplexityCitedNutrition, .perplexityMedicalSearch:
-            if case .healthy = await perplexityBackend.healthCheck() {
-                return perplexityBackend
-            }
-        default:
-            break
-        }
-        
-        // Priority 4: Gemini remote fallback / standard cloud routing
+        // Priority 4: Gemini remote fallback
         return geminiService
     }
     

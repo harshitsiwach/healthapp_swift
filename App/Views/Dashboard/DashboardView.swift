@@ -10,6 +10,7 @@ struct DashboardView: View {
     @State private var showingMealEdit: DailyLog?
     @State private var showingCamera = false
     @State private var showingMealIdeas = false
+    @State private var showingChat = false
     
     private var profile: UserProfile? { profiles.first }
     
@@ -53,6 +54,12 @@ struct DashboardView: View {
                         // Header
                         headerView
                         
+                        // Perplexity Ask Bar
+                        PerplexitySearchBar {
+                            showingChat = true
+                        }
+                        .padding(.top, 8)
+                        
                         // Weekly Calendar
                         WeeklyCalendarView(selectedDate: $selectedDate)
                         
@@ -76,7 +83,7 @@ struct DashboardView: View {
                             GlassCard {
                                 HStack {
                                     Image(systemName: "chart.bar.fill")
-                                        .foregroundStyle(.blue)
+                                        .foregroundStyle(PerplexityTheme.accent)
                                     Text("Weekly Balances")
                                         .font(.system(.headline, design: .rounded))
                                         .fontWeight(.bold)
@@ -101,6 +108,9 @@ struct DashboardView: View {
             .sheet(isPresented: $showingCamera) {
                 FoodLoggingSheet()
             }
+            .navigationDestination(isPresented: $showingChat) {
+                AIChatView()
+            }
             .navigationDestination(isPresented: $showingMealIdeas) {
                 MealIdeasView()
             }
@@ -111,18 +121,14 @@ struct DashboardView: View {
     
     private var headerView: some View {
         HStack(spacing: 12) {
-            AppLogo(size: .small)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(formattedDate)
-                    .font(.system(.title2, design: .rounded))
-                    .fontWeight(.heavy)
-                Text("Stay on track today")
-                    .font(.system(.subheadline, design: .rounded))
-                    .foregroundStyle(.secondary)
-            }
+            AppLogo(size: .small, showText: true)
             
             Spacer()
+            
+            Text(formattedDate)
+                .font(.system(.subheadline, design: .rounded))
+                .fontWeight(.bold)
+                .foregroundStyle(PerplexityTheme.textSecondary)
             
             // Streak & Settings
             HStack(spacing: 8) {
@@ -236,7 +242,7 @@ struct DashboardView: View {
                         progress: calorieProgress,
                         lineWidth: 14,
                         size: 140,
-                        progressColor: calorieProgress > 1.0 ? .red : .blue
+                        progressColor: calorieProgress > 1.0 ? .red : PerplexityTheme.accent
                     )
                     .overlay {
                         VStack(spacing: 2) {
@@ -263,7 +269,7 @@ struct DashboardView: View {
                         
                         Image(systemName: "arrow.right.circle.fill")
                             .font(.title2)
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(PerplexityTheme.accent)
                         
                         Spacer()
                         
@@ -397,7 +403,7 @@ struct DashboardView: View {
                                 Text("\(log.estimatedCalories) kcal")
                                     .font(.system(.subheadline, design: .rounded))
                                     .fontWeight(.heavy)
-                                    .foregroundStyle(.blue)
+                                    .foregroundStyle(PerplexityTheme.accent)
                             }
                         }
                     }

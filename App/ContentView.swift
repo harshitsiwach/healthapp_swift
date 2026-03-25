@@ -7,7 +7,7 @@ struct RootView: View {
     
     var body: some View {
         Group {
-            if profiles.isEmpty || !hasCompletedOnboarding {
+            if profiles.isEmpty || !hasCompletedOnboarding || !PerplexityKeyStore.shared.hasKey {
                 OnboardingView()
             } else {
                 ContentView()

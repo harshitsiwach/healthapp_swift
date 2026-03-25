@@ -3,7 +3,8 @@ import SwiftUI
 struct OnboardingView: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
-    @State private var currentStep = 1
+    @State private var currentStep = 0
+    @State private var isPerplexityConnected = PerplexityKeyStore.shared.hasKey
     
     // Step 1
     @State private var gender = "Male"
@@ -34,9 +35,9 @@ struct OnboardingView: View {
             VStack(spacing: 0) {
                 // Progress indicators
                 HStack(spacing: 8) {
-                    ForEach(1...4, id: \.self) { step in
+                    ForEach(0...4, id: \.self) { step in
                         Capsule()
-                            .fill(step <= currentStep ? AnyShapeStyle(Color.blue.gradient) : AnyShapeStyle(Color.gray.opacity(0.2)))
+                            .fill(step <= currentStep ? AnyShapeStyle(PerplexityTheme.accent.gradient) : AnyShapeStyle(Color.gray.opacity(0.2)))
                             .frame(height: 4)
                     }
                 }
@@ -45,6 +46,12 @@ struct OnboardingView: View {
                 
                 // Content
                 TabView(selection: $currentStep) {
+                    PerplexityAuthView {
+                        isPerplexityConnected = true
+                        currentStep = 1
+                    }
+                    .tag(0)
+                    
                     step1View.tag(1)
                     step2View.tag(2)
                     step3View.tag(3)
@@ -315,7 +322,7 @@ struct OnboardingView: View {
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 18)
-                            .background(Color.blue.gradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .background(PerplexityTheme.brandGradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                     }
                     .buttonStyle(.plain)
                 }
@@ -408,7 +415,7 @@ struct OnboardingView: View {
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 18)
-                .background(Color.blue.gradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .background(PerplexityTheme.brandGradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
         .buttonStyle(.plain)
     }
@@ -487,5 +494,125 @@ struct OnboardingView: View {
         
         // Trigger the transition to the main app
         hasCompletedOnboarding = true
+    }
+}
+
+// MARK: - Perplexity Auth View
+
+struct PerplexityAuthView: View {
+    @State private var apiKey: String = ""
+    @State private var isConnecting = false
+    @State private var errorMessage: String?
+    @State private var showSuccess = false
+    
+    var onConnect: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 40) {
+            Spacer()
+            
+            AppLogo(size: .hero, showText: true)
+                .padding(.bottom, 20)
+            
+            VStack(spacing: 12) {
+                Text("Connect Perplexity")
+                    .perplexityHeadline()
+                
+                Text("Enter your API key to unlock web-grounded\nhealth research and analysis.")
+                    .perplexitySubheadline()
+                    .multilineTextAlignment(.center)
+            }
+            
+            VStack(alignment: .leading, spacing: 12) {
+                Text("API KEY")
+                    .font(.caption2)
+                    .fontWeight(.bold)
+                    .foregroundStyle(PerplexityTheme.textSecondary)
+                    .padding(.leading, 4)
+                
+                HStack {
+                    Image(systemName: "key.fill")
+                        .foregroundStyle(PerplexityTheme.textSecondary)
+                    
+                    SecureField("pplx-...", text: $apiKey)
+                        .textFieldStyle(.plain)
+                        .foregroundStyle(PerplexityTheme.textPrimary)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(PerplexityTheme.surface)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(PerplexityTheme.border, lineWidth: 1)
+                        )
+                )
+                
+                Link(destination: URL(string: "https://www.perplexity.ai/settings/api")!) {
+                    Label("Where do I find my API key?", systemImage: "questionmark.circle")
+                        .font(.caption)
+                        .foregroundStyle(PerplexityTheme.accent)
+                }
+                .padding(.leading, 4)
+            }
+            .padding(.horizontal, 8)
+            
+            if let error = errorMessage {
+                Text(error)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+            
+            Spacer()
+            
+            Button {
+                connect()
+            } label: {
+                HStack {
+                    if isConnecting {
+                        ProgressView()
+                            .tint(.black)
+                    } else {
+                        Text(showSuccess ? "Success! ✨" : "Connect Account")
+                            .fontWeight(.bold)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 18)
+                .background(showSuccess ? AnyShapeStyle(Color.green.gradient) : AnyShapeStyle(PerplexityTheme.brandGradient), in: RoundedRectangle(cornerRadius: 16))
+                .foregroundStyle(.black)
+            }
+            .disabled(apiKey.isEmpty || isConnecting || showSuccess)
+            .padding(.bottom, 40)
+        }
+        .padding(32)
+        .background(GradientBackground())
+        .animation(.spring(), value: errorMessage)
+    }
+    
+    private func connect() {
+        isConnecting = true
+        errorMessage = nil
+        
+        Task {
+            do {
+                try await Task.sleep(nanoseconds: 1_500_000_000)
+                try PerplexityKeyStore.shared.saveKey(apiKey)
+                
+                withAnimation {
+                    showSuccess = true
+                }
+                
+                try await Task.sleep(nanoseconds: 1_000_000_000)
+                onConnect()
+                
+            } catch {
+                errorMessage = "Invalid API key. Please check and try again."
+            }
+            isConnecting = false
+        }
     }
 }

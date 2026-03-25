@@ -1,81 +1,24 @@
 import SwiftUI
 
 struct GradientBackground: View {
-    @Environment(\.colorScheme) var colorScheme
-    
-    // Aesthetic Opacities
-    private var purpleOpacity: Double { colorScheme == .dark ? 0.45 : 0.25 }
-    private var blueOpacity: Double { colorScheme == .dark ? 0.35 : 0.20 }
-    private var mintOpacity: Double { colorScheme == .dark ? 0.30 : 0.15 }
-    private var orangeOpacity: Double { colorScheme == .dark ? 0.25 : 0.10 }
-    
-    // Base Color
-    private var baseColor: Color {
-        if colorScheme == .dark {
-            return Color(red: 0.05, green: 0.05, blue: 0.07)
-        } else {
-            return Color(red: 0.97, green: 0.97, blue: 0.99)
-        }
-    }
-    
     var body: some View {
         ZStack {
-            // Base background
-            baseColor
+            PerplexityTheme.background
                 .ignoresSafeArea()
             
-            // Gradient blobs
+            // Subtle Teal Glow
             Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [Color.purple.opacity(purpleOpacity), Color.purple.opacity(0)],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 220
-                    )
-                )
-                .frame(width: 440, height: 440)
-                .offset(x: -100, y: -200)
-                .blur(radius: 90)
-            
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [Color.blue.opacity(blueOpacity), Color.blue.opacity(0)],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 200
-                    )
-                )
+                .fill(PerplexityTheme.accent.opacity(0.15))
                 .frame(width: 400, height: 400)
-                .offset(x: 180, y: 120)
-                .blur(radius: 100)
-            
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [Color.mint.opacity(mintOpacity), Color.mint.opacity(0)],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 180
-                    )
-                )
-                .frame(width: 360, height: 360)
-                .offset(x: -60, y: 420)
                 .blur(radius: 80)
+                .offset(x: -150, y: -300)
             
+            // Subtle Sky Blue Glow
             Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [Color.orange.opacity(orangeOpacity), Color.orange.opacity(0)],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 150
-                    )
-                )
+                .fill(PerplexityTheme.accentSecondary.opacity(0.1))
                 .frame(width: 300, height: 300)
-                .offset(x: 140, y: -380)
-                .blur(radius: 70)
+                .blur(radius: 100)
+                .offset(x: 100, y: 400)
         }
     }
 }

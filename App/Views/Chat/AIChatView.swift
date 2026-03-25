@@ -11,103 +11,126 @@ struct AIChatView: View {
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                    ScrollViewReader { proxy in
-                        ScrollView {
-                            LazyVStack(spacing: 16) {
-                                ForEach(viewModel.messages) { message in
-                                    MessageBubble(message: message)
-                                        .id(message.id)
-                                }
-                            }
-                            .padding(.horizontal)
-                            .padding(.top, 16)
-                            .padding(.bottom, 20)
-                        }
-                        .onChange(of: viewModel.messages) { _, _ in
-                            withAnimation {
-                                proxy.scrollTo(viewModel.messages.last?.id, anchor: .bottom)
-                            }
-                        }
-                    }
-                    
-                    // Input Area
-                    VStack(spacing: 8) {
-                        if viewModel.isGenerating {
-                            Button(action: {
-                                viewModel.stopGenerating()
-                            }) {
-                                HStack {
-                                    Image(systemName: "stop.circle.fill")
-                                    Text("Stop Generating")
-                                }
-                                .font(.caption.bold())
-                                .foregroundColor(.red)
-                                .padding(.vertical, 6)
-                                .padding(.horizontal, 12)
-                                .background(Color.red.opacity(0.1), in: Capsule())
-                            }
-                            .padding(.top, 4)
-                        }
-                        
-                        HStack(alignment: .bottom, spacing: 12) {
-                            TextField("Ask about your meals or health...", text: $viewModel.currentInput, axis: .vertical)
-                                .focused($isInputFocused)
-                                .lineLimit(1...5)
-                                .padding(12)
-                                .background {
-                                    if #available(iOS 26, *) {
-                                        GlassEffectContainer { }
-                                    } else {
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .fill(.regularMaterial)
-                                    }
-                                }
-                                .cornerRadius(20)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .stroke(Color.white.opacity(0.2), lineWidth: 0.5)
-                                )
-                            
-                            Button(action: {
-                                viewModel.sendMessage()
-                            }) {
-                                ZStack {
-                                    Circle()
-                                        .fill(viewModel.currentInput.isEmpty ? Color.gray.opacity(0.3) : Color.blue)
-                                        .frame(width: 44, height: 44)
-                                    
-                                    Image(systemName: "arrow.up")
-                                        .font(.system(size: 20, weight: .bold))
-                                        .foregroundColor(viewModel.currentInput.isEmpty ? .white.opacity(0.5) : .white)
-                                }
-                                .scaleEffect(isInputFocused ? 1.05 : 1.0)
-                                .animation(.spring(), value: isInputFocused)
-                            }
-                            .disabled(viewModel.currentInput.isEmpty || viewModel.isGenerating)
-                        }
-                        .padding(.horizontal)
-                        .padding(.bottom, 12)
-                        .padding(.top, 8)
-                        .background {
-                            if #available(iOS 26, *) {
-                                Rectangle()
-                                    .fill(.ultraThinMaterial)
-                                    .ignoresSafeArea(edges: .bottom)
-                            } else {
-                                Color(uiColor: .systemBackground)
-                                    .ignoresSafeArea(edges: .bottom)
-                            }
-                        }
-                    }
+                    messageList
+                    inputArea
                 }
             }
-            .navigationTitle("AI Assistant")
+            .navigationTitle("Perplexity Assistant")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     BackendSelectorView(selection: $viewModel.selectedBackend)
                 }
             }
+        }
+    }
+    
+    private var messageList: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 16) {
+                    ForEach(viewModel.messages) { message in
+                        MessageBubble(message: message)
+                            .id(message.id)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.top, 16)
+                .padding(.bottom, 20)
+            }
+            .onChange(of: viewModel.messages) { _, _ in
+                withAnimation {
+                    proxy.scrollTo(viewModel.messages.last?.id, anchor: .bottom)
+                }
+            }
+        }
+    }
+    
+    private var inputArea: some View {
+        VStack(spacing: 8) {
+            if viewModel.isGenerating {
+                stopGeneratingButton
+            }
+            
+            HStack(alignment: .bottom, spacing: 12) {
+                textFieldArea
+                sendButton
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 12)
+            .padding(.top, 8)
+            .background(inputBackground)
+        }
+    }
+    
+    private var stopGeneratingButton: some View {
+        Button(action: {
+            viewModel.stopGenerating()
+        }) {
+            HStack {
+                Image(systemName: "stop.circle.fill")
+                Text("Stop Generating")
+            }
+            .font(.caption.bold())
+            .foregroundColor(.red)
+            .padding(.vertical, 6)
+            .padding(.horizontal, 12)
+            .background(Color.red.opacity(0.1), in: Capsule())
+        }
+        .padding(.top, 4)
+    }
+    
+    private var textFieldArea: some View {
+        TextField("Ask about your meals or health...", text: $viewModel.currentInput, axis: .vertical)
+            .focused($isInputFocused)
+            .lineLimit(1...5)
+            .padding(12)
+            .background(textFieldBackground)
+            .cornerRadius(20)
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(Color.white.opacity(0.2), lineWidth: 0.5)
+            )
+    }
+    
+    private var sendButton: some View {
+        Button(action: {
+            viewModel.sendMessage()
+        }) {
+            ZStack {
+                Circle()
+                    .fill(viewModel.currentInput.isEmpty ? AnyShapeStyle(Color.gray.opacity(0.3)) : AnyShapeStyle(PerplexityTheme.brandGradient))
+                    .frame(width: 44, height: 44)
+                
+                Image(systemName: "arrow.up")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(viewModel.currentInput.isEmpty ? .white.opacity(0.5) : .white)
+            }
+            .scaleEffect(isInputFocused ? 1.05 : 1.0)
+            .animation(.spring(), value: isInputFocused)
+        }
+        .disabled(viewModel.currentInput.isEmpty || viewModel.isGenerating)
+    }
+    
+    @ViewBuilder
+    private var textFieldBackground: some View {
+        if #available(iOS 26, *) {
+            GlassEffectContainer { }
+        } else {
+            RoundedRectangle(cornerRadius: 20)
+                .fill(.regularMaterial)
+        }
+    }
+    
+    @ViewBuilder
+    private var inputBackground: some View {
+        if #available(iOS 26, *) {
+            Rectangle()
+                .fill(.ultraThinMaterial)
+                .ignoresSafeArea(edges: .bottom)
+        } else {
+            Color(uiColor: .systemBackground)
+                .ignoresSafeArea(edges: .bottom)
         }
     }
 }
@@ -121,7 +144,7 @@ struct MessageBubble: View {
                 HStack(spacing: 4) {
                     Image(systemName: "sparkles")
                         .font(.system(size: 10))
-                        .foregroundColor(.blue)
+                        .foregroundColor(PerplexityTheme.accent)
                     Text(message.backendName ?? "AI")
                         .font(.caption2)
                         .fontWeight(.medium)
@@ -155,15 +178,15 @@ struct MessageBubbleBackground: View {
     var body: some View {
         if #available(iOS 26, *) {
             if isUser {
-                Color.blue.opacity(0.8)
+                PerplexityTheme.surface.opacity(0.9)
             } else {
                 GlassEffectContainer { }
             }
         } else {
             if isUser {
-                Color.blue
+                PerplexityTheme.surface
             } else {
-                Color(UIColor.secondarySystemGroupedBackground)
+                Color(UIColor.secondarySystemGroupedBackground).opacity(0.1)
             }
         }
     }
@@ -174,6 +197,6 @@ struct MessageBubbleOverlay: View {
     
     var body: some View {
         RoundedRectangle(cornerRadius: 20)
-            .stroke(isUser ? Color.white.opacity(0.2) : Color.white.opacity(0.3), lineWidth: 0.5)
+            .stroke(isUser ? PerplexityTheme.accent.opacity(0.5) : Color.white.opacity(0.1), lineWidth: 1)
     }
 }

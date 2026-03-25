@@ -4,7 +4,7 @@ struct ChipGroup: View {
     let options: [String]
     @Binding var selected: String
     var columns: Int = 0 // 0 = flow layout
-    var accentColor: Color = .blue
+    var accentColor: Color = PerplexityTheme.accent
     
     var body: some View {
         if #available(iOS 26, *) {
@@ -143,7 +143,7 @@ struct FlowLayout: Layout {
 struct NumberChipGroup: View {
     let range: ClosedRange<Int>
     @Binding var selected: Int
-    var accentColor: Color = .blue
+    var accentColor: Color = PerplexityTheme.accent
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {

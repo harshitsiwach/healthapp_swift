@@ -24,7 +24,7 @@ struct WellnessBarCard: View {
                     VStack(alignment: .trailing) {
                         Text("Level \(wellnessState?.currentLevel ?? 1)")
                             .font(.subheadline.bold())
-                            .foregroundStyle(.tint)
+                            .foregroundStyle(PerplexityTheme.accent)
                         Text("XP: \(wellnessState?.totalXP ?? 0)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -40,7 +40,7 @@ struct WellnessBarCard: View {
                         
                         Capsule()
                             .fill(
-                                LinearGradient(colors: [.accentColor, .accentColor.opacity(0.6)], startPoint: .leading, endPoint: .trailing)
+                                LinearGradient(colors: [PerplexityTheme.accent, PerplexityTheme.accentSecondary], startPoint: .leading, endPoint: .trailing)
                             )
                             .frame(width: max(0, min(geo.size.width, geo.size.width * CGFloat((wellnessState?.currentScore ?? 50.0) / 100.0))), height: 24)
                             .animation(.spring(response: 0.6, dampingFraction: 0.7), value: wellnessState?.currentScore)
@@ -51,7 +51,7 @@ struct WellnessBarCard: View {
                 // Footer Stats
                 HStack {
                     Label("\(Int(wellnessState?.currentScore ?? 50.0))", systemImage: "bolt.heart.fill")
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(PerplexityTheme.accent)
                         .font(.subheadline.bold())
                     
                     Spacer()
