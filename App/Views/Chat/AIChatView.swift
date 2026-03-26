@@ -23,6 +23,7 @@ struct AIChatView: View {
                             .padding(.top, 16)
                             .padding(.bottom, 20)
                         }
+                        .scrollDismissesKeyboard(.interactively)
                         .onChange(of: viewModel.messages) { _, _ in
                             withAnimation {
                                 proxy.scrollTo(viewModel.messages.last?.id, anchor: .bottom)
@@ -98,21 +99,12 @@ struct AIChatView: View {
                                     .ignoresSafeArea(edges: .bottom)
                             }
                         }
+                        .padding(.bottom, 100) // Space for floating tab bar
                     }
                 }
             }
             .navigationTitle("AI Assistant")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Picker("Model", selection: $viewModel.selectedBackend) {
-                        Text("Apple (Local)").tag(AIBackendID.appleFoundation)
-                        Text("Gemini (Cloud)").tag(AIBackendID.geminiRemote)
-                    }
-                    .pickerStyle(.menu)
-                    .tint(.primary)
-                }
-            }
         }
     }
 }

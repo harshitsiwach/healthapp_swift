@@ -43,6 +43,7 @@ struct CircularProgressView: View {
                     .foregroundStyle(.primary)
             }
         }
+        .frame(width: size, height: size)
         .onAppear {
             withAnimation(.spring(response: 1.0, dampingFraction: 0.8)) {
                 animatedProgress = clampedProgress

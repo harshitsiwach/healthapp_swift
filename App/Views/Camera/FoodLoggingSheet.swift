@@ -115,6 +115,7 @@ struct FoodLoggingSheet: View {
             } else {
                 // Camera preview
                 CameraPreview(session: camera.session)
+                    .aspectRatio(3/4, contentMode: .fit)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .padding(.horizontal, 16)
                     .overlay(alignment: .bottom) {
@@ -212,6 +213,11 @@ struct FoodLoggingSheet: View {
                                 .font(.system(.title3, design: .rounded))
                                 .fontWeight(.heavy)
                             Spacer()
+                            if let backendName = viewModel.activeBackendName {
+                                Text("by \(backendName)")
+                                    .font(.system(.caption, design: .rounded))
+                                    .foregroundStyle(.secondary)
+                            }
                             Image(systemName: "sparkles")
                                 .foregroundStyle(.blue)
                         }

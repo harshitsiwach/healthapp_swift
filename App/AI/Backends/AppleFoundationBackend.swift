@@ -98,9 +98,25 @@ final class AppleFoundationBackend: AIBackend {
             
             let responseString: String
             
-            // Simple string response
-            let response = try await session.respond(to: request.userPrompt)
-            responseString = response.content
+            let activeSession: LanguageModelSession
+            if request.task != .chat {
+                let system = request.systemPrompt ?? ""
+                let instructions = request.task == .foodAnalysis ? "\(system)\nIMPORTANT: You must output ONLY RAW CONVENTIONAL JSON, with NO markdown, NO codeblocks, and NO conversational text." : system
+                activeSession = LanguageModelSession { instructions }
+                
+                let response = try await activeSession.respond(to: request.userPrompt)
+                responseString = response.content
+            } else {
+                let fullPrompt: String
+                if let system = request.systemPrompt, !system.isEmpty {
+                    fullPrompt = "\(system)\n\nUser request: \(request.userPrompt)"
+                } else {
+                    fullPrompt = request.userPrompt
+                }
+                
+                let response = try await session.respond(to: fullPrompt)
+                responseString = response.content
+            }
             
             let endTime = Date()
             let latencyMs = Double(endTime.timeIntervalSince(startTime) * 1000)
@@ -144,7 +160,26 @@ final class AppleFoundationBackend: AIBackend {
                     }
                     
                     do {
-                        let stream = session.streamResponse(to: request.userPrompt)
+                        let activeSession: LanguageModelSession
+                        let promptToSend: String
+                        
+                        if request.task != .chat {
+                            let system = request.systemPrompt ?? ""
+                            let instructions = request.task == .foodAnalysis ? "\(system)\nIMPORTANT: You must output ONLY RAW CONVENTIONAL JSON, with NO markdown, NO codeblocks, and NO conversational text." : system
+                            activeSession = LanguageModelSession { instructions }
+                            promptToSend = request.userPrompt
+                        } else {
+                            activeSession = session
+                            let fullPrompt: String
+                            if let system = request.systemPrompt, !system.isEmpty {
+                                fullPrompt = "\(system)\n\nUser request: \(request.userPrompt)"
+                            } else {
+                                fullPrompt = request.userPrompt
+                            }
+                            promptToSend = fullPrompt
+                        }
+                        
+                        let stream = activeSession.streamResponse(to: promptToSend)
                         var index = 0
                         var lastContent = ""
                         

@@ -19,63 +19,67 @@ struct GradientBackground: View {
     }
     
     var body: some View {
-        ZStack {
-            // Base background
-            baseColor
+        Color.clear
+            .background(
+                ZStack {
+                    // Base background
+                    baseColor
+                        .ignoresSafeArea()
+                    
+                    // Gradient blobs
+                    Circle()
+                        .fill(
+                            RadialGradient(
+                                colors: [Color.purple.opacity(purpleOpacity), Color.purple.opacity(0)],
+                                center: .center,
+                                startRadius: 0,
+                                endRadius: 220
+                            )
+                        )
+                        .frame(width: 440, height: 440)
+                        .offset(x: -100, y: -200)
+                        .blur(radius: 90)
+                    
+                    Circle()
+                        .fill(
+                            RadialGradient(
+                                colors: [Color.blue.opacity(blueOpacity), Color.blue.opacity(0)],
+                                center: .center,
+                                startRadius: 0,
+                                endRadius: 200
+                            )
+                        )
+                        .frame(width: 400, height: 400)
+                        .offset(x: 180, y: 120)
+                        .blur(radius: 100)
+                    
+                    Circle()
+                        .fill(
+                            RadialGradient(
+                                colors: [Color.mint.opacity(mintOpacity), Color.mint.opacity(0)],
+                                center: .center,
+                                startRadius: 0,
+                                endRadius: 180
+                            )
+                        )
+                        .frame(width: 360, height: 360)
+                        .offset(x: -60, y: 420)
+                        .blur(radius: 80)
+                    
+                    Circle()
+                        .fill(
+                            RadialGradient(
+                                colors: [Color.orange.opacity(orangeOpacity), Color.orange.opacity(0)],
+                                center: .center,
+                                startRadius: 0,
+                                endRadius: 150
+                            )
+                        )
+                        .frame(width: 300, height: 300)
+                        .offset(x: 140, y: -380)
+                        .blur(radius: 70)
+                }
                 .ignoresSafeArea()
-            
-            // Gradient blobs
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [Color.purple.opacity(purpleOpacity), Color.purple.opacity(0)],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 220
-                    )
-                )
-                .frame(width: 440, height: 440)
-                .offset(x: -100, y: -200)
-                .blur(radius: 90)
-            
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [Color.blue.opacity(blueOpacity), Color.blue.opacity(0)],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 200
-                    )
-                )
-                .frame(width: 400, height: 400)
-                .offset(x: 180, y: 120)
-                .blur(radius: 100)
-            
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [Color.mint.opacity(mintOpacity), Color.mint.opacity(0)],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 180
-                    )
-                )
-                .frame(width: 360, height: 360)
-                .offset(x: -60, y: 420)
-                .blur(radius: 80)
-            
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [Color.orange.opacity(orangeOpacity), Color.orange.opacity(0)],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 150
-                    )
-                )
-                .frame(width: 300, height: 300)
-                .offset(x: 140, y: -380)
-                .blur(radius: 70)
-        }
+            )
     }
 }

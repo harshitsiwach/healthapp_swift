@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Orchestrator Protocol
 
 protocol AIOrchestrating {
-    func activeBackend(for task: AITask) async -> any AIBackend
+    func activeBackend(for request: AIRequest) async throws -> any AIBackend
     func generate(_ request: AIRequest) async throws -> AIResponse
     func stream(_ request: AIRequest) -> AsyncThrowingStream<AITokenEvent, Error>
 }
@@ -12,10 +12,19 @@ protocol AIOrchestrating {
 
 @MainActor
 final class AIOrchestrator: ObservableObject, AIOrchestrating {
+    static let shared = AIOrchestrator()
     
     @Published var currentBackendID: AIBackendID = .geminiRemote
     @Published var isGenerating: Bool = false
-    @Published var activeBackendOverride: AIBackendID? = nil
+    @Published var activeBackendOverride: AIBackendID? = nil {
+        didSet {
+            if let newValue = activeBackendOverride {
+                UserDefaults.standard.set(newValue.rawValue, forKey: "AIActiveBackendOverride")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "AIActiveBackendOverride")
+            }
+        }
+    }
     
     private let appleBackend: AppleFoundationBackend
     private let qwenBackend: QwenLocalBackend
@@ -35,54 +44,76 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
         self.geminiService = geminiService ?? GeminiService()
         self.safetyFilter = safetyFilter ?? HealthSafetyFilter()
         self.telemetry = telemetry ?? AITelemetry()
+        
+        // Restore override from UserDefaults
+        if let storedValue = UserDefaults.standard.string(forKey: "AIActiveBackendOverride"),
+           let backend = AIBackendID(rawValue: storedValue) {
+            self.activeBackendOverride = backend
+        }
     }
     
     // MARK: - Backend Selection
     
-    nonisolated func activeBackend(for task: AITask) async -> any AIBackend {
+    nonisolated func activeBackend(for request: AIRequest) async throws -> any AIBackend {
+        let needsVision = !request.images.isEmpty
+        
         // Obey override if set
         if let override = await MainActor.run(body: { activeBackendOverride }) {
             switch override {
             case .appleFoundation:
+                if needsVision && !appleBackend.supportsVision {
+                    throw AIError.unsupportedFeature("Apple Intelligence does not support image analysis yet.")
+                }
+                
                 // Attempt to prepare if needed
                 if case .degraded = await appleBackend.healthCheck() {
                     try? await appleBackend.prepare()
                 }
                 return appleBackend
+                
             case .qwenLocal:
+                if needsVision && !qwenBackend.supportsVision {
+                    throw AIError.unsupportedFeature("This local model does not support image analysis yet.")
+                }
+                
                 if case .degraded = await qwenBackend.healthCheck() {
                     try? await qwenBackend.prepare()
                 }
                 return qwenBackend
+                
             case .geminiRemote:
                 return geminiService
             }
         }
         
         // Priority 1: Qwen local
-        let qwenHealth = await qwenBackend.healthCheck()
-        switch qwenHealth {
-        case .healthy:
-            return qwenBackend
-        case .degraded:
-            // Attempt to prepare if it's just not initialized
-            try? await qwenBackend.prepare()
-            return qwenBackend
-        default:
-            break
+        if !needsVision || qwenBackend.supportsVision {
+            let qwenHealth = await qwenBackend.healthCheck()
+            switch qwenHealth {
+            case .healthy:
+                return qwenBackend
+            case .degraded:
+                // Attempt to prepare if it's just not initialized
+                try? await qwenBackend.prepare()
+                return qwenBackend
+            default:
+                break
+            }
         }
         
         // Priority 2: Apple Foundation
-        let appleHealth = await appleBackend.healthCheck()
-        switch appleHealth {
-        case .healthy:
-            return appleBackend
-        case .degraded, .unavailable:
-            // Attempt to prepare Apple backend
-            try? await appleBackend.prepare()
-            let newHealth = await appleBackend.healthCheck()
-            if case .healthy = newHealth {
+        if !needsVision || appleBackend.supportsVision {
+            let appleHealth = await appleBackend.healthCheck()
+            switch appleHealth {
+            case .healthy:
                 return appleBackend
+            case .degraded, .unavailable:
+                // Attempt to prepare Apple backend
+                try? await appleBackend.prepare()
+                let newHealth = await appleBackend.healthCheck()
+                if case .healthy = newHealth {
+                    return appleBackend
+                }
             }
         }
         
@@ -99,7 +130,7 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
             throw AIError.safetyTriggered(category: category)
         }
         
-        let backend = await activeBackend(for: request.task)
+        let backend = try await activeBackend(for: request)
         
         // Ensure backend is prepared
         try await backend.prepare()
@@ -147,9 +178,8 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
     nonisolated func stream(_ request: AIRequest) -> AsyncThrowingStream<AITokenEvent, Error> {
         AsyncThrowingStream { continuation in
             Task {
-                let backend = await activeBackend(for: request.task)
-                
                 do {
+                    let backend = try await activeBackend(for: request)
                     // Ensure backend is prepared
                     try await backend.prepare()
                     

@@ -209,7 +209,6 @@
 				AB56F6EA6F22F44B44A9DF74 /* NotificationService.swift */,
 				C95B9631CB7D2DACF7027A70 /* NotificationService.swift */,
 			);
-			name = Notifications;
 			path = Notifications;
 			sourceTree = "<group>";
 		};
@@ -220,7 +219,6 @@
 				316146D5C842C00F94ECD9DA /* LiveActivityService.swift */,
 				E7227627E530461F1A891AF1 /* LiveActivityService.swift */,
 			);
-			name = LiveActivities;
 			path = LiveActivities;
 			sourceTree = "<group>";
 		};
@@ -241,7 +239,6 @@
 				7E18007A06C1EF3AD9EFEE1D /* PermissionsService.swift */,
 				200F35CC93DBFFB3D69C0DB9 /* PermissionsService.swift */,
 			);
-			name = System;
 			path = System;
 			sourceTree = "<group>";
 		};
@@ -250,7 +247,6 @@
 			children = (
 				5EF92C4C8E89E101E410AD08 /* AIChatView.swift */,
 			);
-			name = Chat;
 			path = Chat;
 			sourceTree = "<group>";
 		};
@@ -261,7 +257,6 @@
 				393B20561A01761BEB40B0C5 /* CalendarRemindersPermissionsView.swift */,
 				7E52B7D79F09463E03C995C7 /* CalendarRemindersPermissionsView.swift */,
 			);
-			name = Settings;
 			path = Settings;
 			sourceTree = "<group>";
 		};
@@ -365,7 +360,6 @@
 				7D61694EA6B5CD78057F28C0 /* CalendarService.swift */,
 				E82008A64993339F4C306E8A /* CalendarEventEditor.swift */,
 			);
-			name = Calendar;
 			path = Calendar;
 			sourceTree = "<group>";
 		};
@@ -420,7 +414,6 @@
 				78A4A9765E0FC3F8AA6EF7A8 /* TimerService.swift */,
 				03351D8DA145C5F526F12813 /* TimerService.swift */,
 			);
-			name = Timers;
 			path = Timers;
 			sourceTree = "<group>";
 		};
@@ -485,7 +478,6 @@
 				7F63D237FE56E5F45364B9F0 /* ReminderService.swift */,
 				C01BB53111153AC49E3E3DB3 /* ReminderService.swift */,
 			);
-			name = Reminders;
 			path = Reminders;
 			sourceTree = "<group>";
 		};
@@ -758,7 +750,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = LSA4WRXY8N;
+				DEVELOPMENT_TEAM = C7W2BX5R78;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = App/Info.plist;
@@ -847,7 +839,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = LSA4WRXY8N;
+				DEVELOPMENT_TEAM = C7W2BX5R78;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = App/Info.plist;

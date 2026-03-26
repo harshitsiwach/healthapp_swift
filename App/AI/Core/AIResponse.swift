@@ -61,6 +61,7 @@ enum AIError: LocalizedError {
     case networkError(underlying: Error?)
     case invalidResponse
     case safetyTriggered(category: String)
+    case unsupportedFeature(String)
     
     var errorDescription: String? {
         switch self {
@@ -92,6 +93,8 @@ enum AIError: LocalizedError {
             return "Received an unexpected response. Please try again."
         case .safetyTriggered(let category):
             return "For your safety, we can't provide advice on \(category). Please consult a healthcare professional."
+        case .unsupportedFeature(let message):
+            return message
         }
     }
     
