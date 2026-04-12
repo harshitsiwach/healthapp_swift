@@ -107,7 +107,7 @@ struct AIChatView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Picker("Model", selection: $viewModel.selectedBackend) {
                         Text("Apple (Local)").tag(AIBackendID.appleFoundation)
-                        Text("Gemini (Cloud)").tag(AIBackendID.geminiRemote)
+                        Text("Gemma (On-Device)").tag(AIBackendID.gemmaLocal)
                     }
                     .pickerStyle(.menu)
                     .tint(.primary)

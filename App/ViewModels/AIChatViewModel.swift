@@ -23,7 +23,7 @@ final class AIChatViewModel: ObservableObject {
     @Published var messages: [ChatMessage] = []
     @Published var currentInput: String = ""
     @Published var isGenerating: Bool = false
-    @Published var selectedBackend: AIBackendID = .geminiRemote {
+    @Published var selectedBackend: AIBackendID = .gemmaLocal {
         didSet {
             orchestrator.activeBackendOverride = selectedBackend
         }
@@ -87,7 +87,7 @@ final class AIChatViewModel: ObservableObject {
                 }
                 
                 // Fetch the backend used for display (we can get it actively)
-                let activeBackend = await orchestrator.activeBackend(for: .chat)
+                let activeBackend = try await orchestrator.activeBackend(for: .chat)
                 if let lastIndex = messages.indices.last {
                     messages[lastIndex] = ChatMessage(
                         text: fullResponse,

@@ -10,34 +10,34 @@ struct ModelManagementView: View {
             
             ScrollView {
                 VStack(spacing: 20) {
-                    // Current Backend
+                    // Gemma 4 On-Device Header
                     GlassCard(material: .regularMaterial) {
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
-                                Image(systemName: "cpu")
-                                    .foregroundStyle(.blue)
-                                Text("Active Backend")
+                                Image(systemName: "brain.head.profile")
+                                    .foregroundStyle(.purple)
+                                Text("Gemma 4 (On-Device)")
                                     .font(.system(.headline, design: .rounded))
                                     .fontWeight(.bold)
                             }
                             
                             HStack {
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text("Gemini 2.5 Flash (Remote)")
+                                    Text("Fully Private, Fully Offline")
                                         .font(.system(.subheadline, design: .rounded))
                                         .fontWeight(.medium)
-                                    Text("Cloud-based • Requires internet")
+                                    Text("All AI runs locally on your device. No internet required.")
                                         .font(.system(.caption, design: .rounded))
                                         .foregroundStyle(.secondary)
                                 }
                                 Spacer()
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(.green)
+                                Image(systemName: store.installState == .ready ? "checkmark.circle.fill" : "arrow.down.circle")
+                                    .foregroundStyle(store.installState == .ready ? .green : .blue)
                             }
                         }
                     }
                     
-                    // Apple Intelligence
+                    // Apple Intelligence (Optional)
                     GlassCard {
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
@@ -46,6 +46,13 @@ struct ModelManagementView: View {
                                 Text("Apple Intelligence")
                                     .font(.system(.headline, design: .rounded))
                                     .fontWeight(.bold)
+                                Spacer()
+                                Text("Optional")
+                                    .font(.system(.caption, design: .rounded))
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(.secondary.opacity(0.1), in: Capsule())
                             }
                             
                             let capability = AppleFoundationBackend().checkCapability()
@@ -65,7 +72,7 @@ struct ModelManagementView: View {
                         }
                     }
                     
-                    // Qwen Local Model
+                    // Local Models
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Local Models")
                             .font(.system(.headline, design: .rounded))
@@ -79,9 +86,9 @@ struct ModelManagementView: View {
                     // Storage Info
                     GlassCard(padding: 12) {
                         HStack {
-                            Image(systemName: "internaldrive")
-                                .foregroundStyle(.secondary)
-                            Text("Models are stored locally for privacy")
+                            Image(systemName: "lock.shield")
+                                .foregroundStyle(.green)
+                            Text("Your data never leaves your device")
                                 .font(.system(.caption, design: .rounded))
                                 .foregroundStyle(.secondary)
                         }
@@ -104,7 +111,7 @@ struct ModelManagementView: View {
                 .padding(.bottom, 100)
             }
         }
-        .navigationTitle("AI Models")
+        .navigationTitle("AI Engine")
         .navigationBarTitleDisplayMode(.large)
     }
     
@@ -112,7 +119,7 @@ struct ModelManagementView: View {
         GlassCard(material: .regularMaterial) {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    Image(systemName: "brain.head.profile")
+                    Image(systemName: "cpu")
                         .foregroundStyle(.purple)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(manifest.displayName)
@@ -139,7 +146,7 @@ struct ModelManagementView: View {
                 // Download progress
                 if store.installState == .downloading {
                     ProgressView(value: store.downloadProgress)
-                        .tint(.blue)
+                        .tint(.purple)
                 }
                 
                 // Action buttons
@@ -151,13 +158,13 @@ struct ModelManagementView: View {
                                 await downloader.download(manifest: manifest, to: store)
                             }
                         } label: {
-                            Text("Download")
+                            Text("Download Gemma 4")
                                 .font(.system(.subheadline, design: .rounded))
                                 .fontWeight(.bold)
                                 .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 12)
-                                .background(Color.blue.gradient, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                                .background(Color.purple.gradient, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                         }
                         .buttonStyle(.plain)
                         
@@ -206,7 +213,7 @@ struct ModelManagementView: View {
     private var stateColor: Color {
         switch store.installState {
         case .ready: return .green
-        case .downloading, .verifying, .warmingUp: return .blue
+        case .downloading, .verifying, .warmingUp: return .purple
         case .failed: return .red
         case .incompatible: return .gray
         case .notInstalled: return .secondary

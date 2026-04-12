@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Orchestrator Protocol
 
 protocol AIOrchestrating {
-    func activeBackend(for task: AITask) async -> any AIBackend
+    func activeBackend(for task: AITask) async throws -> any AIBackend
     func generate(_ request: AIRequest) async throws -> AIResponse
     func stream(_ request: AIRequest) -> AsyncThrowingStream<AITokenEvent, Error>
 }
@@ -13,72 +13,64 @@ protocol AIOrchestrating {
 @MainActor
 final class AIOrchestrator: ObservableObject, AIOrchestrating {
     
-    @Published var currentBackendID: AIBackendID = .geminiRemote
+    @Published var currentBackendID: AIBackendID = .gemmaLocal
     @Published var isGenerating: Bool = false
     @Published var activeBackendOverride: AIBackendID? = nil
     
     private let appleBackend: AppleFoundationBackend
-    private let qwenBackend: QwenLocalBackend
-    private let geminiService: GeminiService
+    private let gemmaBackend: GemmaLocalBackend
     private let safetyFilter: HealthSafetyFilter
     private let telemetry: AITelemetry
     
     init(
         appleBackend: AppleFoundationBackend? = nil,
-        qwenBackend: QwenLocalBackend? = nil,
-        geminiService: GeminiService? = nil,
+        gemmaBackend: GemmaLocalBackend? = nil,
         safetyFilter: HealthSafetyFilter? = nil,
         telemetry: AITelemetry? = nil
     ) {
         self.appleBackend = appleBackend ?? AppleFoundationBackend()
-        self.qwenBackend = qwenBackend ?? QwenLocalBackend()
-        self.geminiService = geminiService ?? GeminiService()
+        self.gemmaBackend = gemmaBackend ?? GemmaLocalBackend()
         self.safetyFilter = safetyFilter ?? HealthSafetyFilter()
         self.telemetry = telemetry ?? AITelemetry()
     }
     
     // MARK: - Backend Selection
     
-    nonisolated func activeBackend(for task: AITask) async -> any AIBackend {
+    nonisolated func activeBackend(for task: AITask) async throws -> any AIBackend {
         // Obey override if set
         if let override = await MainActor.run(body: { activeBackendOverride }) {
             switch override {
             case .appleFoundation:
-                // Attempt to prepare if needed
                 if case .degraded = await appleBackend.healthCheck() {
                     try? await appleBackend.prepare()
                 }
                 return appleBackend
-            case .qwenLocal:
-                if case .degraded = await qwenBackend.healthCheck() {
-                    try? await qwenBackend.prepare()
+            case .gemmaLocal:
+                if case .degraded = await gemmaBackend.healthCheck() {
+                    try? await gemmaBackend.prepare()
                 }
-                return qwenBackend
-            case .geminiRemote:
-                return geminiService
+                return gemmaBackend
             }
         }
         
-        // Priority 1: Qwen local
-        let qwenHealth = await qwenBackend.healthCheck()
-        switch qwenHealth {
+        // Priority 1: Gemma local
+        let gemmaHealth = await gemmaBackend.healthCheck()
+        switch gemmaHealth {
         case .healthy:
-            return qwenBackend
+            return gemmaBackend
         case .degraded:
-            // Attempt to prepare if it's just not initialized
-            try? await qwenBackend.prepare()
-            return qwenBackend
+            try? await gemmaBackend.prepare()
+            return gemmaBackend
         default:
             break
         }
         
-        // Priority 2: Apple Foundation
+        // Priority 2: Apple Foundation fallback
         let appleHealth = await appleBackend.healthCheck()
         switch appleHealth {
         case .healthy:
             return appleBackend
         case .degraded, .unavailable:
-            // Attempt to prepare Apple backend
             try? await appleBackend.prepare()
             let newHealth = await appleBackend.healthCheck()
             if case .healthy = newHealth {
@@ -86,8 +78,7 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
             }
         }
         
-        // Priority 3: Gemini remote fallback
-        return geminiService
+        throw AIError.noBackendAvailable
     }
     
     // MARK: - Generate
@@ -99,7 +90,7 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
             throw AIError.safetyTriggered(category: category)
         }
         
-        let backend = await activeBackend(for: request.task)
+        let backend = try await activeBackend(for: request.task)
         
         // Ensure backend is prepared
         try await backend.prepare()
@@ -147,7 +138,7 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
     nonisolated func stream(_ request: AIRequest) -> AsyncThrowingStream<AITokenEvent, Error> {
         AsyncThrowingStream { continuation in
             Task {
-                let backend = await activeBackend(for: request.task)
+                let backend = try await activeBackend(for: request.task)
                 
                 do {
                     // Ensure backend is prepared

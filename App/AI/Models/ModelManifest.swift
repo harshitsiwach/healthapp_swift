@@ -44,21 +44,23 @@ struct ModelManifest: Codable, Identifiable {
         case license
     }
     
-    static let qwen3_5_default = ModelManifest(
-        id: "qwen3_5_0_8b_local_q4",
-        displayName: "Qwen3.5 0.8B Local",
-        runtime: "custom_local",
+    static let gemma4_default = ModelManifest(
+        id: "gemma_4_2b_q4",
+        displayName: "Gemma 4 2B",
+        runtime: "llama_cpp",
         version: "1.0.0",
-        quantization: "q4",
-        fileSizeBytes: 535_000_000,
+        quantization: "q4_K_M",
+        fileSizeBytes: 1_500_000_000,
         checksumSHA256: "",
-        supportsVision: false,
+        supportsVision: true,
         supportsToolCalling: false,
         contextWindow: 8192,
         minIOSVersion: "18.0",
-        downloadURL: "https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF/resolve/main/Qwen3.5-0.8B-Q4_K_M.gguf",
-        license: "Apache-2.0"
+        downloadURL: "https://huggingface.co/google/gemma-4-2b-GGUF/resolve/main/gemma-4-2b-q4_K_M.gguf",
+        license: "Gemma"
     )
+    
+
 }
 
 // MARK: - Model Install State

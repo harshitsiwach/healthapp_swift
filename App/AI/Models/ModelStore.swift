@@ -7,7 +7,7 @@ final class ModelStore: ObservableObject {
     @Published var installState: ModelInstallState = .notInstalled
     @Published var downloadProgress: Double = 0
     @Published var installedManifest: ModelManifest?
-    @Published var availableModels: [ModelManifest] = [ModelManifest.qwen3_5_default]
+    @Published var availableModels: [ModelManifest] = [ModelManifest.gemma4_default]
     
     private let fileManager = FileManager.default
     
@@ -23,8 +23,7 @@ final class ModelStore: ObservableObject {
     }
     
     func checkInstalledModel() {
-        // Check if any model is installed
-        let modelDir = modelsDirectory.appendingPathComponent(ModelManifest.qwen3_5_default.id)
+        let modelDir = modelsDirectory.appendingPathComponent(ModelManifest.gemma4_default.id)
         let modelFile = modelDir.appendingPathComponent("model.bin")
         let manifestFile = modelDir.appendingPathComponent("manifest.json")
         

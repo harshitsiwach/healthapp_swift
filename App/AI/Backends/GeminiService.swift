@@ -49,7 +49,7 @@ final class GeminiService: AIBackend {
         return AIResponse(
             text: text,
             attribution: AIBackendAttribution(
-                backendID: .geminiRemote,
+                backendID: .gemmaLocal,
                 modelVersion: model,
                 isOnDevice: false
             ),
@@ -396,23 +396,7 @@ final class GeminiService: AIBackend {
     }
 }
 
-// MARK: - Response Types
-
-struct FoodAnalysisResult: Codable {
-    let foodName: String
-    let estimatedCalories: Int
-    let proteinG: Double
-    let carbsG: Double
-    let fatG: Double
-    
-    enum CodingKeys: String, CodingKey {
-        case foodName = "food_name"
-        case estimatedCalories = "estimated_calories"
-        case proteinG = "protein_g"
-        case carbsG = "carbs_g"
-        case fatG = "fat_g"
-    }
-}
+// MARK: - Legacy Response Types (defined in ViewModels)
 
 struct HealthReportResult: Codable {
     let score: Int

@@ -1,12 +1,12 @@
 import Foundation
 
-// MARK: - Qwen Local Backend
+// MARK: - Gemma Local Backend
 
 @MainActor
-final class QwenLocalBackend: AIBackend {
-    let id: String = "qwen_local"
-    let displayName: String = "Qwen 3.5 0.8B (Local)"
-    let supportsVision: Bool = false
+final class GemmaLocalBackend: AIBackend {
+    let id: String = "gemma_local"
+    let displayName: String = "Gemma 4 (On-Device)"
+    let supportsVision: Bool = true
     let supportsToolCalling: Bool = false
     let maxContextWindow: Int? = 8192
     
@@ -21,6 +21,10 @@ final class QwenLocalBackend: AIBackend {
     
     func prepare() async throws {
         guard let manifest = modelStore.installedManifest else {
+            throw AIError.modelMissing
+        }
+        
+        guard manifest.id.contains("gemma") else {
             throw AIError.modelMissing
         }
         
@@ -49,7 +53,7 @@ final class QwenLocalBackend: AIBackend {
             throw AIError.modelMissing
         }
         
-        // Mocking Local Qwen response
+        // Mocking Local Gemma 4 response
         var responseText = ""
         switch request.task {
         case .mealRecommendation:
@@ -97,15 +101,25 @@ final class QwenLocalBackend: AIBackend {
                 }
             ]
             """
+        case .foodAnalysis:
+            responseText = """
+            {
+                "food_name": "Mixed Vegetable Curry with Rice",
+                "estimated_calories": 420,
+                "protein_g": 12.0,
+                "carbs_g": 65.0,
+                "fat_g": 15.0
+            }
+            """
         default:
-            responseText = "Qwen Local: I am running on your device and ready to help!"
+            responseText = "Gemma 4: I am running on your device and ready to help!"
         }
         
         return AIResponse(
             text: responseText,
             attribution: AIBackendAttribution(
-                backendID: .qwenLocal,
-                modelVersion: "qwen3.5-0.8b-q4",
+                backendID: .gemmaLocal,
+                modelVersion: "gemma-4-2b-q4",
                 isOnDevice: true
             ),
             metadata: AIResponseMetadata(
@@ -131,7 +145,7 @@ final class QwenLocalBackend: AIBackend {
                 let stubResponse: String
                 switch request.task {
                 case .chat:
-                    stubResponse = "As an AI running locally on your device, I can help you track your nutrition, explain health reports, and suggest meals entirely offline. What would you like to focus on today?"
+                    stubResponse = "As Gemma 4 running locally on your device, I can help you track your nutrition, explain health reports, and suggest meals entirely offline. What would you like to focus on today?"
                 default:
                     stubResponse = "Local model processing request..."
                 }
@@ -158,14 +172,18 @@ final class QwenLocalBackend: AIBackend {
     
     func healthCheck() async -> AIBackendHealth {
         guard modelStore.installedManifest != nil else {
-            return .unavailable(reason: "No model installed")
+            return .unavailable(reason: "No Gemma model installed")
+        }
+        
+        guard modelStore.installedManifest?.id.contains("gemma") == true else {
+            return .unavailable(reason: "No Gemma model installed")
         }
         
         if isReady {
             return .healthy
         }
         
-        return .degraded(reason: "Model installed but not initialized")
+        return .degraded(reason: "Gemma model installed but not initialized")
     }
     
     func unloadModel() {
