@@ -56,6 +56,9 @@
 		BA211C26D535B36BFEF589AD /* PermissionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79079F8F69BA9C308404DD8 /* PermissionsService.swift */; };
 		2E8857450E884E3EA0EE41D8 /* SharedModelContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60AD8EAB1DCBCE69B9C31459 /* SharedModelContainer.swift */; };
 		C3334136A0CACF6F12E566AA /* SiriShortcutsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A92E5D34F8CF75ACCF828B /* SiriShortcutsManager.swift */; };
+		C6A6DAF883B1D7DA94A2BEC1 /* MedicalReportOCR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3663A6374672352B49743ECD /* MedicalReportOCR.swift */; };
+		FAA0D31CF500C2A440F82B1F /* MedicalReportScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BEC8E6188CB0EF34BEB2F5 /* MedicalReportScannerView.swift */; };
+		D373B7E1391F078784FAB41C /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FC34BF68146E77D29FE9B1 /* ImagePicker.swift */; };
 		C0B334037C70EC6882BBF7BD /* ChipGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05668792D454BD2E650C0CA /* ChipGroup.swift */; };
 		C527108CC55E47263C6C60D1 /* TimerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B30AD7C6AF4F1C36C37498 /* TimerService.swift */; };
 		C6313335FF283BA91636749C /* AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB15241668D1DE839F9A40A0 /* AIBackend.swift */; };
@@ -90,6 +93,9 @@
 		200F35CC93DBFFB3D69C0DB9 /* PermissionsService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PermissionsService.swift; sourceTree = "<group>"; };
 		60AD8EAB1DCBCE69B9C31459 /* SharedModelContainer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SharedModelContainer.swift; sourceTree = "<group>"; };
 		03A92E5D34F8CF75ACCF828B /* SiriShortcutsManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SiriShortcutsManager.swift; sourceTree = "<group>"; };
+		3663A6374672352B49743ECD /* MedicalReportOCR.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MedicalReportOCR.swift; sourceTree = "<group>"; };
+		64BEC8E6188CB0EF34BEB2F5 /* MedicalReportScannerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MedicalReportScannerView.swift; sourceTree = "<group>"; };
+		37FC34BF68146E77D29FE9B1 /* ImagePicker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		263FC06E0DC1B82D0A9643C2 /* HealthKitManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HealthKitManager.swift; path = Health/HealthKitManager.swift; sourceTree = "<group>"; };
 		28788D5F1E51C275A2F841EC /* GradientBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBackground.swift; sourceTree = "<group>"; };
 		287DA2D933850934A6E60887 /* CalendarEventEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CalendarEventEditor.swift; sourceTree = "<group>"; };
@@ -194,6 +200,7 @@
 				28788D5F1E51C275A2F841EC /* GradientBackground.swift */,
 				F27212AEC5264B54C6B42FDC /* WeeklyCalendarView.swift */,
 				E8ABF6AC0A293E3680AB2139 /* AppLogo.swift */,
+				37FC34BF68146E77D29FE9B1 /* ImagePicker.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -406,6 +413,7 @@
 				3E9DFD313A7F764405F76048 /* Chat */,
 				5B6B820C1BFA01A325D5C7BE /* Home */,
 				A24D42FF9860D6FE3888247A /* Nutrition */,
+				E559EE20446E7C35DCFC1822 /* MedicalReports */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -416,10 +424,19 @@
 				CAF5410E7D1BD8F6DFEA7E4B /* SaveMealToHealthView.swift */,
 				0206745D35329DC5103E5060 /* SaveMealToHealthView.swift */,
 			);
-			name = Nutrition;
-			sourceTree = "<group>";
-		};
-		A7EAB8766B9CFA3AC7B544BA /* Timers */ = {
+		name = Nutrition;
+		sourceTree = "<group>";
+	};
+	E559EE20446E7C35DCFC1822 /* MedicalReports */ = {
+		isa = PBXGroup;
+		children = (
+			64BEC8E6188CB0EF34BEB2F5 /* MedicalReportScannerView.swift */,
+		);
+		name = MedicalReports;
+		path = MedicalReports;
+		sourceTree = "<group>";
+	};
+	A7EAB8766B9CFA3AC7B544BA /* Timers */= {
 			isa = PBXGroup;
 			children = (
 				28B30AD7C6AF4F1C36C37498 /* TimerService.swift */,
@@ -521,6 +538,7 @@
 				7008B4B9EC3BC3AA07E2F8B7 /* DocumentRetriever.swift */,
 				3652BF668B709903297D267F /* FoodPipeline.swift */,
 				B1AE492DAA2337ECDD93AE20 /* GroundedAnswerService.swift */,
+				3663A6374672352B49743ECD /* MedicalReportOCR.swift */,
 			);
 			path = Retrieval;
 			sourceTree = "<group>";
@@ -695,6 +713,9 @@
 				BA211C26D535B36BFEF589AD /* PermissionsService.swift in Sources */,
 				2E8857450E884E3EA0EE41D8 /* SharedModelContainer.swift in Sources */,
 				C3334136A0CACF6F12E566AA /* SiriShortcutsManager.swift in Sources */,
+				C6A6DAF883B1D7DA94A2BEC1 /* MedicalReportOCR.swift in Sources */,
+				FAA0D31CF500C2A440F82B1F /* MedicalReportScannerView.swift in Sources */,
+				D373B7E1391F078784FAB41C /* ImagePicker.swift in Sources */,
 				8158DDA0159805AE7FCBCF79 /* NativeCalendarEventView.swift in Sources */,
 				84734C52C22EA20C8453D1D8 /* AddIntegrationActionSheet.swift in Sources */,
 				58CDAC2CAE44778BB1616DF9 /* NotificationService.swift in Sources */,
