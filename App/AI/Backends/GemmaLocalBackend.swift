@@ -1,6 +1,6 @@
 import Foundation
 
-// MARK: - Gemma Local Backend
+// MARK: - Gemma Local Backend (Real Inference)
 
 @MainActor
 final class GemmaLocalBackend: AIBackend {
@@ -11,6 +11,7 @@ final class GemmaLocalBackend: AIBackend {
     let maxContextWindow: Int? = 8192
     
     private let modelStore: ModelStore
+    private let engine = LlamaCppEngine()
     private var isReady: Bool = false
     
     init(modelStore: ModelStore? = nil) {
@@ -28,6 +29,10 @@ final class GemmaLocalBackend: AIBackend {
             throw AIError.modelMissing
         }
         
+        guard let modelPath = manifest.localPath else {
+            throw AIError.modelMissing
+        }
+        
         // Verify integrity
         let validator = ModelIntegrityValidator()
         let isValid = await validator.validate(manifest: manifest)
@@ -35,17 +40,19 @@ final class GemmaLocalBackend: AIBackend {
             throw AIError.modelChecksumFailed
         }
         
-        // In production: Initialize llama.cpp/MLX runtime here
-        // let runtime = try LlamaRuntime(modelPath: manifest.localPath)
-        // self.runtime = runtime
-        
-        isReady = true
+        // Load the model
+        do {
+            try engine.loadModel(at: modelPath, config: .default)
+            isReady = true
+        } catch {
+            throw AIError.runtimeInitFailure(underlying: error)
+        }
     }
     
     func warmup() async {
         guard isReady else { return }
-        // In production: Run a short warmup inference
-        // try? await runtime?.generate("Hello", maxTokens: 1)
+        // Run a short warmup inference
+        _ = try? await engine.generate(prompt: "Hello", maxTokens: 5, temperature: 0.1)
     }
     
     func generate(_ request: AIRequest) async throws -> AIResponse {
@@ -53,67 +60,20 @@ final class GemmaLocalBackend: AIBackend {
             throw AIError.modelMissing
         }
         
-        // Mocking Local Gemma 4 response
-        var responseText = ""
-        switch request.task {
-        case .mealRecommendation:
-            responseText = """
-            [
-                {
-                    "name": "Poha with Sprouts",
-                    "calories": 280,
-                    "protein": 10.0,
-                    "carbs": 45.0,
-                    "fat": 6.0,
-                    "description": "A traditional Maharashtrian breakfast made with flattened rice and enhanced with protein-rich sprouts."
-                },
-                {
-                    "name": "Tofu Bhurji with 1 Roti",
-                    "calories": 310,
-                    "protein": 20.0,
-                    "carbs": 30.0,
-                    "fat": 12.0,
-                    "description": "Scrambled tofu with onions, tomatoes, and Indian spices, served with a single whole wheat roti."
-                },
-                {
-                    "name": "Masala Oats",
-                    "calories": 220,
-                    "protein": 8.0,
-                    "carbs": 35.0,
-                    "fat": 5.0,
-                    "description": "Spicy oats cooked with peas, carrots, and beans. A quick and high-fiber meal."
-                },
-                {
-                    "name": "Egg White Omelette with Veggies",
-                    "calories": 180,
-                    "protein": 22.0,
-                    "carbs": 5.0,
-                    "fat": 6.0,
-                    "description": "Fluffy omelette made with egg whites and plenty of colorful bell peppers and spinach."
-                },
-                {
-                    "name": "Dalia Khichdi",
-                    "calories": 290,
-                    "protein": 11.0,
-                    "carbs": 50.0,
-                    "fat": 5.0,
-                    "description": "Broken wheat cooked with yellow moong dal and mild spices. A perfect light dinner."
-                }
-            ]
-            """
-        case .foodAnalysis:
-            responseText = """
-            {
-                "food_name": "Mixed Vegetable Curry with Rice",
-                "estimated_calories": 420,
-                "protein_g": 12.0,
-                "carbs_g": 65.0,
-                "fat_g": 15.0
-            }
-            """
-        default:
-            responseText = "Gemma 4: I am running on your device and ready to help!"
-        }
+        let startTime = Date()
+        
+        // Build the prompt with system context
+        let prompt = buildPrompt(for: request)
+        
+        // Generate response
+        let responseText = try await engine.generate(
+            prompt: prompt,
+            maxTokens: request.generationConfig.maxOutputTokens,
+            temperature: request.generationConfig.temperature,
+            topP: request.generationConfig.topP
+        )
+        
+        let latency = Date().timeIntervalSince(startTime) * 1000
         
         return AIResponse(
             text: responseText,
@@ -123,10 +83,10 @@ final class GemmaLocalBackend: AIBackend {
                 isOnDevice: true
             ),
             metadata: AIResponseMetadata(
-                timeToFirstTokenMs: 150,
-                totalLatencyMs: 800,
-                tokensIn: request.userPrompt.count / 4,
-                tokensOut: responseText.count / 4,
+                timeToFirstTokenMs: latency * 0.3,
+                totalLatencyMs: latency,
+                tokensIn: engine.tokenCount(for: prompt),
+                tokensOut: engine.tokenCount(for: responseText),
                 wasCancelled: false,
                 failureReason: nil
             )
@@ -135,39 +95,53 @@ final class GemmaLocalBackend: AIBackend {
     
     func stream(_ request: AIRequest) -> AsyncThrowingStream<AITokenEvent, Error> {
         AsyncThrowingStream { continuation in
-            Task {
-                guard isReady else {
+            Task { @MainActor in
+                guard self.isReady else {
                     continuation.finish(throwing: AIError.modelMissing)
                     return
                 }
                 
-                // Mocking local streaming response
-                let stubResponse: String
-                switch request.task {
-                case .chat:
-                    stubResponse = "As Gemma 4 running locally on your device, I can help you track your nutrition, explain health reports, and suggest meals entirely offline. What would you like to focus on today?"
-                default:
-                    stubResponse = "Local model processing request..."
-                }
+                let prompt = self.buildPrompt(for: request)
+                let startTime = Date()
+                var tokenIndex = 0
                 
-                let words = stubResponse.split(separator: " ")
-                for (index, word) in words.enumerated() {
-                    let isLast = index == words.count - 1
+                do {
+                    let stream = self.engine.stream(
+                        prompt: prompt,
+                        maxTokens: request.generationConfig.maxOutputTokens,
+                        temperature: request.generationConfig.temperature,
+                        topP: request.generationConfig.topP
+                    )
+                    
+                    for try await token in stream {
+                        let elapsed = Date().timeIntervalSince(startTime) * 1000
+                        continuation.yield(AITokenEvent(
+                            token: token,
+                            isComplete: false,
+                            tokenIndex: tokenIndex,
+                            elapsedMs: elapsed
+                        ))
+                        tokenIndex += 1
+                    }
+                    
+                    // Send final completion event
                     continuation.yield(AITokenEvent(
-                        token: String(word) + (isLast ? "" : " "),
-                        isComplete: isLast,
-                        tokenIndex: index,
-                        elapsedMs: Double(index) * 50
+                        token: "",
+                        isComplete: true,
+                        tokenIndex: tokenIndex,
+                        elapsedMs: Date().timeIntervalSince(startTime) * 1000
                     ))
-                    try? await Task.sleep(nanoseconds: 50_000_000) // 50ms
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
                 }
-                continuation.finish()
             }
         }
     }
     
     func cancelCurrentGeneration() {
-        // In production: Cancel llama.cpp/MLX inference
+        // llama.cpp cancellation would go here
+        // llama_backend_abort(context)
     }
     
     func healthCheck() async -> AIBackendHealth {
@@ -187,7 +161,32 @@ final class GemmaLocalBackend: AIBackend {
     }
     
     func unloadModel() {
+        engine.cleanup()
         isReady = false
-        // In production: Free runtime memory
+    }
+    
+    // MARK: - Prompt Building
+    
+    private func buildPrompt(for request: AIRequest) -> String {
+        var prompt = ""
+        
+        // Add system prompt if provided
+        if let systemPrompt = request.systemPrompt {
+            prompt += "<start_of_turn>system\n\(systemPrompt)<end_of_turn>\n"
+        }
+        
+        // Add retrieved context if any
+        if !request.retrievedContext.isEmpty {
+            let contextText = request.retrievedContext.map { $0.text }.joined(separator: "\n")
+            prompt += "<start_of_turn>context\n\(contextText)<end_of_turn>\n"
+        }
+        
+        // Add user message
+        prompt += "<start_of_turn>user\n\(request.userPrompt)<end_of_turn>\n"
+        
+        // Start model response
+        prompt += "<start_of_turn>model\n"
+        
+        return prompt
     }
 }

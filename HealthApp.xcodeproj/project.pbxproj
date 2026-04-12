@@ -62,6 +62,7 @@
 		27BD07279DCD4A6DDCBE3BA6 /* AppTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FACBCEF637CA2FC88B5CB70 /* AppTips.swift */; };
 		256BAB5DC5EB479346668F7F /* WeatherHydrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361FEDEA08815EA6B81690B6 /* WeatherHydrationService.swift */; };
 		5A7FBCC780531DA4087D1660 /* IndianFoodDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FFF7B802EA83FC77628A05 /* IndianFoodDatabase.swift */; };
+		C5452639F08E7E78444DFF1E /* LlamaCppEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6060DF97BCC9276983843B /* LlamaCppEngine.swift */; };
 		C0B334037C70EC6882BBF7BD /* ChipGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05668792D454BD2E650C0CA /* ChipGroup.swift */; };
 		C527108CC55E47263C6C60D1 /* TimerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B30AD7C6AF4F1C36C37498 /* TimerService.swift */; };
 		C6313335FF283BA91636749C /* AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB15241668D1DE839F9A40A0 /* AIBackend.swift */; };
@@ -102,6 +103,7 @@
 		8FACBCEF637CA2FC88B5CB70 /* AppTips.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppTips.swift; sourceTree = "<group>"; };
 		361FEDEA08815EA6B81690B6 /* WeatherHydrationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WeatherHydrationService.swift; sourceTree = "<group>"; };
 		51FFF7B802EA83FC77628A05 /* IndianFoodDatabase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IndianFoodDatabase.swift; sourceTree = "<group>"; };
+		EA6060DF97BCC9276983843B /* LlamaCppEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LlamaCppEngine.swift; sourceTree = "<group>"; };
 		263FC06E0DC1B82D0A9643C2 /* HealthKitManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HealthKitManager.swift; path = Health/HealthKitManager.swift; sourceTree = "<group>"; };
 		28788D5F1E51C275A2F841EC /* GradientBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBackground.swift; sourceTree = "<group>"; };
 		287DA2D933850934A6E60887 /* CalendarEventEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CalendarEventEditor.swift; sourceTree = "<group>"; };
@@ -247,6 +249,7 @@
 				2BE64E117D9CC2CA55D381C1 /* AppleFoundationBackend.swift */,
 				52C25A45732EB4CF9D110DCF /* GeminiService.swift */,
 				B27C1F9734FAFA7E969FE0F9 /* GemmaLocalBackend.swift */,
+				EA6060DF97BCC9276983843B /* LlamaCppEngine.swift */,
 			);
 			path = Backends;
 			sourceTree = "<group>";
@@ -737,6 +740,7 @@
 				27BD07279DCD4A6DDCBE3BA6 /* AppTips.swift in Sources */,
 				256BAB5DC5EB479346668F7F /* WeatherHydrationService.swift in Sources */,
 				5A7FBCC780531DA4087D1660 /* IndianFoodDatabase.swift in Sources */,
+				C5452639F08E7E78444DFF1E /* LlamaCppEngine.swift in Sources */,
 				8158DDA0159805AE7FCBCF79 /* NativeCalendarEventView.swift in Sources */,
 				84734C52C22EA20C8453D1D8 /* AddIntegrationActionSheet.swift in Sources */,
 				58CDAC2CAE44778BB1616DF9 /* NotificationService.swift in Sources */,
