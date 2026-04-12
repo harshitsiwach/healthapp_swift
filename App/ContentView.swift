@@ -3,16 +3,35 @@ import SwiftData
 
 struct RootView: View {
     @Query private var profiles: [UserProfile]
+    @State private var shortcutAction: ShortcutAction?
+    @State private var showFoodLogging = false
+    @State private var showWaterLogging = false
     
     var body: some View {
         Group {
             if profiles.isEmpty {
                 OnboardingView()
             } else {
-                ContentView()
+                ContentView(showFoodLogging: $showFoodLogging)
                     .onAppear {
                         updateStreak()
                         requestNotifications()
+                        donateShortcuts()
+                    }
+                    .onContinueUserActivity("com.aihealthappoffline.logMeal") { activity in
+                        showFoodLogging = true
+                    }
+                    .onContinueUserActivity("com.aihealthappoffline.logFood") { activity in
+                        shortcutAction = SiriShortcutsManager.handleUserActivity(activity)
+                        showFoodLogging = true
+                    }
+                    .onContinueUserActivity("com.aihealthappoffline.checkCalories") { activity in
+                        // Navigate to dashboard (already default)
+                        shortcutAction = .checkCalories
+                    }
+                    .onContinueUserActivity("com.aihealthappoffline.logWater") { activity in
+                        showWaterLogging = true
+                        shortcutAction = .logWater
                     }
             }
         }
@@ -43,12 +62,19 @@ struct RootView: View {
             }
         }
     }
+    
+    private func donateShortcuts() {
+        SiriShortcutsManager.shared.donateMealLoggingShortcut()
+        SiriShortcutsManager.shared.donateCaloriesCheckShortcut()
+        SiriShortcutsManager.shared.donateWaterLoggingShortcut()
+    }
 }
 
 struct ContentView: View {
     @Query private var profiles: [UserProfile]
     @State private var selectedTab = 0
     @State private var showCamera = false
+    @Binding var showFoodLogging: Bool
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -112,6 +138,9 @@ struct ContentView: View {
             .ignoresSafeArea(.keyboard)
         }
         .sheet(isPresented: $showCamera) {
+            FoodLoggingSheet()
+        }
+        .sheet(isPresented: $showFoodLogging) {
             FoodLoggingSheet()
         }
     }

@@ -30,5 +30,12 @@
 	<string>HealthApp needs write access to your calendar to add doctor appointments and follow-up visits.</string>
 	<key>NSRemindersFullAccessUsageDescription</key>
 	<string>HealthApp needs access to your reminders to save and sync medication, hydration, and habit schedules.</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>com.aihealthappoffline.logMeal</string>
+		<string>com.aihealthappoffline.logFood</string>
+		<string>com.aihealthappoffline.checkCalories</string>
+		<string>com.aihealthappoffline.logWater</string>
+	</array>
 </dict>
 </plist>

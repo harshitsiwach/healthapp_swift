@@ -55,6 +55,7 @@
 		B9BFB0E8D7A3A8BCC8F5543A /* ModelManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 831F88434C188B1B9754B807 /* ModelManagementView.swift */; };
 		BA211C26D535B36BFEF589AD /* PermissionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79079F8F69BA9C308404DD8 /* PermissionsService.swift */; };
 		2E8857450E884E3EA0EE41D8 /* SharedModelContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60AD8EAB1DCBCE69B9C31459 /* SharedModelContainer.swift */; };
+		C3334136A0CACF6F12E566AA /* SiriShortcutsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A92E5D34F8CF75ACCF828B /* SiriShortcutsManager.swift */; };
 		C0B334037C70EC6882BBF7BD /* ChipGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05668792D454BD2E650C0CA /* ChipGroup.swift */; };
 		C527108CC55E47263C6C60D1 /* TimerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B30AD7C6AF4F1C36C37498 /* TimerService.swift */; };
 		C6313335FF283BA91636749C /* AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB15241668D1DE839F9A40A0 /* AIBackend.swift */; };
@@ -88,6 +89,7 @@
 		1FEE3B9DE303144A628B81F3 /* CalendarRemindersPermissionsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CalendarRemindersPermissionsView.swift; sourceTree = "<group>"; };
 		200F35CC93DBFFB3D69C0DB9 /* PermissionsService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PermissionsService.swift; sourceTree = "<group>"; };
 		60AD8EAB1DCBCE69B9C31459 /* SharedModelContainer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SharedModelContainer.swift; sourceTree = "<group>"; };
+		03A92E5D34F8CF75ACCF828B /* SiriShortcutsManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SiriShortcutsManager.swift; sourceTree = "<group>"; };
 		263FC06E0DC1B82D0A9643C2 /* HealthKitManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HealthKitManager.swift; path = Health/HealthKitManager.swift; sourceTree = "<group>"; };
 		28788D5F1E51C275A2F841EC /* GradientBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBackground.swift; sourceTree = "<group>"; };
 		287DA2D933850934A6E60887 /* CalendarEventEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CalendarEventEditor.swift; sourceTree = "<group>"; };
@@ -243,6 +245,7 @@
 				7E18007A06C1EF3AD9EFEE1D /* PermissionsService.swift */,
 				200F35CC93DBFFB3D69C0DB9 /* PermissionsService.swift */,
 				60AD8EAB1DCBCE69B9C31459 /* SharedModelContainer.swift */,
+				03A92E5D34F8CF75ACCF828B /* SiriShortcutsManager.swift */,
 			);
 			name = System;
 			path = System;
@@ -691,6 +694,7 @@
 				D0F25A0912D263E026A3312C /* LiveActivityService.swift in Sources */,
 				BA211C26D535B36BFEF589AD /* PermissionsService.swift in Sources */,
 				2E8857450E884E3EA0EE41D8 /* SharedModelContainer.swift in Sources */,
+				C3334136A0CACF6F12E566AA /* SiriShortcutsManager.swift in Sources */,
 				8158DDA0159805AE7FCBCF79 /* NativeCalendarEventView.swift in Sources */,
 				84734C52C22EA20C8453D1D8 /* AddIntegrationActionSheet.swift in Sources */,
 				58CDAC2CAE44778BB1616DF9 /* NotificationService.swift in Sources */,
