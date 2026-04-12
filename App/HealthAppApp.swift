@@ -12,7 +12,7 @@ struct HealthAppApp: App {
                     handleGoalNotification(notification)
                 }
         }
-        .modelContainer(for: [UserProfile.self, DailyLog.self])
+        .modelContainer(ModelContainer.shared())
     }
     
     private func handleGoalNotification(_ notification: Foundation.Notification) {
@@ -20,11 +20,8 @@ struct HealthAppApp: App {
               let date = userInfo["date"] as? String,
               let completed = userInfo["completed"] as? Bool else { return }
         
-        // This will be handled by the model context in the active scene
-        // For background writes, we need to create a separate model context
         let descriptor = FetchDescriptor<UserProfile>()
         
-        // Post to the main UI for now — the dashboard handles this
         _ = date
         _ = completed
     }
