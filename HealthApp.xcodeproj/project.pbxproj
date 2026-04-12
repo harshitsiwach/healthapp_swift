@@ -61,6 +61,7 @@
 		D373B7E1391F078784FAB41C /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FC34BF68146E77D29FE9B1 /* ImagePicker.swift */; };
 		27BD07279DCD4A6DDCBE3BA6 /* AppTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FACBCEF637CA2FC88B5CB70 /* AppTips.swift */; };
 		256BAB5DC5EB479346668F7F /* WeatherHydrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361FEDEA08815EA6B81690B6 /* WeatherHydrationService.swift */; };
+		5A7FBCC780531DA4087D1660 /* IndianFoodDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FFF7B802EA83FC77628A05 /* IndianFoodDatabase.swift */; };
 		C0B334037C70EC6882BBF7BD /* ChipGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05668792D454BD2E650C0CA /* ChipGroup.swift */; };
 		C527108CC55E47263C6C60D1 /* TimerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B30AD7C6AF4F1C36C37498 /* TimerService.swift */; };
 		C6313335FF283BA91636749C /* AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB15241668D1DE839F9A40A0 /* AIBackend.swift */; };
@@ -100,6 +101,7 @@
 		37FC34BF68146E77D29FE9B1 /* ImagePicker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		8FACBCEF637CA2FC88B5CB70 /* AppTips.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppTips.swift; sourceTree = "<group>"; };
 		361FEDEA08815EA6B81690B6 /* WeatherHydrationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WeatherHydrationService.swift; sourceTree = "<group>"; };
+		51FFF7B802EA83FC77628A05 /* IndianFoodDatabase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IndianFoodDatabase.swift; sourceTree = "<group>"; };
 		263FC06E0DC1B82D0A9643C2 /* HealthKitManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HealthKitManager.swift; path = Health/HealthKitManager.swift; sourceTree = "<group>"; };
 		28788D5F1E51C275A2F841EC /* GradientBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBackground.swift; sourceTree = "<group>"; };
 		287DA2D933850934A6E60887 /* CalendarEventEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CalendarEventEditor.swift; sourceTree = "<group>"; };
@@ -360,11 +362,21 @@
 				39C4C9461E96896E9A5DC2FB /* System */,
 				17731BD250C2588323130FCA /* Notifications */,
 				E88C7BBB11AF33EDB121D547 /* Reminders */,
-			);
-			path = App;
-			sourceTree = "<group>";
-		};
-		850AC29570F7158B78F6156E /* Models */ = {
+			34C3EB4CE874CB7774A92229 /* Data */,
+		);
+		path = App;
+		sourceTree = "<group>";
+	};
+	34C3EB4CE874CB7774A92229 /* Data */ = {
+		isa = PBXGroup;
+		children = (
+			51FFF7B802EA83FC77628A05 /* IndianFoodDatabase.swift */,
+		);
+		name = Data;
+		path = Data;
+		sourceTree = "<group>";
+	};
+	850AC29570F7158B78F6156E /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				A0056960BC6D86AC627BA7BE /* DailyLog.swift */,
@@ -724,6 +736,7 @@
 				D373B7E1391F078784FAB41C /* ImagePicker.swift in Sources */,
 				27BD07279DCD4A6DDCBE3BA6 /* AppTips.swift in Sources */,
 				256BAB5DC5EB479346668F7F /* WeatherHydrationService.swift in Sources */,
+				5A7FBCC780531DA4087D1660 /* IndianFoodDatabase.swift in Sources */,
 				8158DDA0159805AE7FCBCF79 /* NativeCalendarEventView.swift in Sources */,
 				84734C52C22EA20C8453D1D8 /* AddIntegrationActionSheet.swift in Sources */,
 				58CDAC2CAE44778BB1616DF9 /* NotificationService.swift in Sources */,
