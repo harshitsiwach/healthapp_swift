@@ -15,6 +15,9 @@ struct DashboardView: View {
     @State private var showingWaterSheet = false
     @State private var showSplash = false
     @State private var showConfetti = false
+    @State private var showingSleepSheet = false
+    @State private var showingStepsSheet = false
+    @State private var showingActivityDetail = false
     
     // Hydration tracking (persisted per day)
     @AppStorage("hydration_ml") private var hydrationML: Int = 0
@@ -65,6 +68,45 @@ struct DashboardView: View {
     }
     private var consumedFat: Double {
         logsForDate.reduce(0) { $0 + $1.fatG }
+    }
+    
+    // MARK: - Health Metrics from DailyLog
+    
+    private var todayLog: DailyLog? {
+        allLogs.first { $0.date == selectedDateString }
+    }
+    
+    private var loggedSteps: Int {
+        todayLog?.steps ?? 0
+    }
+    
+    private var loggedSleepHours: Int {
+        todayLog?.sleepHours ?? 0
+    }
+    
+    private var loggedSleepMinutes: Int {
+        todayLog?.sleepMinutes ?? 0
+    }
+    
+    private var sleepDisplay: String {
+        if loggedSleepHours == 0 && loggedSleepMinutes == 0 {
+            return "Tap to log"
+        }
+        return "\(loggedSleepHours)h \(loggedSleepMinutes)m"
+    }
+    
+    private var stepsDisplay: String {
+        if loggedSteps == 0 {
+            return "Tap to log"
+        }
+        return "\(loggedSteps.formatted())"
+    }
+    
+    private let stepsGoal = 10000
+    
+    private var stepsProgress: Double {
+        guard loggedSteps > 0 else { return 0 }
+        return min(Double(loggedSteps) / Double(stepsGoal), 1.0)
     }
     
     // MARK: - Body
@@ -148,6 +190,24 @@ struct DashboardView: View {
                             showConfetti = false
                         }
                     }
+                }
+            }
+            .sheet(isPresented: $showingSleepSheet) {
+                SleepLoggingSheet(
+                    hours: loggedSleepHours,
+                    minutes: loggedSleepMinutes,
+                    colors: colors
+                ) { hours, minutes in
+                    saveSleep(hours: hours, minutes: minutes)
+                }
+            }
+            .sheet(isPresented: $showingStepsSheet) {
+                StepsLoggingSheet(
+                    currentSteps: loggedSteps,
+                    goal: stepsGoal,
+                    colors: colors
+                ) { steps in
+                    saveSteps(steps)
                 }
             }
             .navigationDestination(isPresented: $showingMealIdeas) {
@@ -277,60 +337,99 @@ struct DashboardView: View {
     // MARK: - Sleep Card
     
     private var sleepCard: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
-            Image(systemName: "moon.fill")
-                .font(.system(size: 16))
-                .foregroundStyle(colors.neonBlue)
-                .neonGlow(colors.neonBlue, intensity: 0.3)
-            Text("7h 42m")
-                .font(DesignSystem.Typography.statMedium)
-                .foregroundStyle(colors.textPrimary)
-            Text("Sleep")
-                .font(DesignSystem.Typography.caption)
-                .foregroundStyle(colors.textSecondary)
-            HStack(spacing: 3) {
-                ForEach(0..<8, id: \.self) { i in
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(i < 6 ? colors.neonBlue : colors.neonBlue.opacity(0.2))
-                        .frame(height: CGFloat(8 + i * 2))
+        Button {
+            Haptic.impact(.light)
+            showingSleepSheet = true
+        } label: {
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
+                HStack {
+                    Image(systemName: "moon.fill")
+                        .font(.system(size: 16))
+                        .foregroundStyle(colors.neonBlue)
+                        .neonGlow(colors.neonBlue, intensity: 0.3)
+                    Spacer()
+                    Image(systemName: loggedSleepHours > 0 ? "pencil.circle.fill" : "plus.circle.fill")
+                        .font(.system(size: 14))
+                        .foregroundStyle(colors.neonBlue)
                 }
+                
+                Text(sleepDisplay)
+                    .font(DesignSystem.Typography.statMedium)
+                    .foregroundStyle(colors.textPrimary)
+                    .contentTransition(.numericText())
+                
+                Text("Sleep")
+                    .font(DesignSystem.Typography.caption)
+                    .foregroundStyle(colors.textSecondary)
+                
+                // Sleep quality bars (animated from data)
+                HStack(spacing: 3) {
+                    let totalMinutes = loggedSleepHours * 60 + loggedSleepMinutes
+                    let qualityBars = min(8, max(1, totalMinutes / 60))
+                    ForEach(0..<8, id: \.self) { i in
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(i < qualityBars ? colors.neonBlue : colors.neonBlue.opacity(0.15))
+                            .frame(height: CGFloat(6 + (i % 4) * 5))
+                            .animation(.spring(response: 0.5).delay(Double(i) * 0.05), value: qualityBars)
+                    }
+                }
+                .frame(height: 24)
             }
-            .frame(height: 24)
+            .themedCard()
+            .frame(maxWidth: .infinity)
         }
-        .themedCard()
-        .frame(maxWidth: .infinity)
+        .buttonStyle(.scaleButton)
     }
     
     // MARK: - Steps Card
     
     private var stepsCard: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
-            Image(systemName: "figure.walk")
-                .font(.system(size: 16))
-                .foregroundStyle(colors.neonYellow)
-                .neonGlow(colors.neonYellow, intensity: 0.3)
-            Text("8,432")
-                .font(DesignSystem.Typography.statMedium)
-                .foregroundStyle(colors.textPrimary)
-            Text("Steps")
-                .font(DesignSystem.Typography.caption)
-                .foregroundStyle(colors.textSecondary)
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(colors.neonYellow.opacity(0.15))
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(colors.neonYellow.gradient)
-                        .frame(width: geo.size.width * 0.84)
+        Button {
+            Haptic.impact(.light)
+            showingStepsSheet = true
+        } label: {
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
+                HStack {
+                    Image(systemName: "figure.walk")
+                        .font(.system(size: 16))
+                        .foregroundStyle(colors.neonYellow)
+                        .neonGlow(colors.neonYellow, intensity: 0.3)
+                    Spacer()
+                    Image(systemName: loggedSteps > 0 ? "pencil.circle.fill" : "plus.circle.fill")
+                        .font(.system(size: 14))
+                        .foregroundStyle(colors.neonYellow)
                 }
+                
+                Text(stepsDisplay)
+                    .font(DesignSystem.Typography.statMedium)
+                    .foregroundStyle(colors.textPrimary)
+                    .contentTransition(.numericText())
+                
+                Text("Steps")
+                    .font(DesignSystem.Typography.caption)
+                    .foregroundStyle(colors.textSecondary)
+                
+                // Progress bar
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(colors.neonYellow.opacity(0.15))
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(colors.neonYellow.gradient)
+                            .frame(width: geo.size.width * stepsProgress)
+                            .animation(.spring(response: 0.8), value: stepsProgress)
+                    }
+                }
+                .frame(height: 6)
+                
+                Text(loggedSteps > 0 ? "\(Int(stepsProgress * 100))% of \(stepsGoal.formatted())" : "Set your goal")
+                    .font(DesignSystem.Typography.caption2)
+                    .foregroundStyle(colors.textTertiary)
             }
-            .frame(height: 6)
-            Text("84% of 10k")
-                .font(DesignSystem.Typography.caption2)
-                .foregroundStyle(colors.textTertiary)
+            .themedCard()
+            .frame(maxWidth: .infinity)
         }
-        .themedCard()
-        .frame(maxWidth: .infinity)
+        .buttonStyle(.scaleButton)
     }
     
     // MARK: - Activity Rings
@@ -643,6 +742,31 @@ struct DashboardView: View {
         if hour < 21 { return "Almost there, finish strong" }
         return "Great job today! Rest well"
     }
+    
+    // MARK: - Save Functions
+    
+    private func saveSleep(hours: Int, minutes: Int) {
+        if let log = todayLog {
+            log.sleepHours = hours
+            log.sleepMinutes = minutes
+        } else {
+            let log = DailyLog(date: selectedDateString, sleepHours: hours, sleepMinutes: minutes)
+            modelContext.insert(log)
+        }
+        try? modelContext.save()
+        Haptic.notification(.success)
+    }
+    
+    private func saveSteps(_ steps: Int) {
+        if let log = todayLog {
+            log.steps = steps
+        } else {
+            let log = DailyLog(date: selectedDateString, steps: steps)
+            modelContext.insert(log)
+        }
+        try? modelContext.save()
+        Haptic.notification(.success)
+    }
 }
 
 // MARK: - Water Intake Sheet
@@ -762,5 +886,299 @@ struct WaterIntakeSheet: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Sleep Logging Sheet
+
+struct SleepLoggingSheet: View {
+    @Environment(\.dismiss) var dismiss
+    let hours: Int
+    let minutes: Int
+    let colors: DesignSystem.ThemeColors
+    let onSave: (Int, Int) -> Void
+    
+    @State private var selectedHours: Int
+    @State private var selectedMinutes: Int
+    
+    init(hours: Int, minutes: Int, colors: DesignSystem.ThemeColors, onSave: @escaping (Int, Int) -> Void) {
+        self.hours = hours
+        self.minutes = minutes
+        self.colors = colors
+        self.onSave = onSave
+        self._selectedHours = State(initialValue: hours)
+        self._selectedMinutes = State(initialValue: minutes)
+    }
+    
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: DesignSystem.Spacing.xl) {
+                // Moon icon with glow
+                Image(systemName: "moon.fill")
+                    .font(.system(size: 50))
+                    .foregroundStyle(colors.neonBlue)
+                    .neonGlow(colors.neonBlue, intensity: 0.5)
+                    .padding(.top, DesignSystem.Spacing.lg)
+                
+                Text("How long did you sleep?")
+                    .font(DesignSystem.Typography.title3)
+                    .foregroundStyle(colors.textPrimary)
+                
+                // Time pickers
+                HStack(spacing: DesignSystem.Spacing.md) {
+                    // Hours picker
+                    VStack(spacing: DesignSystem.Spacing.xs) {
+                        Text("Hours")
+                            .font(DesignSystem.Typography.caption)
+                            .foregroundStyle(colors.textSecondary)
+                        
+                        Picker("Hours", selection: $selectedHours) {
+                            ForEach(0..<13, id: \.self) { h in
+                                Text("\(h)").tag(h)
+                            }
+                        }
+                        .pickerStyle(.wheel)
+                        .frame(width: 100, height: 150)
+                        .background(
+                            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                                .fill(colors.backgroundElevated)
+                        )
+                    }
+                    
+                    Text(":")
+                        .font(DesignSystem.Typography.title1)
+                        .foregroundStyle(colors.textTertiary)
+                    
+                    // Minutes picker
+                    VStack(spacing: DesignSystem.Spacing.xs) {
+                        Text("Minutes")
+                            .font(DesignSystem.Typography.caption)
+                            .foregroundStyle(colors.textSecondary)
+                        
+                        Picker("Minutes", selection: $selectedMinutes) {
+                            ForEach([0, 15, 30, 45], id: \.self) { m in
+                                Text(String(format: "%02d", m)).tag(m)
+                            }
+                        }
+                        .pickerStyle(.wheel)
+                        .frame(width: 100, height: 150)
+                        .background(
+                            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                                .fill(colors.backgroundElevated)
+                        )
+                    }
+                }
+                
+                // Total display
+                let totalMinutes = selectedHours * 60 + selectedMinutes
+                Text("Total: \(totalMinutes / 60)h \(totalMinutes % 60)m")
+                    .font(DesignSystem.Typography.headline)
+                    .foregroundStyle(totalMinutes >= 420 ? colors.neonGreen : totalMinutes >= 360 ? colors.neonYellow : colors.neonRed)
+                    .animation(.smooth, value: totalMinutes)
+                
+                // Quality indicator
+                if totalMinutes > 0 {
+                    HStack(spacing: 4) {
+                        Image(systemName: totalMinutes >= 420 ? "checkmark.circle.fill" : totalMinutes >= 360 ? "exclamationmark.triangle.fill" : "xmark.circle.fill")
+                            .foregroundStyle(totalMinutes >= 420 ? colors.neonGreen : totalMinutes >= 360 ? colors.neonYellow : colors.neonRed)
+                        Text(totalMinutes >= 420 ? "Great sleep!" : totalMinutes >= 360 ? "Could be better" : "You need more rest")
+                            .font(DesignSystem.Typography.caption)
+                            .foregroundStyle(colors.textSecondary)
+                    }
+                }
+                
+                Spacer()
+                
+                // Save button
+                Button {
+                    onSave(selectedHours, selectedMinutes)
+                    dismiss()
+                } label: {
+                    Text("Save Sleep")
+                        .font(DesignSystem.Typography.bodyBold)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, DesignSystem.Spacing.md)
+                        .background(
+                            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)
+                                .fill(colors.neonBlue.gradient)
+                        )
+                }
+                .buttonStyle(.scaleButton)
+                .padding(.horizontal, DesignSystem.Spacing.md)
+                .padding(.bottom, DesignSystem.Spacing.lg)
+            }
+            .background(colors.background.ignoresSafeArea())
+            .navigationTitle("Log Sleep")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                        .foregroundStyle(colors.neonBlue)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Steps Logging Sheet
+
+struct StepsLoggingSheet: View {
+    @Environment(\.dismiss) var dismiss
+    let currentSteps: Int
+    let goal: Int
+    let colors: DesignSystem.ThemeColors
+    let onSave: (Int) -> Void
+    
+    @State private var stepInput: String
+    @State private var selectedPreset: Int? = nil
+    
+    init(currentSteps: Int, goal: Int, colors: DesignSystem.ThemeColors, onSave: @escaping (Int) -> Void) {
+        self.currentSteps = currentSteps
+        self.goal = goal
+        self.colors = colors
+        self.onSave = onSave
+        self._stepInput = State(initialValue: currentSteps > 0 ? "\(currentSteps)" : "")
+    }
+    
+    let presets = [2500, 5000, 7500, 10000, 12500, 15000]
+    
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: DesignSystem.Spacing.lg) {
+                headerSection
+                inputSection
+                presetsSection
+                ringPreview
+                Spacer()
+                saveButton
+            }
+            .background(colors.background.ignoresSafeArea())
+            .navigationTitle("Log Steps")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                        .foregroundStyle(colors.neonYellow)
+                }
+            }
+        }
+    }
+    
+    private var headerSection: some View {
+        VStack(spacing: DesignSystem.Spacing.sm) {
+            Image(systemName: "figure.walk")
+                .font(.system(size: 50))
+                .foregroundStyle(colors.neonYellow)
+                .neonGlow(colors.neonYellow, intensity: 0.5)
+                .padding(.top, DesignSystem.Spacing.lg)
+            
+            Text("How many steps today?")
+                .font(DesignSystem.Typography.title3)
+                .foregroundStyle(colors.textPrimary)
+            
+            if let steps = Int(stepInput), steps > 0 {
+                let pct = Double(steps) / Double(goal)
+                VStack(spacing: 4) {
+                    Text("\(steps.formatted())")
+                        .font(DesignSystem.Typography.statLarge)
+                        .foregroundStyle(colors.textPrimary)
+                        .contentTransition(.numericText())
+                    Text("\(Int(pct * 100))% of \(goal.formatted()) goal")
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundStyle(pct >= 1.0 ? colors.neonGreen : colors.textSecondary)
+                }
+                .animation(.smooth, value: steps)
+            }
+        }
+    }
+    
+    private var inputSection: some View {
+        HStack {
+            Image(systemName: "number")
+                .foregroundStyle(colors.textTertiary)
+            TextField("Enter steps", text: $stepInput)
+                .font(DesignSystem.Typography.title2)
+                .keyboardType(.numberPad)
+                .foregroundStyle(colors.textPrimary)
+        }
+        .padding(DesignSystem.Spacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                .fill(colors.backgroundElevated)
+                .overlay(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                    .strokeBorder(colors.cardBorder))
+        )
+        .padding(.horizontal, DesignSystem.Spacing.md)
+    }
+    
+    private var presetsSection: some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
+            Text("Quick Add")
+                .font(DesignSystem.Typography.subheadline)
+                .foregroundStyle(colors.textSecondary)
+                .padding(.horizontal, DesignSystem.Spacing.md)
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), spacing: 10) {
+                ForEach(presets, id: \.self) { preset in
+                    presetButton(preset)
+                }
+            }
+            .padding(.horizontal, DesignSystem.Spacing.md)
+        }
+    }
+    
+    private func presetButton(_ preset: Int) -> some View {
+        let isSelected = selectedPreset == preset
+        return Button {
+            Haptic.selection()
+            stepInput = "\(preset)"
+            selectedPreset = preset
+        } label: {
+            Text(preset.formatted())
+                .font(DesignSystem.Typography.bodyBold)
+                .foregroundStyle(isSelected ? .white : colors.textPrimary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, DesignSystem.Spacing.sm)
+                .background(
+                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                        .fill(isSelected ? colors.neonYellow.opacity(0.9) : colors.backgroundElevated)
+                        .overlay(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                            .strokeBorder(isSelected ? colors.neonYellow : colors.cardBorder))
+                )
+        }
+        .buttonStyle(.scaleButton)
+    }
+    
+    @ViewBuilder
+    private var ringPreview: some View {
+        if let steps = Int(stepInput), steps > 0 {
+            let pct = min(Double(steps) / Double(goal), 1.0)
+            ActivityRing(progress: pct, color: colors.neonYellow, size: 100, lineWidth: 12)
+                .padding(.top, DesignSystem.Spacing.sm)
+        }
+    }
+    
+    private var saveButton: some View {
+        Button {
+            if let steps = Int(stepInput), steps > 0 {
+                onSave(steps)
+                dismiss()
+            }
+        } label: {
+            Text("Save Steps")
+                .font(DesignSystem.Typography.bodyBold)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, DesignSystem.Spacing.md)
+                .background(
+                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)
+                        .fill((Int(stepInput) ?? 0) > 0 ? colors.neonYellow.gradient : colors.textTertiary.opacity(0.3).gradient)
+                )
+        }
+        .buttonStyle(.scaleButton)
+        .disabled((Int(stepInput) ?? 0) <= 0)
+        .padding(.horizontal, DesignSystem.Spacing.md)
+        .padding(.bottom, DesignSystem.Spacing.lg)
     }
 }

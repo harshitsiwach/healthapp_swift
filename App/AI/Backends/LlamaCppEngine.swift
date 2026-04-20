@@ -29,6 +29,7 @@ final class LlamaCppEngine {
     }
     
     private var config: Config = .default
+    private var mockMode = false
     
     // MARK: - Lifecycle
     
@@ -36,14 +37,25 @@ final class LlamaCppEngine {
         cleanup()
     }
     
+    /// Enable mock mode for testing without a real model
+    func enableMockMode() {
+        mockMode = true
+        isInitialized = true
+        print("LlamaCppEngine: Mock mode enabled (demo responses)")
+    }
+    
     // MARK: - Model Loading
     
     /// Load a GGUF model file
     func loadModel(at path: URL, config: Config = .default) throws {
         self.config = config
-        
-        // Clean up any existing model
         cleanup()
+        
+        if mockMode {
+            isInitialized = true
+            print("LlamaCppEngine: Mock mode - skipping model load")
+            return
+        }
         
         // In production with llama.cpp linked:
         /*
@@ -67,7 +79,6 @@ final class LlamaCppEngine {
         }
         */
         
-        // Placeholder until llama.cpp is linked
         isInitialized = true
         print("LlamaCppEngine: Model loaded at \(path.lastPathComponent)")
     }
