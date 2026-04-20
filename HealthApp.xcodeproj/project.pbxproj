@@ -188,6 +188,7 @@
 		F94A90DAA01C8132A7477CEF /* AIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIResponse.swift; sourceTree = "<group>"; };
 		FDAE97549709945854E627CB /* DailyHealthSummaryCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DailyHealthSummaryCard.swift; path = Home/DailyHealthSummaryCard.swift; sourceTree = "<group>"; };
 		FE32A8427FABA7FFF16A77BA /* HealthAuthorizationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HealthAuthorizationService.swift; sourceTree = "<group>"; };
+		EEAE984DE5346E2E401491E8 /* HealthApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HealthApp.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -355,6 +356,7 @@
 			children = (
 				C9ED963C8D1C3EAD5B867598 /* ContentView.swift */,
 				AE7D5A6F40FB05FFF36540BD /* HealthAppApp.swift */,
+				EEAE984DE5346E2E401491E8 /* HealthApp.entitlements */,
 				69C098587193E9446CBA6710 /* AI */,
 				850AC29570F7158B78F6156E /* Models */,
 				EA46F9385196E7474A0AAA9D /* Services */,
@@ -820,6 +822,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = App/Info.plist;
+				CODE_SIGN_ENTITLEMENTS = HealthApp.entitlements;
 				INFOPLIST_KEY_NSCameraUsageDescription = "HealthApp needs camera access to analyze your meals";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -909,6 +912,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = App/Info.plist;
+				CODE_SIGN_ENTITLEMENTS = HealthApp.entitlements;
 				INFOPLIST_KEY_NSCameraUsageDescription = "HealthApp needs camera access to analyze your meals";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
