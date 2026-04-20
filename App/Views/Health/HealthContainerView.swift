@@ -2,6 +2,7 @@ import SwiftUI
 
 /// A container view that merges the Weekly Report (Insights) and Apple Health (Raw Data)
 struct HealthContainerView: View {
+    @Environment(\.theme) var colors
     @State private var selectedTab = 0
     
     var body: some View {
@@ -28,7 +29,7 @@ struct HealthContainerView: View {
             }
             .navigationTitle(selectedTab == 0 ? "Weekly Report" : "Apple Health")
             .navigationBarTitleDisplayMode(.inline)
-            .background(GradientBackground().ignoresSafeArea())
+            .background(colors.background.ignoresSafeArea())
         }
     }
 }

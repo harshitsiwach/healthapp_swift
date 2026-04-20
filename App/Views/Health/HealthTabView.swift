@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct HealthTabView: View {
+    @Environment(\.theme) var colors
     @Query private var profiles: [UserProfile]
     @Query(sort: \DailyLog.date, order: .reverse) private var allLogs: [DailyLog]
     
@@ -12,7 +13,7 @@ struct HealthTabView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                GradientBackground()
+                colors.background.ignoresSafeArea()
                 
                 ScrollView {
                     VStack(spacing: 20) {
@@ -50,7 +51,7 @@ struct HealthTabView: View {
                 .fontWeight(.bold)
             Text("Analyzing your last 7 days of nutrition")
                 .font(.system(.subheadline, design: .rounded))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(colors.textSecondary)
             Spacer()
         }
     }
@@ -64,28 +65,28 @@ struct HealthTabView: View {
                 VStack(spacing: 16) {
                     Text("Health Score")
                         .font(.system(.headline, design: .rounded))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(colors.textSecondary)
                     
                     CircularProgressView(
                         progress: Double(report.score) / 10.0,
                         lineWidth: 16,
                         size: 140,
-                        progressColor: report.score >= 7 ? .green : report.score >= 4 ? .orange : .red
+                        progressColor: report.score >= 7 ? colors.neonGreen : report.score >= 4 ? colors.neonOrange : colors.neonRed
                     )
                     .overlay {
                         Text("\(report.score)")
                             .font(.system(size: 48, weight: .heavy, design: .rounded))
-                            .foregroundStyle(report.score >= 7 ? .green : report.score >= 4 ? .orange : .red)
+                            .foregroundStyle(report.score >= 7 ? colors.neonGreen : report.score >= 4 ? colors.neonOrange : colors.neonRed)
                     }
                     
                     Text("out of 10")
                         .font(.system(.subheadline, design: .rounded))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(colors.textSecondary)
                     
                     Text(report.summary)
                         .font(.system(.subheadline, design: .rounded))
                         .multilineTextAlignment(.center)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(colors.textSecondary)
                         .padding(.top, 4)
                 }
                 .frame(maxWidth: .infinity)
@@ -97,7 +98,7 @@ struct HealthTabView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
                             Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundStyle(.yellow)
+                                .foregroundStyle(colors.neonYellow)
                             Text("Health Warnings")
                                 .font(.system(.headline, design: .rounded))
                                 .fontWeight(.bold)
@@ -107,7 +108,7 @@ struct HealthTabView: View {
                             HStack(alignment: .top, spacing: 8) {
                                 Image(systemName: "chevron.right")
                                     .font(.caption)
-                                    .foregroundStyle(.orange)
+                                    .foregroundStyle(colors.neonOrange)
                                     .padding(.top, 3)
                                 Text(warning)
                                     .font(.system(.subheadline, design: .rounded))
@@ -123,7 +124,7 @@ struct HealthTabView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
                             Image(systemName: "leaf.fill")
-                                .foregroundStyle(.green)
+                                .foregroundStyle(colors.neonGreen)
                             Text("Natural Remedies")
                                 .font(.system(.headline, design: .rounded))
                                 .fontWeight(.bold)
@@ -136,7 +137,7 @@ struct HealthTabView: View {
                                     .fontWeight(.bold)
                                 Text(cure.benefit)
                                     .font(.system(.caption, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(colors.textSecondary)
                             }
                             .padding(.vertical, 4)
                         }
@@ -154,7 +155,7 @@ struct HealthTabView: View {
                 }
                 .font(.system(.subheadline, design: .rounded))
                 .fontWeight(.bold)
-                .foregroundStyle(.blue)
+                .foregroundStyle(colors.neonBlue)
                 .padding(.vertical, 14)
                 .frame(maxWidth: .infinity)
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
@@ -170,13 +171,13 @@ struct HealthTabView: View {
             Spacer(minLength: 80)
             Image(systemName: "heart.text.clipboard")
                 .font(.system(size: 60))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(colors.textSecondary)
             Text("No Report Yet")
                 .font(.system(.title2, design: .rounded))
                 .fontWeight(.heavy)
             Text("Log meals for a few days to get your weekly health report")
                 .font(.system(.subheadline, design: .rounded))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(colors.textSecondary)
                 .multilineTextAlignment(.center)
             
             Button {
@@ -188,7 +189,7 @@ struct HealthTabView: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 32)
                     .padding(.vertical, 14)
-                    .background(Color.blue.gradient, in: Capsule())
+                    .background(colors.neonBlue.gradient, in: Capsule())
             }
             .buttonStyle(.plain)
             Spacer()

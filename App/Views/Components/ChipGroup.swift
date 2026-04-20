@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ChipGroup: View {
+    @Environment(\.theme) var colors
     let options: [String]
     @Binding var selected: String
     var columns: Int = 0 // 0 = flow layout
@@ -47,7 +48,7 @@ struct ChipGroup: View {
                     .padding(.horizontal, 18)
                     .padding(.vertical, 10)
                     .glassEffect(selected == option ? .regular.tint(accentColor).interactive() : .regular.interactive(), in: .capsule)
-                    .foregroundStyle(selected == option ? .white : .primary)
+                    .foregroundStyle(selected == option ? .white : colors.textPrimary)
                     .overlay(
                         Capsule()
                             .stroke(selected == option ? Color.clear : Color.gray.opacity(0.2), lineWidth: 0.5)
@@ -82,7 +83,7 @@ struct ChipGroup: View {
                             }
                         }
                     )
-                    .foregroundStyle(selected == option ? .white : .primary)
+                    .foregroundStyle(selected == option ? .white : colors.textPrimary)
                     .overlay(
                         Capsule()
                             .stroke(selected == option ? Color.clear : Color.gray.opacity(0.2), lineWidth: 0.5)
@@ -141,6 +142,7 @@ struct FlowLayout: Layout {
 // MARK: - Number Chip Group
 
 struct NumberChipGroup: View {
+    @Environment(\.theme) var colors
     let range: ClosedRange<Int>
     @Binding var selected: Int
     var accentColor: Color = .blue
@@ -177,7 +179,7 @@ struct NumberChipGroup: View {
                     .fontWeight(selected == number ? .bold : .medium)
                     .frame(width: 44, height: 44)
                     .glassEffect(selected == number ? .regular.tint(accentColor).interactive() : .regular.interactive(), in: .circle)
-                    .foregroundStyle(selected == number ? .white : .primary)
+                    .foregroundStyle(selected == number ? .white : colors.textPrimary)
             }
             .buttonStyle(.plain)
             .scaleEffect(selected == number ? 1.1 : 1.0)
@@ -200,7 +202,7 @@ struct NumberChipGroup: View {
                         Circle()
                             .fill(selected == number ? AnyShapeStyle(accentColor.gradient) : AnyShapeStyle(.ultraThinMaterial))
                     )
-                    .foregroundStyle(selected == number ? .white : .primary)
+                    .foregroundStyle(selected == number ? .white : colors.textPrimary)
             }
             .buttonStyle(.plain)
             .scaleEffect(selected == number ? 1.1 : 1.0)

@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct SettingsView: View {
+    @Environment(\.theme) var colors
     @Environment(\.modelContext) private var modelContext
     @Query private var profiles: [UserProfile]
     @Query private var allLogs: [DailyLog]
@@ -15,7 +16,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                GradientBackground()
+                colors.background.ignoresSafeArea()
                 
                 ScrollView {
                     VStack(spacing: 20) {
@@ -29,7 +30,7 @@ struct SettingsView: View {
                             VStack(alignment: .leading, spacing: 12) {
                                 HStack {
                                     Image(systemName: "bell.badge.fill")
-                                        .foregroundStyle(.blue)
+                                        .foregroundStyle(colors.neonBlue)
                                     Text("Daily Reminder")
                                         .font(.system(.headline, design: .rounded))
                                         .fontWeight(.bold)
@@ -37,7 +38,7 @@ struct SettingsView: View {
                                 
                                 Text("Get reminded to check your daily goals")
                                     .font(.system(.caption, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(colors.textSecondary)
                                 
                                 DatePicker("Reminder Time", selection: $notificationTime, displayedComponents: .hourAndMinute)
                                     .datePickerStyle(.compact)
@@ -53,19 +54,19 @@ struct SettingsView: View {
                             GlassCard {
                                 HStack {
                                     Image(systemName: "brain")
-                                        .foregroundStyle(.purple)
+                                        .foregroundStyle(colors.neonPurple)
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text("AI Model Management")
                                             .font(.system(.headline, design: .rounded))
                                             .fontWeight(.bold)
-                                            .foregroundStyle(.primary)
+                                            .foregroundStyle(colors.textPrimary)
                                         Text("Download and manage on-device AI models")
                                             .font(.system(.caption, design: .rounded))
-                                            .foregroundStyle(.secondary)
+                                            .foregroundStyle(colors.textSecondary)
                                     }
                                     Spacer()
                                     Image(systemName: "chevron.right")
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(colors.textSecondary)
                                 }
                             }
                         }
@@ -76,7 +77,7 @@ struct SettingsView: View {
                             VStack(alignment: .leading, spacing: 12) {
                                 HStack {
                                     Image(systemName: "externaldrive.fill")
-                                        .foregroundStyle(.blue)
+                                        .foregroundStyle(colors.neonBlue)
                                     Text("AI Data")
                                         .font(.system(.headline, design: .rounded))
                                         .fontWeight(.bold)
@@ -97,7 +98,7 @@ struct SettingsView: View {
                             VStack(alignment: .leading, spacing: 12) {
                                 HStack {
                                     Image(systemName: "exclamationmark.triangle.fill")
-                                        .foregroundStyle(.red)
+                                        .foregroundStyle(colors.neonRed)
                                     Text("Danger Zone")
                                         .font(.system(.headline, design: .rounded))
                                         .fontWeight(.bold)
@@ -116,10 +117,10 @@ struct SettingsView: View {
                                 
                                 Text("Version 1.0.0")
                                     .font(.system(.caption, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(colors.textSecondary)
                                 Text("Powered by Gemini AI • Built with SwiftUI")
                                     .font(.system(.caption2, design: .rounded))
-                                    .foregroundStyle(.tertiary)
+                                    .foregroundStyle(colors.textTertiary)
                             }
                             .frame(maxWidth: .infinity)
                         }
@@ -156,7 +157,7 @@ struct SettingsView: View {
                     Text(String(profile.gender.prefix(1)))
                         .font(.system(.title2, design: .rounded))
                         .fontWeight(.heavy)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(colors.textPrimary)
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
@@ -165,14 +166,14 @@ struct SettingsView: View {
                         .fontWeight(.bold)
                     Text("\(profile.calculatedDailyCalories) kcal/day • \(profile.dietaryPreference.capitalized)")
                         .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(colors.textSecondary)
                     HStack(spacing: 4) {
                         Image(systemName: "flame.fill")
                             .font(.caption2)
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(colors.neonOrange)
                         Text("\(profile.streakCount) day streak")
                             .font(.system(.caption, design: .rounded))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(colors.textSecondary)
                     }
                 }
                 
@@ -182,10 +183,10 @@ struct SettingsView: View {
                     Text("\(profile.healthScore)")
                         .font(.system(.title2, design: .rounded))
                         .fontWeight(.heavy)
-                        .foregroundStyle(profile.healthScore >= 70 ? .green : .orange)
+                        .foregroundStyle(profile.healthScore >= 70 ? colors.neonGreen : colors.neonOrange)
                     Text("Score")
                         .font(.system(.caption2, design: .rounded))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(colors.textSecondary)
                 }
             }
         }
@@ -200,7 +201,7 @@ struct SettingsView: View {
                 Text(label)
                     .font(.system(.subheadline, design: .rounded))
                     .fontWeight(.medium)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(colors.textPrimary)
                 Spacer()
             }
             .padding(.vertical, 6)

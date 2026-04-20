@@ -3,6 +3,7 @@ import SwiftData
 import EventKit
 
 struct ProgressTabView: View {
+    @Environment(\.theme) var colors
     @Query(sort: \DailyLog.date) private var allLogs: [DailyLog]
     
     @State private var selectedMonth = Date()
@@ -18,7 +19,7 @@ struct ProgressTabView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                GradientBackground()
+                colors.background.ignoresSafeArea()
                 
                 ScrollView {
                     VStack(spacing: 24) {

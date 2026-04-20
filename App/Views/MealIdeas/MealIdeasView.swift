@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct MealIdeasView: View {
+    @Environment(\.theme) var colors
     @Query private var profiles: [UserProfile]
     @Query(sort: \DailyLog.date, order: .reverse) private var allLogs: [DailyLog]
     
@@ -22,7 +23,7 @@ struct MealIdeasView: View {
     
     var body: some View {
         ZStack {
-            GradientBackground()
+            colors.background.ignoresSafeArea()
             
             ScrollView {
                 VStack(spacing: 20) {
@@ -55,7 +56,7 @@ struct MealIdeasView: View {
                     GlassCard(padding: 12) {
                         HStack {
                             Image(systemName: "flame.fill")
-                                .foregroundStyle(.orange)
+                                .foregroundStyle(colors.neonOrange)
                             Text("\(remainingCalories) kcal remaining today")
                                 .font(.system(.subheadline, design: .rounded))
                                 .fontWeight(.bold)
@@ -77,7 +78,7 @@ struct MealIdeasView: View {
                         VStack(spacing: 12) {
                             Image(systemName: "exclamationmark.triangle")
                                 .font(.title)
-                                .foregroundStyle(.orange)
+                                .foregroundStyle(colors.neonOrange)
                             Text(error)
                                 .font(.system(.caption, design: .rounded))
                                 .foregroundStyle(.secondary)
@@ -112,14 +113,14 @@ struct MealIdeasView: View {
                 .background(
                     Group {
                         if #available(iOS 26, *) {
-                            Capsule().fill(.clear).glassEffect(selected ? .regular.tint(.blue).interactive() : .regular.interactive(), in: .capsule)
+                            Capsule().fill(.clear).glassEffect(selected ? .regular.tint(colors.neonBlue).interactive() : .regular.interactive(), in: .capsule)
                         } else {
-                            Capsule().fill(selected ? AnyShapeStyle(Color.blue.gradient) : AnyShapeStyle(.ultraThinMaterial))
+                            Capsule().fill(selected ? AnyShapeStyle(colors.neonBlue.gradient) : AnyShapeStyle(.ultraThinMaterial))
                         }
                     }
                 )
                 .foregroundStyle(selected ? .white : .primary)
-                .overlay(Capsule().stroke(selected ? Color.clear : Color.gray.opacity(0.2), lineWidth: 0.5))
+                .overlay(Capsule().stroke(selected ? Color.clear : colors.cardBorder, lineWidth: 0.5))
         }
         .buttonStyle(.plain)
         .scaleEffect(selected ? 1.05 : 1.0)
@@ -138,7 +139,7 @@ struct MealIdeasView: View {
                     Text("\(meal.calories) kcal")
                         .font(.system(.subheadline, design: .rounded))
                         .fontWeight(.heavy)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(colors.neonBlue)
                 }
                 
                 Text(meal.description)
@@ -147,9 +148,9 @@ struct MealIdeasView: View {
                     .lineLimit(3)
                 
                 HStack(spacing: 8) {
-                    macroPill("P: \(Int(meal.protein))g", color: .green)
-                    macroPill("C: \(Int(meal.carbs))g", color: .orange)
-                    macroPill("F: \(Int(meal.fat))g", color: .purple)
+                    macroPill("P: \(Int(meal.protein))g", color: colors.neonGreen)
+                    macroPill("C: \(Int(meal.carbs))g", color: colors.neonOrange)
+                    macroPill("F: \(Int(meal.fat))g", color: colors.neonPurple)
                 }
             }
         }

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct GradientBackground: View {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.theme) var colors
     
     // Aesthetic Opacities
     private var purpleOpacity: Double { colorScheme == .dark ? 0.45 : 0.25 }
@@ -28,7 +29,7 @@ struct GradientBackground: View {
             Circle()
                 .fill(
                     RadialGradient(
-                        colors: [Color.purple.opacity(purpleOpacity), Color.purple.opacity(0)],
+                        colors: [colors.neonPurple.opacity(purpleOpacity), colors.neonPurple.opacity(0)],
                         center: .center,
                         startRadius: 0,
                         endRadius: 220
@@ -41,7 +42,7 @@ struct GradientBackground: View {
             Circle()
                 .fill(
                     RadialGradient(
-                        colors: [Color.blue.opacity(blueOpacity), Color.blue.opacity(0)],
+                        colors: [colors.neonBlue.opacity(blueOpacity), colors.neonBlue.opacity(0)],
                         center: .center,
                         startRadius: 0,
                         endRadius: 200
@@ -54,7 +55,7 @@ struct GradientBackground: View {
             Circle()
                 .fill(
                     RadialGradient(
-                        colors: [Color.mint.opacity(mintOpacity), Color.mint.opacity(0)],
+                        colors: [colors.neonGreen.opacity(mintOpacity), colors.neonGreen.opacity(0)],
                         center: .center,
                         startRadius: 0,
                         endRadius: 180
@@ -67,7 +68,7 @@ struct GradientBackground: View {
             Circle()
                 .fill(
                     RadialGradient(
-                        colors: [Color.orange.opacity(orangeOpacity), Color.orange.opacity(0)],
+                        colors: [colors.neonOrange.opacity(orangeOpacity), colors.neonOrange.opacity(0)],
                         center: .center,
                         startRadius: 0,
                         endRadius: 150

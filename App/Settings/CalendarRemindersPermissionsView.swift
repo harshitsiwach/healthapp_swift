@@ -2,6 +2,7 @@ import SwiftUI
 
 /// Settings view allowing the user to manage iOS permissions for Calendar and Reminders
 struct CalendarRemindersPermissionsView: View {
+    @Environment(\.theme) var colors
     @StateObject private var permissions = PermissionsService.shared
     @Environment(\.dismiss) private var dismiss
     
@@ -11,13 +12,13 @@ struct CalendarRemindersPermissionsView: View {
                 
                 HStack {
                     Image(systemName: "calendar.badge.plus")
-                        .foregroundColor(.blue)
+                        .foregroundColor(colors.neonBlue)
                     VStack(alignment: .leading) {
                         Text("Add to Calendar")
                             .font(.headline)
                         Text(permissions.hasCalendarWriteOnlyAccess ? "Authorized" : "Not Authorized")
                             .font(.caption)
-                            .foregroundColor(permissions.hasCalendarWriteOnlyAccess ? .green : .secondary)
+                            .foregroundColor(permissions.hasCalendarWriteOnlyAccess ? colors.neonGreen : colors.textSecondary)
                     }
                     Spacer()
                     if !permissions.hasCalendarWriteOnlyAccess {
@@ -26,7 +27,7 @@ struct CalendarRemindersPermissionsView: View {
                         }
                         .buttonStyle(.borderedProminent)
                     } else {
-                        Image(systemName: "checkmark.circle.fill").foregroundColor(.green)
+                        Image(systemName: "checkmark.circle.fill").foregroundColor(colors.neonGreen)
                     }
                 }
             }
@@ -35,13 +36,13 @@ struct CalendarRemindersPermissionsView: View {
                 
                 HStack {
                     Image(systemName: "list.bullet.rectangle.portrait")
-                        .foregroundColor(.orange)
+                        .foregroundColor(colors.neonOrange)
                     VStack(alignment: .leading) {
                         Text("Sync to Reminders")
                             .font(.headline)
                         Text(permissions.hasRemindersAccess ? "Authorized" : "Not Authorized")
                             .font(.caption)
-                            .foregroundColor(permissions.hasRemindersAccess ? .green : .secondary)
+                            .foregroundColor(permissions.hasRemindersAccess ? colors.neonGreen : colors.textSecondary)
                     }
                     Spacer()
                     if !permissions.hasRemindersAccess {
@@ -51,7 +52,7 @@ struct CalendarRemindersPermissionsView: View {
                         .buttonStyle(.borderedProminent)
                         .tint(.orange)
                     } else {
-                        Image(systemName: "checkmark.circle.fill").foregroundColor(.green)
+                        Image(systemName: "checkmark.circle.fill").foregroundColor(colors.neonGreen)
                     }
                 }
             }
@@ -59,13 +60,13 @@ struct CalendarRemindersPermissionsView: View {
             Section(header: Text("Push Notifications"), footer: Text("Required for local timers like fasting windows or cooking alarms.")) {
                 HStack {
                     Image(systemName: "bell.badge")
-                        .foregroundColor(.red)
+                        .foregroundColor(colors.neonRed)
                     VStack(alignment: .leading) {
                         Text("Alerts & Timers")
                             .font(.headline)
                         Text(permissions.hasNotificationAccess ? "Authorized" : "Not Authorized")
                             .font(.caption)
-                            .foregroundColor(permissions.hasNotificationAccess ? .green : .secondary)
+                            .foregroundColor(permissions.hasNotificationAccess ? colors.neonGreen : colors.textSecondary)
                     }
                     Spacer()
                     if !permissions.hasNotificationAccess {
@@ -75,7 +76,7 @@ struct CalendarRemindersPermissionsView: View {
                         .buttonStyle(.borderedProminent)
                         .tint(.red)
                     } else {
-                        Image(systemName: "checkmark.circle.fill").foregroundColor(.green)
+                        Image(systemName: "checkmark.circle.fill").foregroundColor(colors.neonGreen)
                     }
                 }
             }
@@ -87,7 +88,7 @@ struct CalendarRemindersPermissionsView: View {
                     HStack {
                         Spacer()
                         Text("Open iOS Settings")
-                            .foregroundColor(.blue)
+                            .foregroundColor(colors.neonBlue)
                         Spacer()
                     }
                 }

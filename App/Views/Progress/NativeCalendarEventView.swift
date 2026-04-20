@@ -3,6 +3,7 @@ import EventKit
 
 /// Renders a native Apple Calendar event in a SwiftUI list/card style
 struct NativeCalendarEventView: View {
+    @Environment(\.theme) var colors
     let event: EKEvent
     
     var body: some View {
@@ -17,12 +18,12 @@ struct NativeCalendarEventView: View {
                 Text(event.title)
                     .font(.system(.subheadline, design: .rounded))
                     .fontWeight(.semibold)
-                    .foregroundColor(.primary)
+                    .foregroundColor(colors.textPrimary)
                 
                 if let location = event.location, !location.isEmpty {
                     Text(location)
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(colors.textSecondary)
                         .lineLimit(1)
                 }
             }
@@ -34,16 +35,16 @@ struct NativeCalendarEventView: View {
                     Text("All day")
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundColor(.primary)
+                        .foregroundColor(colors.textPrimary)
                 } else {
                     Text(timeString(from: event.startDate))
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundColor(.primary)
+                        .foregroundColor(colors.textPrimary)
                     
                     Text(timeString(from: event.endDate))
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(colors.textSecondary)
                 }
             }
         }
@@ -54,12 +55,12 @@ struct NativeCalendarEventView: View {
                 GlassEffectContainer { }
             } else {
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(UIColor.secondarySystemGroupedBackground))
+                    .fill(colors.backgroundCard)
             }
         }
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
+                .stroke(colors.cardBorder.opacity(0.1), lineWidth: 0.5)
         )
     }
     

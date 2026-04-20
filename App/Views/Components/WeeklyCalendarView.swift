@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct WeeklyCalendarView: View {
+    @Environment(\.theme) var colors
     @Binding var selectedDate: Date
     
     private let calendar = Calendar.current
@@ -30,16 +31,16 @@ struct WeeklyCalendarView: View {
                                 Text(dayOfWeek(date))
                                     .font(.system(.caption2, design: .rounded))
                                     .fontWeight(.medium)
-                                    .foregroundStyle(isSelected ? .white : .secondary)
+                                    .foregroundStyle(isSelected ? .white : colors.textSecondary)
                                 
                                 Text(dayNumber(date))
                                     .font(.system(.title3, design: .rounded))
                                     .fontWeight(.heavy)
-                                    .foregroundStyle(isSelected ? .white : .primary)
+                                    .foregroundStyle(isSelected ? .white : colors.textPrimary)
                                 
                                 if isToday && !isSelected {
                                     Circle()
-                                        .fill(Color.blue)
+                                        .fill(colors.neonBlue)
                                         .frame(width: 5, height: 5)
                                 } else {
                                     Circle()
@@ -53,16 +54,16 @@ struct WeeklyCalendarView: View {
                                     if #available(iOS 26, *) {
                                         RoundedRectangle(cornerRadius: 16, style: .continuous)
                                             .fill(Color.clear)
-                                            .glassEffect(isSelected ? .regular.tint(Color.blue).interactive() : .regular.interactive(), in: .rect(cornerRadius: 16))
+                                            .glassEffect(isSelected ? .regular.tint(colors.neonBlue).interactive() : .regular.interactive(), in: .rect(cornerRadius: 16))
                                     } else {
                                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                            .fill(isSelected ? AnyShapeStyle(Color.blue.gradient) : AnyShapeStyle(.ultraThinMaterial))
+                                            .fill(isSelected ? AnyShapeStyle(colors.neonBlue.gradient) : AnyShapeStyle(.ultraThinMaterial))
                                     }
                                 }
                             )
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                    .stroke(isSelected ? Color.clear : Color.gray.opacity(0.15), lineWidth: 0.5)
+                                    .stroke(isSelected ? Color.clear : colors.cardBorder.opacity(0.15), lineWidth: 0.5)
                             )
                         }
                         .buttonStyle(.plain)

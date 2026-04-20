@@ -71,6 +71,7 @@ struct RootView: View {
 }
 
 struct ContentView: View {
+    @Environment(\.theme) var colors
     @Query private var profiles: [UserProfile]
     @State private var selectedTab = 0
     @State private var showCamera = false
@@ -114,7 +115,7 @@ struct ContentView: View {
                     }
                     .tag(3)
             }
-            .tint(.blue)
+            .tint(colors.neonBlue)
             
             // Floating Action Button (FAB)
             VStack {
@@ -124,9 +125,9 @@ struct ContentView: View {
                 } label: {
                     ZStack {
                         Circle()
-                            .fill(Color.blue.gradient)
+                            .fill(colors.neonBlue.gradient)
                             .frame(width: 56, height: 56)
-                            .shadow(color: Color.blue.opacity(0.3), radius: 10, x: 0, y: 5)
+                            .shadow(color: colors.neonBlue.opacity(0.3), radius: 10, x: 0, y: 5)
                         
                         Image(systemName: "plus")
                             .font(.system(size: 24, weight: .bold))

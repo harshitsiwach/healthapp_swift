@@ -2,6 +2,7 @@ import SwiftUI
 
 /// Action sheet to allow creating native Calendar events or Reminders from the app
 struct AddIntegrationActionSheet: View {
+    @Environment(\.theme) var colors
     @Environment(\.dismiss) private var dismiss
     
     var onAddAppointment: () -> Void
@@ -25,11 +26,11 @@ struct AddIntegrationActionSheet: View {
                 HStack {
                     Image(systemName: "calendar.badge.plus")
                         .font(.title3)
-                        .foregroundColor(.blue)
+                        .foregroundColor(colors.neonBlue)
                         .frame(width: 30)
                     Text("New Calendar Appointment")
                         .font(.body)
-                        .foregroundColor(.primary)
+                        .foregroundColor(colors.textPrimary)
                     Spacer()
                 }
                 .padding()
@@ -44,11 +45,11 @@ struct AddIntegrationActionSheet: View {
                 HStack {
                     Image(systemName: "list.bullet.rectangle.portrait")
                         .font(.title3)
-                        .foregroundColor(.orange)
+                        .foregroundColor(colors.neonOrange)
                         .frame(width: 30)
                     Text("New Apple Reminder")
                         .font(.body)
-                        .foregroundColor(.primary)
+                        .foregroundColor(colors.textPrimary)
                     Spacer()
                 }
                 .padding()

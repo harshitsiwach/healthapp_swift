@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CircularProgressView: View {
+    @Environment(\.theme) var colors
     let progress: Double // 0.0 - 1.0
     var lineWidth: CGFloat = 12
     var size: CGFloat = 120
@@ -40,7 +41,7 @@ struct CircularProgressView: View {
                 Text("\(Int(clampedProgress * 100))%")
                     .font(.system(.title3, design: .rounded))
                     .fontWeight(.heavy)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(colors.textPrimary)
             }
         }
         .onAppear {
@@ -59,6 +60,7 @@ struct CircularProgressView: View {
 // MARK: - Mini Variant
 
 struct MiniCircularProgress: View {
+    @Environment(\.theme) var colors
     let progress: Double
     var size: CGFloat = 40
     var lineWidth: CGFloat = 4

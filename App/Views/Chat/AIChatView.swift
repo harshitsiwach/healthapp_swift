@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct AIChatView: View {
+    @Environment(\.theme) var colors
     @StateObject private var viewModel = AIChatViewModel()
     @FocusState private var isInputFocused: Bool
     
     var body: some View {
         NavigationView {
             ZStack {
-                GradientBackground()
-                    .ignoresSafeArea()
+                colors.background.ignoresSafeArea()
                 
                 VStack(spacing: 0) {
                     ScrollViewReader { proxy in
@@ -41,10 +41,10 @@ struct AIChatView: View {
                                     Text("Stop Generating")
                                 }
                                 .font(.caption.bold())
-                                .foregroundColor(.red)
+                                .foregroundColor(colors.error)
                                 .padding(.vertical, 6)
                                 .padding(.horizontal, 12)
-                                .background(Color.red.opacity(0.1), in: Capsule())
+                                .background(colors.error.opacity(0.1), in: Capsule())
                             }
                             .padding(.top, 4)
                         }
@@ -65,7 +65,7 @@ struct AIChatView: View {
                                 .cornerRadius(20)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 20)
-                                        .stroke(Color.white.opacity(0.2), lineWidth: 0.5)
+                                        .stroke(colors.cardBorder, lineWidth: 0.5)
                                 )
                             
                             Button(action: {
@@ -73,7 +73,7 @@ struct AIChatView: View {
                             }) {
                                 ZStack {
                                     Circle()
-                                        .fill(viewModel.currentInput.isEmpty ? Color.gray.opacity(0.3) : Color.blue)
+                                        .fill(viewModel.currentInput.isEmpty ? colors.textTertiary.opacity(0.3) : colors.neonBlue)
                                         .frame(width: 44, height: 44)
                                     
                                     Image(systemName: "arrow.up")
@@ -91,10 +91,10 @@ struct AIChatView: View {
                         .background {
                             if #available(iOS 26, *) {
                                 Rectangle()
-                                    .fill(.ultraThinMaterial)
+                                Color(uiColor: .systemBackground)
                                     .ignoresSafeArea(edges: .bottom)
                             } else {
-                                Color(uiColor: .systemBackground)
+                                colors.backgroundCard
                                     .ignoresSafeArea(edges: .bottom)
                             }
                         }

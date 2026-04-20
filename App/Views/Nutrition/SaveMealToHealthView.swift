@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SaveMealToHealthView: View {
+    @Environment(\.theme) var colors
     @StateObject private var syncService = HealthSyncService()
     let mealName: String
     let calories: Double
@@ -26,7 +27,7 @@ struct SaveMealToHealthView: View {
             }
             .font(.system(.subheadline, design: .rounded))
             .fontWeight(.bold)
-            .foregroundStyle(isSaved ? .white : .pink)
+            .foregroundStyle(isSaved ? .white : colors.protein)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
             .background(
@@ -34,10 +35,10 @@ struct SaveMealToHealthView: View {
                     if #available(iOS 26, *) {
                         Capsule()
                             .fill(Color.clear)
-                            .glassEffect(isSaved ? .regular.tint(.green) : .regular.tint(.pink).interactive(), in: .capsule)
+                            .glassEffect(isSaved ? .regular.tint(colors.neonGreen) : .regular.tint(colors.protein).interactive(), in: .capsule)
                     } else {
                         Capsule()
-                            .fill(isSaved ? AnyShapeStyle(Color.green.gradient) : AnyShapeStyle(Color.pink.opacity(0.1)))
+                            .fill(isSaved ? AnyShapeStyle(colors.neonGreen.gradient) : AnyShapeStyle(colors.protein.opacity(0.1)))
                     }
                 }
             )

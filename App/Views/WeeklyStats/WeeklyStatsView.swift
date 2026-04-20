@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct WeeklyStatsView: View {
+    @Environment(\.theme) var colors
     @Query private var profiles: [UserProfile]
     @Query(sort: \DailyLog.date, order: .reverse) private var allLogs: [DailyLog]
     
@@ -56,7 +57,7 @@ struct WeeklyStatsView: View {
     
     var body: some View {
         ZStack {
-            GradientBackground()
+            colors.background.ignoresSafeArea()
             
             ScrollView {
                 VStack(spacing: 20) {

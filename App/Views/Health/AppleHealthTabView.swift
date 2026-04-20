@@ -1,13 +1,14 @@
 import SwiftUI
 
 struct AppleHealthTabView: View {
+    @Environment(\.theme) var colors
     @StateObject private var insightsService = HealthInsightsService()
     @State private var showingPermissions = false
     
     var body: some View {
         NavigationStack {
             ZStack {
-                GradientBackground()
+                colors.background.ignoresSafeArea()
                 
                 ScrollView {
                     VStack(spacing: 24) {
@@ -18,7 +19,7 @@ struct AppleHealthTabView: View {
                             
                             Text("Your centralized hub for health data and privacy controls.")
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(colors.textSecondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)
@@ -36,12 +37,12 @@ struct AppleHealthTabView: View {
                                     VStack(spacing: 12) {
                                         Image(systemName: "heart.slash")
                                             .font(.largeTitle)
-                                            .foregroundStyle(.gray)
+                                            .foregroundStyle(colors.textTertiary)
                                         Text("No Health Data Found")
                                             .font(.headline)
                                         Text("Make sure you have granted permissions and have logged data in Apple Health.")
                                             .font(.subheadline)
-                                            .foregroundStyle(.secondary)
+                                            .foregroundStyle(colors.textSecondary)
                                             .multilineTextAlignment(.center)
                                     }
                                     .frame(maxWidth: .infinity)
@@ -54,7 +55,7 @@ struct AppleHealthTabView: View {
                         if let error = insightsService.errorMessage {
                             Text(error)
                                 .font(.caption)
-                                .foregroundStyle(.red)
+                                .foregroundStyle(colors.neonRed)
                                 .padding(.horizontal)
                         }
                         
@@ -67,7 +68,7 @@ struct AppleHealthTabView: View {
                                 Text("Manage Permissions")
                             }
                             .font(.headline)
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(colors.textPrimary)
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(

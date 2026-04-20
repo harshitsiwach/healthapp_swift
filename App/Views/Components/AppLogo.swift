@@ -2,6 +2,7 @@ import SwiftUI
 
 /// A premium branding component for HealthApp using SF Symbols and glassmorphism
 struct AppLogo: View {
+    @Environment(\.theme) var colors
     enum Size {
         case small, medium, large, hero
         
@@ -34,7 +35,7 @@ struct AppLogo: View {
                 Circle()
                     .fill(
                         RadialGradient(
-                            colors: [.blue.opacity(0.3), .clear],
+                            colors: [colors.neonBlue.opacity(0.3), .clear],
                             center: .center,
                             startRadius: 0,
                             endRadius: size.iconSize * 1.5
@@ -65,7 +66,7 @@ struct AppLogo: View {
                         .aspectRatio(contentMode: .fit)
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [.blue, .cyan],
+                                colors: [colors.neonBlue, colors.neonBlue.opacity(0.7)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -76,7 +77,7 @@ struct AppLogo: View {
                     Image(systemName: "sparkles")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .foregroundStyle(.yellow)
+                        .foregroundStyle(colors.neonYellow)
                         .frame(width: size.iconSize * 0.4, height: size.iconSize * 0.4)
                         .offset(x: size.iconSize * 0.4, y: -size.iconSize * 0.4)
                         .symbolEffect(.variableColor.reversing, options: .repeating)
@@ -87,7 +88,7 @@ struct AppLogo: View {
             if showText {
                 Text("HealthApp")
                     .font(.system(size: size.iconSize * 0.5, weight: .black, design: .rounded))
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(colors.textPrimary)
             }
         }
     }

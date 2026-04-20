@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct MealEditSheet: View {
+    @Environment(\.theme) var colors
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
@@ -16,7 +17,7 @@ struct MealEditSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                GradientBackground()
+                colors.background.ignoresSafeArea()
                 
                 ScrollView {
                     VStack(spacing: 20) {

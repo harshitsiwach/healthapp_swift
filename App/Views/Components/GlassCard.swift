@@ -45,6 +45,7 @@ struct GlassCard<Content: View>: View {
 
 struct GlassCardGreen<Content: View>: View {
     let content: Content
+    @Environment(\.theme) var colors
     
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
@@ -54,24 +55,24 @@ struct GlassCardGreen<Content: View>: View {
         if #available(iOS 26, *) {
             content
                 .padding(16)
-                .glassEffect(.regular.tint(.green.opacity(0.2)), in: .rect(cornerRadius: 20, style: .continuous))
+                .glassEffect(.regular.tint(colors.neonGreen.opacity(0.2)), in: .rect(cornerRadius: 20, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .stroke(Color.green.opacity(0.25), lineWidth: 0.5)
+                        .stroke(colors.neonGreen.opacity(0.25), lineWidth: 0.5)
                 )
         } else {
             content
                 .padding(16)
                 .background(
                     ZStack {
-                        Color.green.opacity(0.08)
+                        colors.neonGreen.opacity(0.08)
                         Rectangle().fill(.ultraThinMaterial)
                     }
                     .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .stroke(Color.green.opacity(0.25), lineWidth: 0.5)
+                        .stroke(colors.neonGreen.opacity(0.25), lineWidth: 0.5)
                 )
         }
     }
@@ -79,6 +80,7 @@ struct GlassCardGreen<Content: View>: View {
 
 struct GlassCardYellow<Content: View>: View {
     let content: Content
+    @Environment(\.theme) var colors
     
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
@@ -88,24 +90,24 @@ struct GlassCardYellow<Content: View>: View {
         if #available(iOS 26, *) {
             content
                 .padding(16)
-                .glassEffect(.regular.tint(.yellow.opacity(0.2)), in: .rect(cornerRadius: 20, style: .continuous))
+                .glassEffect(.regular.tint(colors.neonYellow.opacity(0.2)), in: .rect(cornerRadius: 20, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .stroke(Color.yellow.opacity(0.25), lineWidth: 0.5)
+                        .stroke(colors.neonYellow.opacity(0.25), lineWidth: 0.5)
                 )
         } else {
             content
                 .padding(16)
                 .background(
                     ZStack {
-                        Color.yellow.opacity(0.08)
+                        colors.neonYellow.opacity(0.08)
                         Rectangle().fill(.ultraThinMaterial)
                     }
                     .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .stroke(Color.yellow.opacity(0.25), lineWidth: 0.5)
+                        .stroke(colors.neonYellow.opacity(0.25), lineWidth: 0.5)
                 )
         }
     }
@@ -113,6 +115,7 @@ struct GlassCardYellow<Content: View>: View {
 
 struct GlassCardRed<Content: View>: View {
     let content: Content
+    @Environment(\.theme) var colors
     
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
@@ -122,24 +125,24 @@ struct GlassCardRed<Content: View>: View {
         if #available(iOS 26, *) {
             content
                 .padding(16)
-                .glassEffect(.regular.tint(.red.opacity(0.2)), in: .rect(cornerRadius: 20, style: .continuous))
+                .glassEffect(.regular.tint(colors.neonRed.opacity(0.2)), in: .rect(cornerRadius: 20, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .stroke(Color.red.opacity(0.2), lineWidth: 0.5)
+                        .stroke(colors.neonRed.opacity(0.2), lineWidth: 0.5)
                 )
         } else {
             content
                 .padding(16)
                 .background(
                     ZStack {
-                        Color.red.opacity(0.06)
+                        colors.neonRed.opacity(0.06)
                         Rectangle().fill(.ultraThinMaterial)
                     }
                     .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .stroke(Color.red.opacity(0.2), lineWidth: 0.5)
+                        .stroke(colors.neonRed.opacity(0.2), lineWidth: 0.5)
                 )
         }
     }

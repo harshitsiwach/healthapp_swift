@@ -1,12 +1,13 @@
 import SwiftUI
 
 struct ModelManagementView: View {
+    @Environment(\.theme) var colors
     @StateObject private var store = ModelStore()
     @StateObject private var downloader = ModelDownloader()
     
     var body: some View {
         ZStack {
-            GradientBackground()
+            colors.background.ignoresSafeArea()
             
             ScrollView {
                 VStack(spacing: 20) {
@@ -15,7 +16,7 @@ struct ModelManagementView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
                                 Image(systemName: "brain.head.profile")
-                                    .foregroundStyle(.purple)
+                                    .foregroundStyle(colors.neonPurple)
                                 Text("Gemma 4 (On-Device)")
                                     .font(.system(.headline, design: .rounded))
                                     .fontWeight(.bold)
@@ -28,11 +29,11 @@ struct ModelManagementView: View {
                                         .fontWeight(.medium)
                                     Text("All AI runs locally on your device. No internet required.")
                                         .font(.system(.caption, design: .rounded))
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(colors.textSecondary)
                                 }
                                 Spacer()
                                 Image(systemName: store.installState == .ready ? "checkmark.circle.fill" : "arrow.down.circle")
-                                    .foregroundStyle(store.installState == .ready ? .green : .blue)
+                                    .foregroundStyle(store.installState == .ready ? colors.neonGreen : colors.neonBlue)
                             }
                         }
                     }
@@ -42,17 +43,17 @@ struct ModelManagementView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
                                 Image(systemName: "apple.logo")
-                                    .foregroundStyle(.primary)
+                                    .foregroundStyle(colors.textPrimary)
                                 Text("Apple Intelligence")
                                     .font(.system(.headline, design: .rounded))
                                     .fontWeight(.bold)
                                 Spacer()
                                 Text("Optional")
                                     .font(.system(.caption, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(colors.textSecondary)
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 4)
-                                    .background(.secondary.opacity(0.1), in: Capsule())
+                                    .background(colors.textSecondary.opacity(0.1), in: Capsule())
                             }
                             
                             let capability = AppleFoundationBackend().checkCapability()
@@ -63,11 +64,11 @@ struct ModelManagementView: View {
                                         .font(.system(.subheadline, design: .rounded))
                                     Text(capability.canUseFoundationModels ? "Available" : "Not available on this device")
                                         .font(.system(.caption, design: .rounded))
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(colors.textSecondary)
                                 }
                                 Spacer()
                                 Image(systemName: capability.canUseFoundationModels ? "checkmark.circle.fill" : "xmark.circle")
-                                    .foregroundStyle(capability.canUseFoundationModels ? .green : .gray)
+                                    .foregroundStyle(capability.canUseFoundationModels ? colors.neonGreen : colors.textTertiary)
                             }
                         }
                     }
@@ -87,10 +88,10 @@ struct ModelManagementView: View {
                     GlassCard(padding: 12) {
                         HStack {
                             Image(systemName: "lock.shield")
-                                .foregroundStyle(.green)
+                                .foregroundStyle(colors.neonGreen)
                             Text("Your data never leaves your device")
                                 .font(.system(.caption, design: .rounded))
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(colors.textSecondary)
                         }
                     }
                     
@@ -102,7 +103,7 @@ struct ModelManagementView: View {
                             Text("Delete All Models")
                                 .font(.system(.subheadline, design: .rounded))
                                 .fontWeight(.bold)
-                                .foregroundStyle(.red)
+                                .foregroundStyle(colors.neonRed)
                                 .padding(.top, 8)
                         }
                     }
@@ -120,14 +121,14 @@ struct ModelManagementView: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Image(systemName: "cpu")
-                        .foregroundStyle(.purple)
+                        .foregroundStyle(colors.neonPurple)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(manifest.displayName)
                             .font(.system(.headline, design: .rounded))
                             .fontWeight(.bold)
                         Text("v\(manifest.version) • \(manifest.quantization.uppercased()) • \(manifest.fileSizeFormatted)")
                             .font(.system(.caption, design: .rounded))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(colors.textSecondary)
                     }
                     Spacer()
                 }
@@ -161,7 +162,7 @@ struct ModelManagementView: View {
                             Text("Download Gemma 4")
                                 .font(.system(.subheadline, design: .rounded))
                                 .fontWeight(.bold)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(colors.textPrimary)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 12)
                                 .background(Color.purple.gradient, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
@@ -175,7 +176,7 @@ struct ModelManagementView: View {
                             Text("Cancel")
                                 .font(.system(.subheadline, design: .rounded))
                                 .fontWeight(.bold)
-                                .foregroundStyle(.red)
+                                .foregroundStyle(colors.neonRed)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 12)
                                 .background(Color.red.opacity(0.1), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
@@ -189,7 +190,7 @@ struct ModelManagementView: View {
                             Text("Delete Model")
                                 .font(.system(.subheadline, design: .rounded))
                                 .fontWeight(.bold)
-                                .foregroundStyle(.red)
+                                .foregroundStyle(colors.neonRed)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 12)
                                 .background(Color.red.opacity(0.1), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
@@ -204,7 +205,7 @@ struct ModelManagementView: View {
                 if let error = downloader.error {
                     Text(error)
                         .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(.red)
+                        .foregroundStyle(colors.neonRed)
                 }
             }
         }
@@ -212,11 +213,11 @@ struct ModelManagementView: View {
     
     private var stateColor: Color {
         switch store.installState {
-        case .ready: return .green
-        case .downloading, .verifying, .warmingUp: return .purple
-        case .failed: return .red
-        case .incompatible: return .gray
-        case .notInstalled: return .secondary
+        case .ready: return colors.neonGreen
+        case .downloading, .verifying, .warmingUp: return colors.neonPurple
+        case .failed: return colors.neonRed
+        case .incompatible: return colors.textTertiary
+        case .notInstalled: return colors.textSecondary
         }
     }
 }

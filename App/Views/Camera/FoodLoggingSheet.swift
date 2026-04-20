@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct FoodLoggingSheet: View {
+    @Environment(\.theme) var colors
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
@@ -15,7 +16,7 @@ struct FoodLoggingSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                GradientBackground()
+                colors.background.ignoresSafeArea()
                 
                 Group {
                     switch viewModel.state {
@@ -68,7 +69,7 @@ struct FoodLoggingSheet: View {
                 }
                 .font(.system(.subheadline, design: .rounded))
                 .fontWeight(.medium)
-                .foregroundStyle(.blue)
+                .foregroundStyle(colors.neonBlue)
                 .padding(.vertical, 12)
             }
         }
@@ -91,7 +92,7 @@ struct FoodLoggingSheet: View {
                         Text("Retake")
                             .font(.system(.subheadline, design: .rounded))
                             .fontWeight(.bold)
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(colors.textPrimary)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
                             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
@@ -107,7 +108,7 @@ struct FoodLoggingSheet: View {
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
-                            .background(Color.blue.gradient, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .background(colors.neonBlue.gradient, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
                     .buttonStyle(.plain)
                 }
@@ -142,7 +143,7 @@ struct FoodLoggingSheet: View {
             
             Image(systemName: "fork.knife.circle.fill")
                 .font(.system(size: 60))
-                .foregroundStyle(.blue)
+                .foregroundStyle(colors.neonBlue)
             
             Text("What did you eat?")
                 .font(.system(.title2, design: .rounded))
@@ -150,7 +151,7 @@ struct FoodLoggingSheet: View {
             
             Text("e.g., \"2 roti and dal\" or \"1 plate chole chawal\"")
                 .font(.system(.subheadline, design: .rounded))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(colors.textSecondary)
                 .multilineTextAlignment(.center)
             
             GlassCard {
@@ -172,7 +173,7 @@ struct FoodLoggingSheet: View {
                     .padding(.vertical, 18)
                     .background(
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(textInput.isEmpty ? AnyShapeStyle(Color.gray) : AnyShapeStyle(Color.blue.gradient))
+                            .fill(textInput.isEmpty ? AnyShapeStyle(Color.gray) : AnyShapeStyle(colors.neonBlue.gradient))
                     )
             }
             .buttonStyle(.plain)
@@ -195,7 +196,7 @@ struct FoodLoggingSheet: View {
                 .fontWeight(.bold)
             Text("Our AI nutritionist is estimating calories")
                 .font(.system(.subheadline, design: .rounded))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(colors.textSecondary)
             Spacer()
         }
     }
@@ -213,7 +214,7 @@ struct FoodLoggingSheet: View {
                                 .fontWeight(.heavy)
                             Spacer()
                             Image(systemName: "sparkles")
-                                .foregroundStyle(.blue)
+                                .foregroundStyle(colors.neonBlue)
                         }
                         
                         editableField(label: "Food Name", text: $viewModel.foodName)
@@ -248,13 +249,13 @@ struct FoodLoggingSheet: View {
             Spacer()
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 50))
-                .foregroundStyle(.orange)
+                .foregroundStyle(colors.neonOrange)
             Text("Something went wrong")
                 .font(.system(.title3, design: .rounded))
                 .fontWeight(.bold)
             Text(message)
                 .font(.system(.subheadline, design: .rounded))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(colors.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
             Button {
@@ -279,7 +280,7 @@ struct FoodLoggingSheet: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
                 .font(.system(.caption, design: .rounded))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(colors.textSecondary)
             TextField(label, text: text)
                 .font(.system(.body, design: .rounded))
                 .fontWeight(.medium)
@@ -292,7 +293,7 @@ struct FoodLoggingSheet: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
                 .font(.system(.caption, design: .rounded))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(colors.textSecondary)
             TextField(label, value: value, format: .number)
                 .font(.system(.body, design: .rounded))
                 .fontWeight(.medium)
@@ -306,7 +307,7 @@ struct FoodLoggingSheet: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
                 .font(.system(.caption, design: .rounded))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(colors.textSecondary)
             TextField(label, value: value, format: .number.precision(.fractionLength(1)))
                 .font(.system(.body, design: .rounded))
                 .fontWeight(.medium)

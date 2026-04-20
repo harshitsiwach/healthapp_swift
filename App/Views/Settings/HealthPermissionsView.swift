@@ -2,13 +2,14 @@ import SwiftUI
 import HealthKit
 
 struct HealthPermissionsView: View {
+    @Environment(\.theme) var colors
     @StateObject private var authService = HealthAuthorizationService()
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
         NavigationStack {
             ZStack {
-                GradientBackground()
+                colors.background.ignoresSafeArea()
                 
                 ScrollView {
                     VStack(spacing: 24) {
@@ -23,7 +24,7 @@ struct HealthPermissionsView: View {
                         
                         Text("Connect HealthApp to Apple Health to get personalized, context-aware AI coaching based on your activity, sleep, and vitals.")
                             .font(.system(.body, design: .rounded))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(colors.textSecondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
                         
@@ -49,7 +50,7 @@ struct HealthPermissionsView: View {
                             Text("Connect Health")
                                 .font(.system(.headline, design: .rounded))
                                 .fontWeight(.bold)
-                                .foregroundColor(.white)
+                                .foregroundColor(colors.textPrimary)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
                                 .background(

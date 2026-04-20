@@ -2,6 +2,7 @@ import SwiftUI
 import PhotosUI
 
 struct MedicalReportScannerView: View {
+    @Environment(\.theme) var colors
     @StateObject private var viewModel = MedicalReportViewModel()
     @State private var showCamera = false
     @State private var selectedItem: PhotosPickerItem?
@@ -9,7 +10,7 @@ struct MedicalReportScannerView: View {
     
     var body: some View {
         ZStack {
-            GradientBackground()
+            colors.background.ignoresSafeArea()
             
             ScrollView {
                 VStack(spacing: 20) {
@@ -18,7 +19,7 @@ struct MedicalReportScannerView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
                                 Image(systemName: "doc.text.viewfinder")
-                                    .foregroundStyle(.purple)
+                                    .foregroundStyle(colors.neonPurple)
                                     .font(.title2)
                                 Text("Medical Report Scanner")
                                     .font(.system(.headline, design: .rounded))
@@ -27,7 +28,7 @@ struct MedicalReportScannerView: View {
                             
                             Text("Scan your lab reports to get instant insights. Supports blood work, lipid panels, thyroid tests, and more.")
                                 .font(.system(.caption, design: .rounded))
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(colors.textSecondary)
                         }
                     }
                     
@@ -46,7 +47,7 @@ struct MedicalReportScannerView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 20)
-                            .background(.purple.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
+                            .background(colors.neonPurple.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
                         }
                         .buttonStyle(.plain)
                         
@@ -61,7 +62,7 @@ struct MedicalReportScannerView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 20)
-                            .background(.blue.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
+                            .background(colors.neonBlue.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
                         }
                     }
                     
@@ -73,7 +74,7 @@ struct MedicalReportScannerView: View {
                                     .scaleEffect(1.2)
                                 Text("Scanning report...")
                                     .font(.system(.subheadline, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(colors.textSecondary)
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 20)
@@ -99,13 +100,13 @@ struct MedicalReportScannerView: View {
                             VStack(spacing: 12) {
                                 Image(systemName: "doc.text.magnifyingglass")
                                     .font(.system(size: 40))
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(colors.textSecondary)
                                 Text("No reports scanned yet")
                                     .font(.system(.subheadline, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(colors.textSecondary)
                                 Text("Take a photo or select from gallery")
                                     .font(.system(.caption, design: .rounded))
-                                    .foregroundStyle(.tertiary)
+                                    .foregroundStyle(colors.textTertiary)
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 40)
@@ -147,6 +148,7 @@ struct MedicalReportScannerView: View {
 // MARK: - Report Card
 
 struct ReportCard: View {
+    @Environment(\.theme) var colors
     let report: LabReport
     
     var body: some View {
@@ -155,7 +157,7 @@ struct ReportCard: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Image(systemName: report.abnormalTests.isEmpty ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                            .foregroundStyle(report.abnormalTests.isEmpty ? .green : .orange)
+                            .foregroundStyle(report.abnormalTests.isEmpty ? colors.neonGreen : colors.neonOrange)
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Lab Report")
@@ -163,19 +165,19 @@ struct ReportCard: View {
                                 .fontWeight(.semibold)
                             Text(report.date, style: .date)
                                 .font(.system(.caption, design: .rounded))
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(colors.textSecondary)
                         }
                         
                         Spacer()
                         
                         Text("\(report.tests.count) tests")
                             .font(.system(.caption, design: .rounded))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(colors.textSecondary)
                     }
                     
                     Text(report.summary)
                         .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(report.abnormalTests.isEmpty ? .green : .orange)
+                        .foregroundStyle(report.abnormalTests.isEmpty ? colors.neonGreen : colors.neonOrange)
                         .lineLimit(2)
                 }
             }
@@ -187,12 +189,13 @@ struct ReportCard: View {
 // MARK: - Report Detail View
 
 struct ReportDetailView: View {
+    @Environment(\.theme) var colors
     let report: LabReport
     @State private var showAIInsights = false
     
     var body: some View {
         ZStack {
-            GradientBackground()
+            colors.background.ignoresSafeArea()
             
             ScrollView {
                 VStack(spacing: 16) {
@@ -201,23 +204,23 @@ struct ReportDetailView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
                                 Image(systemName: "doc.text")
-                                    .foregroundStyle(.purple)
+                                    .foregroundStyle(colors.neonPurple)
                                 Text("Report Summary")
                                     .font(.system(.headline, design: .rounded))
                                     .fontWeight(.bold)
                                 Spacer()
                                 Text(report.date, style: .date)
                                     .font(.system(.caption, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(colors.textSecondary)
                             }
                             
                             if !report.abnormalTests.isEmpty {
                                 HStack {
                                     Image(systemName: "exclamationmark.triangle.fill")
-                                        .foregroundStyle(.orange)
+                                        .foregroundStyle(colors.neonOrange)
                                     Text("\(report.abnormalTests.count) values outside normal range")
                                         .font(.system(.caption, design: .rounded))
-                                        .foregroundStyle(.orange)
+                                        .foregroundStyle(colors.neonOrange)
                                 }
                             }
                         }
@@ -229,7 +232,7 @@ struct ReportDetailView: View {
                             Text("Needs Attention")
                                 .font(.system(.subheadline, design: .rounded))
                                 .fontWeight(.bold)
-                                .foregroundStyle(.orange)
+                                .foregroundStyle(colors.neonOrange)
                             
                             ForEach(report.abnormalTests) { test in
                                 TestResultRow(test: test, highlighted: true)
@@ -259,7 +262,7 @@ struct ReportDetailView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
-                        .background(.purple.gradient, in: RoundedRectangle(cornerRadius: 12))
+                        .background(colors.neonPurple.gradient, in: RoundedRectangle(cornerRadius: 12))
                         .foregroundStyle(.white)
                     }
                     .buttonStyle(.plain)
@@ -279,6 +282,7 @@ struct ReportDetailView: View {
 // MARK: - Test Result Row
 
 struct TestResultRow: View {
+    @Environment(\.theme) var colors
     let test: LabTest
     let highlighted: Bool
     
@@ -293,7 +297,7 @@ struct TestResultRow: View {
                     if let range = test.normalRange {
                         Text("Normal: \(String(format: "%.1f", range.lowerBound))-\(String(format: "%.1f", range.upperBound)) \(test.unit)")
                             .font(.system(.caption2, design: .rounded))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(colors.textSecondary)
                     }
                 }
                 
@@ -318,10 +322,10 @@ struct TestResultRow: View {
     
     var testStatusColor: Color {
         switch test.status {
-        case .normal: return .green
-        case .high: return .red
-        case .low: return .orange
-        case .borderline: return .yellow
+        case .normal: return colors.neonGreen
+        case .high: return colors.neonRed
+        case .low: return colors.neonOrange
+        case .borderline: return colors.neonYellow
         }
     }
 }
@@ -329,13 +333,14 @@ struct TestResultRow: View {
 // MARK: - Medical Report AI View
 
 struct MedicalReportAIView: View {
+    @Environment(\.theme) var colors
     let report: LabReport
     @StateObject private var viewModel = MedicalReportAIViewModel()
     
     var body: some View {
         NavigationView {
             ZStack {
-                GradientBackground()
+                colors.background.ignoresSafeArea()
                 
                 ScrollView {
                     VStack(spacing: 16) {
@@ -345,7 +350,7 @@ struct MedicalReportAIView: View {
                                     ProgressView()
                                     Text("Analyzing your report...")
                                         .font(.system(.subheadline, design: .rounded))
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(colors.textSecondary)
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 40)
@@ -366,10 +371,10 @@ struct MedicalReportAIView: View {
                             GlassCard(padding: 12) {
                                 HStack(alignment: .top, spacing: 8) {
                                     Image(systemName: "info.circle")
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(colors.textSecondary)
                                     Text("This analysis is for educational purposes only. Always consult your doctor for medical advice.")
                                         .font(.system(.caption, design: .rounded))
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(colors.textSecondary)
                                 }
                             }
                         }

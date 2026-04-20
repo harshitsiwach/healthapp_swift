@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct OnboardingView: View {
+    @Environment(\.theme) var colors
     @Environment(\.modelContext) private var modelContext
     @State private var currentStep = 1
     
@@ -28,14 +29,14 @@ struct OnboardingView: View {
     
     var body: some View {
         ZStack {
-            GradientBackground()
+            colors.background.ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // Progress indicators
                 HStack(spacing: 8) {
                     ForEach(1...4, id: \.self) { step in
                         Capsule()
-                            .fill(step <= currentStep ? AnyShapeStyle(Color.blue.gradient) : AnyShapeStyle(Color.gray.opacity(0.2)))
+                            .fill(step <= currentStep ? AnyShapeStyle(colors.neonBlue.gradient) : AnyShapeStyle(Color.gray.opacity(0.2)))
                             .frame(height: 4)
                     }
                 }
@@ -207,7 +208,7 @@ struct OnboardingView: View {
                     ChipGroup(
                         options: ["Vegetarian", "Vegan", "Eggetarian", "Non-Veg"],
                         selected: $dietaryPreference,
-                        accentColor: .green
+                        accentColor: colors.neonGreen
                     )
                 }
                 
@@ -267,7 +268,7 @@ struct OnboardingView: View {
                                 .foregroundStyle(.secondary)
                             Text("\(calculatedCalories)")
                                 .font(.system(size: 56, weight: .heavy, design: .rounded))
-                                .foregroundStyle(.blue)
+                                .foregroundStyle(colors.neonBlue)
                             Text("kcal/day")
                                 .font(.system(.caption, design: .rounded))
                                 .foregroundStyle(.secondary)
@@ -277,9 +278,9 @@ struct OnboardingView: View {
                     
                     // Macros
                     HStack(spacing: 12) {
-                        macroResultCard(label: "Carbs", value: "\(calculatedCarbs)g", color: .orange)
-                        macroResultCard(label: "Protein", value: "\(calculatedProtein)g", color: .green)
-                        macroResultCard(label: "Fats", value: "\(calculatedFats)g", color: .purple)
+                        macroResultCard(label: "Carbs", value: "\(calculatedCarbs)g", color: colors.neonOrange)
+                        macroResultCard(label: "Protein", value: "\(calculatedProtein)g", color: colors.neonGreen)
+                        macroResultCard(label: "Fats", value: "\(calculatedFats)g", color: colors.neonPurple)
                     }
                     
                     // Health Score
@@ -296,7 +297,7 @@ struct OnboardingView: View {
                             Spacer()
                             Text("\(healthScore)")
                                 .font(.system(size: 40, weight: .heavy, design: .rounded))
-                                .foregroundStyle(healthScore >= 70 ? .green : healthScore >= 50 ? .orange : .red)
+                                .foregroundStyle(healthScore >= 70 ? colors.success : healthScore >= 50 ? colors.warning : colors.error)
                             Text("/100")
                                 .font(.system(.caption, design: .rounded))
                                 .foregroundStyle(.secondary)
@@ -314,7 +315,7 @@ struct OnboardingView: View {
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 18)
-                            .background(Color.blue.gradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .background(colors.neonBlue.gradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                     }
                     .buttonStyle(.plain)
                 }
@@ -332,11 +333,11 @@ struct OnboardingView: View {
             HStack(spacing: 16) {
                 Image(systemName: icon)
                     .font(.title2)
-                    .foregroundStyle(goal == value ? .white : .blue)
+                    .foregroundStyle(goal == value ? .white : colors.neonBlue)
                     .frame(width: 44, height: 44)
                     .background(
                         Circle()
-                            .fill(goal == value ? Color.blue : Color.blue.opacity(0.1))
+                            .fill(goal == value ? colors.neonBlue : colors.neonBlue.opacity(0.1))
                     )
                 
                 VStack(alignment: .leading, spacing: 2) {
@@ -347,7 +348,7 @@ struct OnboardingView: View {
                     if recommended == value {
                         Text("💡 Recommended")
                             .font(.system(.caption, design: .rounded))
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(colors.neonOrange)
                     }
                 }
                 
@@ -356,13 +357,13 @@ struct OnboardingView: View {
                 if goal == value {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title2)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(colors.neonBlue)
                 }
             }
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(goal == value ? Color.blue.opacity(0.08) : .clear)
+                    .fill(goal == value ? colors.neonBlue.opacity(0.08) : .clear)
             )
             .background(
                 Group {
@@ -378,7 +379,7 @@ struct OnboardingView: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(goal == value ? Color.blue.opacity(0.3) : Color.gray.opacity(0.15), lineWidth: 1)
+                    .stroke(goal == value ? colors.neonBlue.opacity(0.3) : colors.cardBorder, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -407,7 +408,7 @@ struct OnboardingView: View {
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 18)
-                .background(Color.blue.gradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .background(colors.neonBlue.gradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
         .buttonStyle(.plain)
     }
