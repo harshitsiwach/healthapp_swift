@@ -13,6 +13,8 @@ struct DashboardView: View {
     @State private var showingMealIdeas = false
     @State private var animateOnAppear = false
     @State private var showingWaterSheet = false
+    @State private var showSplash = false
+    @State private var showConfetti = false
     
     // Hydration tracking (persisted per day)
     @AppStorage("hydration_ml") private var hydrationML: Int = 0
@@ -72,30 +74,43 @@ struct DashboardView: View {
             ZStack {
                 ThemedBackground(themeManager: themeManager)
                 
+                // Floating ambient particles
+                FloatingParticles(color: colors.neonBlue, count: 6)
+                    .opacity(0.3)
+                
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: DesignSystem.Spacing.md) {
                         headerView
                             .padding(.top, DesignSystem.Spacing.xs)
                         
                         heartRateCard
+                            .staggeredEntrance(index: 0)
                         
                         HStack(spacing: DesignSystem.Spacing.md) {
                             sleepCard
+                                .staggeredEntrance(index: 1)
                             stepsCard
+                                .staggeredEntrance(index: 2)
                         }
                         
                         activityRingsCard
+                            .staggeredEntrance(index: 3)
                         
                         calorieCard
+                            .staggeredEntrance(index: 4)
                         
                         HStack(spacing: DesignSystem.Spacing.md) {
                             hydrationCard
+                                .staggeredEntrance(index: 5)
                             macrosCard
+                                .staggeredEntrance(index: 6)
                         }
                         
                         quickActionsRow
+                            .staggeredEntrance(index: 7)
                         
                         recentlyLoggedSection
+                            .staggeredEntrance(index: 8)
                     }
                     .padding(.horizontal, DesignSystem.Spacing.md)
                     .padding(.bottom, 120)
@@ -115,9 +130,24 @@ struct DashboardView: View {
                     goal: hydrationGoal,
                     colors: colors
                 ) { added in
+                    let wasUnderGoal = hydrationML < hydrationGoal
                     hydrationML += added
                     hydrationDate = selectedDateString
                     Haptic.notification(.success)
+                    
+                    // Trigger splash
+                    showSplash = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        showSplash = false
+                    }
+                    
+                    // Confetti if goal reached
+                    if wasUnderGoal && hydrationML >= hydrationGoal {
+                        showConfetti = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            showConfetti = false
+                        }
+                    }
                 }
             }
             .navigationDestination(isPresented: $showingMealIdeas) {
@@ -213,6 +243,7 @@ struct DashboardView: View {
                 Image(systemName: "heart.fill")
                     .font(.system(size: 14))
                     .foregroundStyle(colors.neonRed)
+                    .heartbeat(active: true)
                     .neonGlow(colors.neonRed, intensity: 0.4)
                 Text("Heart Rate")
                     .font(DesignSystem.Typography.subheadline)
@@ -241,8 +272,6 @@ struct DashboardView: View {
                 .frame(height: 60)
         }
         .themedCard()
-        .opacity(animateOnAppear ? 1 : 0)
-        .offset(y: animateOnAppear ? 0 : 20)
     }
     
     // MARK: - Sleep Card
@@ -270,8 +299,6 @@ struct DashboardView: View {
         }
         .themedCard()
         .frame(maxWidth: .infinity)
-        .opacity(animateOnAppear ? 1 : 0)
-        .offset(y: animateOnAppear ? 0 : 30)
     }
     
     // MARK: - Steps Card
@@ -304,8 +331,6 @@ struct DashboardView: View {
         }
         .themedCard()
         .frame(maxWidth: .infinity)
-        .opacity(animateOnAppear ? 1 : 0)
-        .offset(y: animateOnAppear ? 0 : 30)
     }
     
     // MARK: - Activity Rings
@@ -325,8 +350,6 @@ struct DashboardView: View {
             .frame(maxWidth: .infinity)
         }
         .themedCard()
-        .opacity(animateOnAppear ? 1 : 0)
-        .offset(y: animateOnAppear ? 0 : 30)
     }
     
     private func activityRingStat(label: String, value: String, progress: Double, color: Color) -> some View {
@@ -406,8 +429,6 @@ struct DashboardView: View {
             }
         }
         .themedCard()
-        .opacity(animateOnAppear ? 1 : 0)
-        .offset(y: animateOnAppear ? 0 : 30)
     }
     
     // MARK: - Hydration Card (Tappable)
@@ -415,34 +436,43 @@ struct DashboardView: View {
     private var hydrationCard: some View {
         let pct = Double(currentHydration) / Double(hydrationGoal)
         
-        return Button {
-            Haptic.impact(.light)
-            showingWaterSheet = true
-        } label: {
-            VStack(spacing: DesignSystem.Spacing.sm) {
-                HStack {
-                    Text("Hydration")
-                        .font(DesignSystem.Typography.caption)
-                        .foregroundStyle(colors.textSecondary)
-                    Spacer()
-                    Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 14))
-                        .foregroundStyle(colors.neonBlue)
+        return ZStack {
+            Button {
+                Haptic.impact(.light)
+                showingWaterSheet = true
+            } label: {
+                VStack(spacing: DesignSystem.Spacing.sm) {
+                    HStack {
+                        Text("Hydration")
+                            .font(DesignSystem.Typography.caption)
+                            .foregroundStyle(colors.textSecondary)
+                        Spacer()
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 14))
+                            .foregroundStyle(colors.neonBlue)
+                            .glowPulse(colors.neonBlue)
+                    }
+                    
+                    AnimatedWaterFill(fillPercent: min(pct, 1.0), color: colors.neonBlue)
+                        .frame(width: 50, height: 80)
+                    
+                    Text("\(currentHydration)ml / \(hydrationGoal)ml")
+                        .font(DesignSystem.Typography.caption2)
+                        .foregroundStyle(colors.textTertiary)
+                        .contentTransition(.numericText())
                 }
-                
-                HydrationBeaker(fillPercent: min(pct, 1.0), color: colors.neonBlue)
-                    .frame(width: 50, height: 80)
-                
-                Text("\(currentHydration)ml / \(hydrationGoal)ml")
-                    .font(DesignSystem.Typography.caption2)
-                    .foregroundStyle(colors.textTertiary)
+                .themedCard()
+                .frame(maxWidth: .infinity)
             }
-            .themedCard()
-            .frame(maxWidth: .infinity)
+            .buttonStyle(.scaleButton)
+            
+            // Splash effect on add
+            SplashParticles(color: colors.neonBlue, isActive: showSplash, count: 10)
+                .offset(y: -10)
+            
+            // Confetti when goal reached
+            ConfettiView(isActive: showConfetti)
         }
-        .buttonStyle(.scaleButton)
-        .opacity(animateOnAppear ? 1 : 0)
-        .offset(y: animateOnAppear ? 0 : 30)
     }
     
     // MARK: - Macros Card
@@ -459,8 +489,6 @@ struct DashboardView: View {
         }
         .themedCard()
         .frame(maxWidth: .infinity)
-        .opacity(animateOnAppear ? 1 : 0)
-        .offset(y: animateOnAppear ? 0 : 30)
     }
     
     private func macroBar(label: String, value: Double, target: Double, color: Color) -> some View {
