@@ -18,6 +18,8 @@ struct DashboardView: View {
     @State private var showingSleepSheet = false
     @State private var showingStepsSheet = false
     @State private var showingActivityDetail = false
+    @State private var showingHRVSheet = false
+    @State private var showingModelBrowser = false
     
     // Hydration tracking (persisted per day)
     @AppStorage("hydration_ml") private var hydrationML: Int = 0
@@ -107,6 +109,14 @@ struct DashboardView: View {
     private var stepsProgress: Double {
         guard loggedSteps > 0 else { return 0 }
         return min(Double(loggedSteps) / Double(stepsGoal), 1.0)
+    }
+    
+    private var loggedHRV: Double {
+        todayLog?.hrvMs ?? 0
+    }
+    
+    private var loggedStress: Int {
+        todayLog?.stressLevel ?? 0
     }
     
     // MARK: - Body
@@ -210,6 +220,17 @@ struct DashboardView: View {
                     saveSteps(steps)
                 }
             }
+            .sheet(isPresented: $showingHRVSheet) {
+                HRVStressSheet(
+                    currentHRV: loggedHRV,
+                    currentStress: loggedStress
+                ) { hrv, stress in
+                    saveHRVStress(hrv: hrv, stress: stress)
+                }
+            }
+            .fullScreenCover(isPresented: $showingModelBrowser) {
+                HuggingFaceModelBrowser()
+            }
             .navigationDestination(isPresented: $showingMealIdeas) {
                 MealIdeasView()
             }
@@ -298,40 +319,68 @@ struct DashboardView: View {
     // MARK: - Heart Rate Card
     
     private var heartRateCard: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
-            HStack {
-                Image(systemName: "heart.fill")
-                    .font(.system(size: 14))
-                    .foregroundStyle(colors.neonRed)
-                    .heartbeat(active: true)
-                    .neonGlow(colors.neonRed, intensity: 0.4)
-                Text("Heart Rate")
-                    .font(DesignSystem.Typography.subheadline)
-                    .foregroundStyle(colors.textSecondary)
-                Spacer()
-                Text("LIVE")
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.neonRed)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(Capsule().fill(colors.neonRed.opacity(0.15)))
+        Button {
+            Haptic.impact(.light)
+            showingHRVSheet = true
+        } label: {
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
+                HStack {
+                    Image(systemName: "heart.fill")
+                        .font(.system(size: 14))
+                        .foregroundStyle(colors.neonRed)
+                        .heartbeat(active: true)
+                        .neonGlow(colors.neonRed, intensity: 0.4)
+                    Text("Heart Rate")
+                        .font(DesignSystem.Typography.subheadline)
+                        .foregroundStyle(colors.textSecondary)
+                    Spacer()
+                    
+                    // HRV + Stress badges
+                    if loggedHRV > 0 {
+                        HStack(spacing: 6) {
+                            Label("\(Int(loggedHRV))ms", systemImage: "waveform.path.ecg")
+                                .font(.system(size: 9, weight: .bold, design: .rounded))
+                                .foregroundStyle(hrvColor)
+                            if loggedStress > 0 {
+                                Label("\(loggedStress)/10", systemImage: "brain.head.profile")
+                                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                                    .foregroundStyle(stressColor)
+                            }
+                        }
+                    }
+                }
+
+                HStack(alignment: .bottom, spacing: DesignSystem.Spacing.xs) {
+                    Text("\(heartRate)")
+                        .font(DesignSystem.Typography.heartRate)
+                        .foregroundStyle(colors.textPrimary)
+                        .contentTransition(.numericText())
+                    Text("BPM")
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundStyle(colors.textTertiary)
+                        .padding(.bottom, 8)
+                }
+
+                PulseLine(dataPoints: pulseData, color: colors.neonRed)
+                    .frame(height: 60)
             }
-            
-            HStack(alignment: .bottom, spacing: DesignSystem.Spacing.xs) {
-                Text("\(heartRate)")
-                    .font(DesignSystem.Typography.heartRate)
-                    .foregroundStyle(colors.textPrimary)
-                    .contentTransition(.numericText())
-                Text("BPM")
-                    .font(DesignSystem.Typography.caption)
-                    .foregroundStyle(colors.textTertiary)
-                    .padding(.bottom, 8)
-            }
-            
-            PulseLine(dataPoints: pulseData, color: colors.neonRed)
-                .frame(height: 60)
+            .themedCard()
         }
-        .themedCard()
+        .buttonStyle(.scaleButton)
+    }
+    
+    private var hrvColor: Color {
+        if loggedHRV >= 80 { return colors.neonGreen }
+        if loggedHRV >= 50 { return colors.neonYellow }
+        if loggedHRV >= 30 { return colors.neonOrange }
+        return colors.neonRed
+    }
+    
+    private var stressColor: Color {
+        if loggedStress <= 3 { return colors.neonGreen }
+        if loggedStress <= 5 { return colors.neonYellow }
+        if loggedStress <= 7 { return colors.neonOrange }
+        return colors.neonRed
     }
     
     // MARK: - Sleep Card
@@ -618,16 +667,36 @@ struct DashboardView: View {
     // MARK: - Quick Actions
     
     private var quickActionsRow: some View {
-        HStack(spacing: DesignSystem.Spacing.sm) {
-            NavigationLink(destination: MedicalReportScannerView()) {
-                quickActionLabel(icon: "doc.text.viewfinder", title: "Scan Report", color: colors.neonPurple)
+        VStack(spacing: DesignSystem.Spacing.sm) {
+            HStack(spacing: DesignSystem.Spacing.sm) {
+                NavigationLink(destination: MedicalReportScannerView()) {
+                    quickActionLabel(icon: "doc.text.viewfinder", title: "Scan Report", color: colors.neonPurple)
+                }
+                .buttonStyle(.scaleButton)
+
+                NavigationLink(destination: WeeklyStatsView()) {
+                    quickActionLabel(icon: "chart.bar.fill", title: "Weekly Stats", color: colors.neonBlue)
+                }
+                .buttonStyle(.scaleButton)
             }
-            .buttonStyle(.scaleButton)
             
-            NavigationLink(destination: WeeklyStatsView()) {
-                quickActionLabel(icon: "chart.bar.fill", title: "Weekly Stats", color: colors.neonBlue)
+            HStack(spacing: DesignSystem.Spacing.sm) {
+                Button {
+                    Haptic.impact(.light)
+                    showingModelBrowser = true
+                } label: {
+                    quickActionLabel(icon: "arrow.down.circle.dotted", title: "Browse AI Models", color: colors.neonPurple)
+                }
+                .buttonStyle(.scaleButton)
+                
+                Button {
+                    Haptic.impact(.light)
+                    showingHRVSheet = true
+                } label: {
+                    quickActionLabel(icon: "heart.text.square", title: "Log HRV & Stress", color: colors.neonRed)
+                }
+                .buttonStyle(.scaleButton)
             }
-            .buttonStyle(.scaleButton)
         }
     }
     
@@ -762,6 +831,18 @@ struct DashboardView: View {
             log.steps = steps
         } else {
             let log = DailyLog(date: selectedDateString, steps: steps)
+            modelContext.insert(log)
+        }
+        try? modelContext.save()
+        Haptic.notification(.success)
+    }
+    
+    private func saveHRVStress(hrv: Double, stress: Int) {
+        if let log = todayLog {
+            log.hrvMs = hrv
+            log.stressLevel = stress
+        } else {
+            let log = DailyLog(date: selectedDateString, hrvMs: hrv, stressLevel: stress)
             modelContext.insert(log)
         }
         try? modelContext.save()

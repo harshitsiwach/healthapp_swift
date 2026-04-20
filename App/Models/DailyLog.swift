@@ -19,6 +19,8 @@ final class DailyLog {
     var sleepMinutes: Int?
     var heartRate: Int?
     var waterML: Int?
+    var hrvMs: Double? // Heart Rate Variability in milliseconds
+    var stressLevel: Int? // 1-10 scale
     
     init(
         date: String,
@@ -33,7 +35,9 @@ final class DailyLog {
         sleepHours: Int? = nil,
         sleepMinutes: Int? = nil,
         heartRate: Int? = nil,
-        waterML: Int? = nil
+        waterML: Int? = nil,
+        hrvMs: Double? = nil,
+        stressLevel: Int? = nil
     ) {
         self.id = UUID()
         self.date = date
@@ -49,5 +53,7 @@ final class DailyLog {
         self.sleepMinutes = sleepMinutes
         self.heartRate = heartRate
         self.waterML = waterML
+        self.hrvMs = hrvMs
+        self.stressLevel = stressLevel
     }
 }
