@@ -85,6 +85,11 @@
 		F933303D377A37D5724A04CD /* HealthAuthorizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 538E1B60A2D52CD8C27D1FD1 /* HealthAuthorizationService.swift */; };
 		FA0657C670F672396CCDFBBE /* AIOrchestrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1580A9992234C6EABF5456 /* AIOrchestrator.swift */; };
 		FA139551825131A460E8AD83 /* DailyHealthSummaryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDAE97549709945854E627CB /* DailyHealthSummaryCard.swift */; };
+		6968643D851D6F11F7DCF128 /* MedicalPassport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F6B8336FEC0A7B62DF3865 /* MedicalPassport.swift */; };
+		F5422D2A52001ECC7CCD4C39 /* MedicalPassportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E416BA353DC14668C9F7F47F /* MedicalPassportView.swift */; };
+		D568BCAD957055F5FF9AAB6D /* MedicalPassportEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB6E5DD8E24AEABE6A76A47F /* MedicalPassportEditView.swift */; };
+		E51F92C45C8DA58A14374E32 /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EEA78C58822AE3D21655E8 /* QRCodeView.swift */; };
+		C690C100FF535A7FD758003F /* VaccinationTrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD37E41417196D8D418D2B6 /* VaccinationTrackerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -195,6 +200,11 @@
 		FDAE97549709945854E627CB /* DailyHealthSummaryCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DailyHealthSummaryCard.swift; path = Home/DailyHealthSummaryCard.swift; sourceTree = "<group>"; };
 		FE32A8427FABA7FFF16A77BA /* HealthAuthorizationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HealthAuthorizationService.swift; sourceTree = "<group>"; };
 		EEAE984DE5346E2E401491E8 /* HealthApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HealthApp.entitlements; sourceTree = "<group>"; };
+		B5F6B8336FEC0A7B62DF3865 /* MedicalPassport.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MedicalPassport.swift; sourceTree = "<group>"; };
+		E416BA353DC14668C9F7F47F /* MedicalPassportView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MedicalPassportView.swift; sourceTree = "<group>"; };
+		CB6E5DD8E24AEABE6A76A47F /* MedicalPassportEditView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MedicalPassportEditView.swift; sourceTree = "<group>"; };
+		66EEA78C58822AE3D21655E8 /* QRCodeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
+		DCD37E41417196D8D418D2B6 /* VaccinationTrackerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaccinationTrackerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -397,6 +407,7 @@
 				A0056960BC6D86AC627BA7BE /* DailyLog.swift */,
 				49B33A9A3364944C244DAD77 /* HealthCalculations.swift */,
 				C150B888F77C0F120F197164 /* UserProfile.swift */,
+				B5F6B8336FEC0A7B62DF3865 /* MedicalPassport.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -431,23 +442,24 @@
 			path = WeeklyStats;
 			sourceTree = "<group>";
 		};
-		92C3A2C241F145AEB8B89346 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				75E2236807CF57ACF2D8F2D7 /* Camera */,
-				0B3493FE385DC31291ABAAF3 /* Components */,
-				C588C78D810FF4D0D916658A /* Dashboard */,
-				B0D39DD0B11DEB4145E9BC2E /* Health */,
-				75EF2F6A03B5E71C8AF32965 /* MealIdeas */,
-				FBAAECCE416325889B5BF04F /* Onboarding */,
-				F44EF5064F66ABF588531F63 /* Progress */,
-				6C61E0122A38CE9EF646CDAB /* Settings */,
-				8F246FFF1F3CB10FE35BB2CD /* WeeklyStats */,
-				3E9DFD313A7F764405F76048 /* Chat */,
-				5B6B820C1BFA01A325D5C7BE /* Home */,
-				A24D42FF9860D6FE3888247A /* Nutrition */,
-				E559EE20446E7C35DCFC1822 /* MedicalReports */,
-				A0A3CC5D56FA5ED979E5B6A3 /* HuggingFaceModelBrowser.swift */,
+	92C3A2C241F145AEB8B89346 /* Views */ = {
+		isa = PBXGroup;
+		children = (
+			75E2236807CF57ACF2D8F2D7 /* Camera */,
+			0B3493FE385DC31291ABAAF3 /* Components */,
+			C588C78D810FF4D0D916658A /* Dashboard */,
+			B0D39DD0B11DEB4145E9BC2E /* Health */,
+			75EF2F6A03B5E71C8AF32965 /* MealIdeas */,
+			FBAAECCE416325889B5BF04F /* Onboarding */,
+			F44EF5064F66ABF588531F63 /* Progress */,
+			6C61E0122A38CE9EF646CDAB /* Settings */,
+			8F246FFF1F3CB10FE35BB2CD /* WeeklyStats */,
+			3E9DFD313A7F764405F76048 /* Chat */,
+			5B6B820C1BFA01A325D5C7BE /* Home */,
+			A24D42FF9860D6FE3888247A /* Nutrition */,
+			E559EE20446E7C35DCFC1822 /* MedicalReports */,
+			AA11BB22CC33DD44EE55FF66 /* MedicalPassport */,
+			A0A3CC5D56FA5ED979E5B6A3 /* HuggingFaceModelBrowser.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -619,6 +631,18 @@
 			path = Onboarding;
 			sourceTree = "<group>";
 		};
+	AA11BB22CC33DD44EE55FF66 /* MedicalPassport */ = {
+		isa = PBXGroup;
+		children = (
+			E416BA353DC14668C9F7F47F /* MedicalPassportView.swift */,
+			CB6E5DD8E24AEABE6A76A47F /* MedicalPassportEditView.swift */,
+			66EEA78C58822AE3D21655E8 /* QRCodeView.swift */,
+			DCD37E41417196D8D418D2B6 /* VaccinationTrackerView.swift */,
+		);
+		name = MedicalPassport;
+		path = MedicalPassport;
+		sourceTree = "<group>";
+	};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -756,10 +780,15 @@
 				5A7FBCC780531DA4087D1660 /* IndianFoodDatabase.swift in Sources */,
 				C5452639F08E7E78444DFF1E /* LlamaCppEngine.swift in Sources */,
 				4669B1EB6F6F5EFCDB7E3D0E /* DesignSystem.swift in Sources */,
-				9B8D8A66D20B889754FE6A31 /* ThemeManager.swift in Sources */,
-				6A91BB21A9A0200CA2925CF2 /* HuggingFaceModelBrowser.swift in Sources */,
-				F6D8A08BEA7522C82E1B79F4 /* HRVStressSheet.swift in Sources */,
-				8158DDA0159805AE7FCBCF79 /* NativeCalendarEventView.swift in Sources */,
+			9B8D8A66D20B889754FE6A31 /* ThemeManager.swift in Sources */,
+			6A91BB21A9A0200CA2925CF2 /* HuggingFaceModelBrowser.swift in Sources */,
+			F6D8A08BEA7522C82E1B79F4 /* HRVStressSheet.swift in Sources */,
+			6968643D851D6F11F7DCF128 /* MedicalPassport.swift in Sources */,
+			F5422D2A52001ECC7CCD4C39 /* MedicalPassportView.swift in Sources */,
+			D568BCAD957055F5FF9AAB6D /* MedicalPassportEditView.swift in Sources */,
+			E51F92C45C8DA58A14374E32 /* QRCodeView.swift in Sources */,
+			C690C100FF535A7FD758003F /* VaccinationTrackerView.swift in Sources */,
+			8158DDA0159805AE7FCBCF79 /* NativeCalendarEventView.swift in Sources */,
 				84734C52C22EA20C8453D1D8 /* AddIntegrationActionSheet.swift in Sources */,
 				58CDAC2CAE44778BB1616DF9 /* NotificationService.swift in Sources */,
 				14E13F8BFE98A8CF41E79A1C /* ReminderService.swift in Sources */,

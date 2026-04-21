@@ -20,6 +20,8 @@ struct DashboardView: View {
     @State private var showingActivityDetail = false
     @State private var showingHRVSheet = false
     @State private var showingModelBrowser = false
+    @State private var showingCalorieSuggestions = false
+    @State private var showingMedicalPassport = false
     
     // Hydration tracking (persisted per day)
     @AppStorage("hydration_ml") private var hydrationML: Int = 0
@@ -230,6 +232,15 @@ struct DashboardView: View {
             }
             .fullScreenCover(isPresented: $showingModelBrowser) {
                 HuggingFaceModelBrowser()
+            }
+            .sheet(isPresented: $showingCalorieSuggestions) {
+                CalorieSuggestionsSheet(
+                    consumed: consumedCalories,
+                    target: profile?.calculatedDailyCalories ?? 2000
+                )
+            }
+            .sheet(isPresented: $showingMedicalPassport) {
+                MedicalPassportView()
             }
             .navigationDestination(isPresented: $showingMealIdeas) {
                 MealIdeasView()
@@ -484,35 +495,78 @@ struct DashboardView: View {
     // MARK: - Activity Rings
     
     private var activityRingsCard: some View {
-        VStack(spacing: DesignSystem.Spacing.md) {
-            Text("Activity")
-                .font(DesignSystem.Typography.headline)
-                .foregroundStyle(colors.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
+        Button {
+            Haptic.selection()
+            showingActivityDetail = true
+        } label: {
             HStack(spacing: DesignSystem.Spacing.xl) {
-                activityRingStat(label: "Move", value: "390/500", progress: 0.78, color: colors.neonRed)
-                activityRingStat(label: "Exercise", value: "26/40", progress: 0.65, color: colors.neonBlue)
-                activityRingStat(label: "Stand", value: "9/12", progress: 0.90, color: colors.neonYellow)
+                // Stacked concentric rings (Apple Fitness style)
+                ZStack {
+                    // Move ring (outermost, red)
+                    ActivityRing(progress: moveProgress, color: colors.neonRed, size: 120, lineWidth: 14)
+                    // Exercise ring (middle, blue)
+                    ActivityRing(progress: exerciseProgress, color: colors.neonBlue, size: 92, lineWidth: 14)
+                    // Stand ring (innermost, yellow)
+                    ActivityRing(progress: standProgress, color: colors.neonYellow, size: 64, lineWidth: 14)
+                }
+                .frame(width: 130, height: 130)
+                
+                // Stats column
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
+                    ringStat(icon: "flame.fill", label: "MOVE", value: "\(moveCal)/\(moveGoal)", unit: "kcal", color: colors.neonRed)
+                    ringStat(icon: "figure.run", label: "EXERCISE", value: "\(exerciseMin)/\(exerciseGoal)", unit: "min", color: colors.neonBlue)
+                    ringStat(icon: "figure.stand", label: "STAND", value: "\(standHr)/\(standGoal)", unit: "hrs", color: colors.neonYellow)
+                }
             }
             .frame(maxWidth: .infinity)
+            .themedCard()
         }
-        .themedCard()
+        .buttonStyle(.scaleButton)
+        .sheet(isPresented: $showingActivityDetail) {
+            ActivityDetailView(
+                moveCal: moveCal, moveGoal: moveGoal,
+                exerciseMin: exerciseMin, exerciseGoal: exerciseGoal,
+                standHr: standHr, standGoal: standGoal
+            )
+        }
     }
     
-    private func activityRingStat(label: String, value: String, progress: Double, color: Color) -> some View {
-        VStack(spacing: 8) {
-            ActivityRing(progress: progress, color: color, size: 80, lineWidth: 10)
-            VStack(spacing: 2) {
+    private func ringStat(icon: String, label: String, value: String, unit: String, color: Color) -> some View {
+        HStack(spacing: DesignSystem.Spacing.xs) {
+            Image(systemName: icon)
+                .font(.system(size: 12))
+                .foregroundStyle(color)
+                .frame(width: 20)
+            VStack(alignment: .leading, spacing: 1) {
                 Text(label)
-                    .font(DesignSystem.Typography.caption2)
-                    .foregroundStyle(colors.textSecondary)
-                Text(value)
-                    .font(DesignSystem.Typography.statSmall)
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
                     .foregroundStyle(color)
+                    .tracking(0.5)
+                HStack(alignment: .bottom, spacing: 2) {
+                    Text(value)
+                        .font(DesignSystem.Typography.bodyBold)
+                        .foregroundStyle(colors.textPrimary)
+                    Text(unit)
+                        .font(DesignSystem.Typography.caption2)
+                        .foregroundStyle(colors.textTertiary)
+                }
             }
         }
     }
+    
+    // MARK: - Activity Ring Data
+    
+    private var moveCal: Int { todayLog?.estimatedCalories ?? 0 }
+    private var moveGoal: Int { profile?.calculatedDailyCalories ?? 500 }
+    private var moveProgress: Double { moveGoal > 0 ? min(Double(moveCal) / Double(moveGoal), 1.0) : 0 }
+    
+    private var exerciseMin: Int { 0 } // Will connect to HealthKit
+    private var exerciseGoal: Int { 30 }
+    private var exerciseProgress: Double { min(Double(exerciseMin) / Double(exerciseGoal), 1.0) }
+    
+    private var standHr: Int { 0 } // Will connect to HealthKit
+    private var standGoal: Int { 12 }
+    private var standProgress: Double { min(Double(standHr) / Double(standGoal), 1.0) }
     
     // MARK: - Calorie Card
     
@@ -520,63 +574,93 @@ struct DashboardView: View {
         let target = profile?.calculatedDailyCalories ?? 2000
         let remaining = target - consumedCalories
         let progress = target > 0 ? Double(consumedCalories) / Double(target) : 0
-        
-        return VStack(spacing: DesignSystem.Spacing.md) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Calories")
-                        .font(DesignSystem.Typography.subheadline)
-                        .foregroundStyle(colors.textSecondary)
-                    HStack(alignment: .bottom, spacing: 4) {
-                        Text("\(consumedCalories)")
-                            .font(DesignSystem.Typography.statLarge)
-                            .foregroundStyle(colors.textPrimary)
-                            .contentTransition(.numericText())
-                        Text("/ \(target) kcal")
-                            .font(DesignSystem.Typography.caption)
+        let isUnderGoal = remaining > 200
+        let isOverGoal = remaining < 0
+
+        return Button {
+            Haptic.impact(.light)
+            showingCalorieSuggestions = true
+        } label: {
+            VStack(spacing: DesignSystem.Spacing.md) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 6) {
+                            Text("Calories")
+                                .font(DesignSystem.Typography.subheadline)
+                                .foregroundStyle(colors.textSecondary)
+                            
+                            // Status badge
+                            if isUnderGoal {
+                                Label("Add meals", systemImage: "fork.knife")
+                                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                                    .foregroundStyle(colors.neonGreen)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(Capsule().fill(colors.neonGreen.opacity(0.15)))
+                            } else if isOverGoal {
+                                Label("Burn it off", systemImage: "flame.fill")
+                                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                                    .foregroundStyle(colors.neonOrange)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(Capsule().fill(colors.neonOrange.opacity(0.15)))
+                            }
+                        }
+                        HStack(alignment: .bottom, spacing: 4) {
+                            Text("\(consumedCalories)")
+                                .font(DesignSystem.Typography.statLarge)
+                                .foregroundStyle(colors.textPrimary)
+                                .contentTransition(.numericText())
+                            Text("/ \(target) kcal")
+                                .font(DesignSystem.Typography.caption)
+                                .foregroundStyle(colors.textTertiary)
+                                .padding(.bottom, 8)
+                        }
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text("Net")
+                            .font(DesignSystem.Typography.caption2)
                             .foregroundStyle(colors.textTertiary)
-                            .padding(.bottom, 8)
+                        Text("\(remaining)")
+                            .font(DesignSystem.Typography.statMedium)
+                            .foregroundStyle(remaining > 0 ? colors.neonGreen : colors.neonRed)
+                            .contentTransition(.numericText())
                     }
                 }
-                Spacer()
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("Net")
+
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(colors.neonGreen.opacity(0.12))
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(LinearGradient(
+                                colors: progress > 1.0
+                                    ? [colors.neonRed, colors.neonOrange]
+                                    : [colors.neonGreen, colors.neonBlue],
+                                startPoint: .leading, endPoint: .trailing))
+                            .frame(width: geo.size.width * min(progress, 1.0))
+                            .animation(.spring(response: 0.8), value: progress)
+                    }
+                }
+                .frame(height: 8)
+
+                HStack {
+                    Label("Intake: \(consumedCalories) kcal", systemImage: "arrow.down.circle.fill")
                         .font(DesignSystem.Typography.caption2)
+                        .foregroundStyle(colors.neonGreen)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption2)
                         .foregroundStyle(colors.textTertiary)
-                    Text("\(remaining)")
-                        .font(DesignSystem.Typography.statMedium)
-                        .foregroundStyle(remaining > 0 ? colors.neonGreen : colors.neonRed)
-                        .contentTransition(.numericText())
+                    Label("Tap for \(isOverGoal ? "exercises" : "meals")", systemImage: isOverGoal ? "figure.run" : "fork.knife")
+                        .font(DesignSystem.Typography.caption2)
+                        .foregroundStyle(colors.textSecondary)
                 }
             }
-            
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(colors.neonGreen.opacity(0.12))
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(LinearGradient(
-                            colors: progress > 1.0
-                                ? [colors.neonRed, colors.neonOrange]
-                                : [colors.neonGreen, colors.neonBlue],
-                            startPoint: .leading, endPoint: .trailing))
-                        .frame(width: geo.size.width * min(progress, 1.0))
-                        .animation(.spring(response: 0.8), value: progress)
-                }
-            }
-            .frame(height: 8)
-            
-            HStack {
-                Label("Intake: \(consumedCalories) kcal", systemImage: "arrow.down.circle.fill")
-                    .font(DesignSystem.Typography.caption2)
-                    .foregroundStyle(colors.neonGreen)
-                Spacer()
-                Label("Burned: 420 kcal", systemImage: "flame.fill")
-                    .font(DesignSystem.Typography.caption2)
-                    .foregroundStyle(colors.neonOrange)
-            }
+            .themedCard()
         }
-        .themedCard()
+        .buttonStyle(.scaleButton)
     }
     
     // MARK: - Hydration Card (Tappable)
@@ -691,9 +775,9 @@ struct DashboardView: View {
                 
                 Button {
                     Haptic.impact(.light)
-                    showingHRVSheet = true
+                    showingMedicalPassport = true
                 } label: {
-                    quickActionLabel(icon: "heart.text.square", title: "Log HRV & Stress", color: colors.neonRed)
+                    quickActionLabel(icon: "heart.text.square.fill", title: "Medical Passport", color: colors.neonRed)
                 }
                 .buttonStyle(.scaleButton)
             }
@@ -1261,5 +1345,308 @@ struct StepsLoggingSheet: View {
         .disabled((Int(stepInput) ?? 0) <= 0)
         .padding(.horizontal, DesignSystem.Spacing.md)
         .padding(.bottom, DesignSystem.Spacing.lg)
+    }
+}
+
+// MARK: - Calorie Suggestions Sheet
+
+struct CalorieSuggestionsSheet: View {
+    @Environment(\.dismiss) var dismiss
+    @Environment(\.theme) var colors
+    let consumed: Int
+    let target: Int
+    
+    @State private var selectedTab = 0
+    @State private var animateIn = false
+    
+    private var remaining: Int { target - consumed }
+    private var isOverGoal: Bool { remaining < 0 }
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: DesignSystem.Spacing.lg) {
+                    // Header
+                    headerSection
+                    
+                    // Tab picker
+                    Picker("Suggestions", selection: $selectedTab) {
+                        Text(isOverGoal ? "Burn It Off" : "Meal Ideas").tag(0)
+                        Text("Exercises").tag(1)
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal)
+                    
+                    if selectedTab == 0 && !isOverGoal {
+                        mealSuggestions
+                    } else if selectedTab == 0 && isOverGoal {
+                        exerciseSuggestions
+                    } else {
+                        exerciseSuggestions
+                    }
+                }
+                .padding(.bottom, 100)
+            }
+            .background(colors.background.ignoresSafeArea())
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                        .foregroundStyle(colors.neonGreen)
+                }
+            }
+            .onAppear {
+                selectedTab = isOverGoal ? 1 : 0
+                withAnimation(.spring(response: 0.6).delay(0.1)) { animateIn = true }
+            }
+        }
+    }
+    
+    private var headerSection: some View {
+        VStack(spacing: DesignSystem.Spacing.sm) {
+            Image(systemName: isOverGoal ? "flame.fill" : "fork.knife")
+                .font(.system(size: 40))
+                .foregroundStyle(isOverGoal ? colors.neonOrange : colors.neonGreen)
+                .neonGlow(isOverGoal ? colors.neonOrange : colors.neonGreen, intensity: 0.5)
+            
+            if isOverGoal {
+                Text("You're \(abs(remaining)) kcal over")
+                    .font(DesignSystem.Typography.title3)
+                    .foregroundStyle(colors.textPrimary)
+                Text("Here are exercises to burn it off")
+                    .font(DesignSystem.Typography.caption)
+                    .foregroundStyle(colors.textSecondary)
+            } else {
+                Text("\(remaining) kcal remaining")
+                    .font(DesignSystem.Typography.title3)
+                    .foregroundStyle(colors.textPrimary)
+                Text("Suggested meals to hit your goal")
+                    .font(DesignSystem.Typography.caption)
+                    .foregroundStyle(colors.textSecondary)
+            }
+        }
+        .padding(.top, DesignSystem.Spacing.md)
+    }
+    
+    private var mealSuggestions: some View {
+        let meals = getMealSuggestions(for: remaining)
+        return VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
+            Text("Suggested Meals")
+                .font(DesignSystem.Typography.headline)
+                .foregroundStyle(colors.textPrimary)
+                .padding(.horizontal)
+            
+            ForEach(Array(meals.enumerated()), id: \.offset) { _, meal in
+                HStack(spacing: DesignSystem.Spacing.sm) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(meal.name)
+                            .font(DesignSystem.Typography.bodyBold)
+                            .foregroundStyle(colors.textPrimary)
+                        Text(meal.description)
+                            .font(DesignSystem.Typography.caption)
+                            .foregroundStyle(colors.textSecondary)
+                        HStack(spacing: 8) {
+                            Label("\(meal.calories) kcal", systemImage: "flame")
+                                .foregroundStyle(colors.neonOrange)
+                            Label("P: \(meal.protein)g", systemImage: "p.circle")
+                                .foregroundStyle(colors.protein)
+                            Label("C: \(meal.carbs)g", systemImage: "c.circle")
+                                .foregroundStyle(colors.carbs)
+                            Label("F: \(meal.fat)g", systemImage: "f.circle")
+                                .foregroundStyle(colors.fat)
+                        }
+                        .font(DesignSystem.Typography.caption2)
+                    }
+                    Spacer()
+                    Text("+\(meal.calories)")
+                        .font(DesignSystem.Typography.statSmall)
+                        .foregroundStyle(colors.neonGreen)
+                }
+                .padding(DesignSystem.Spacing.md)
+                .background(
+                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                        .fill(colors.backgroundCard)
+                        .overlay(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                            .strokeBorder(colors.neonGreen.opacity(0.2)))
+                )
+                .padding(.horizontal)
+                .opacity(animateIn ? 1 : 0)
+                .offset(x: animateIn ? 0 : 30)
+                .animation(.spring(response: 0.5).delay(Double(meals.firstIndex(where: { $0.name == meal.name }) ?? 0) * 0.1), value: animateIn)
+            }
+        }
+    }
+    
+    private var exerciseSuggestions: some View {
+        let exercises = getExerciseSuggestions(for: abs(remaining))
+        return VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
+            Text("Exercises to Burn \(abs(remaining)) kcal")
+                .font(DesignSystem.Typography.headline)
+                .foregroundStyle(colors.textPrimary)
+                .padding(.horizontal)
+            
+            ForEach(Array(exercises.enumerated()), id: \.offset) { _, exercise in
+                HStack(spacing: DesignSystem.Spacing.sm) {
+                    Image(systemName: exercise.icon)
+                        .font(.system(size: 24))
+                        .foregroundStyle(exercise.color)
+                        .frame(width: 44, height: 44)
+                        .background(Circle().fill(exercise.color.opacity(0.15)))
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(exercise.name)
+                            .font(DesignSystem.Typography.bodyBold)
+                            .foregroundStyle(colors.textPrimary)
+                        Text(exercise.duration)
+                            .font(DesignSystem.Typography.caption)
+                            .foregroundStyle(colors.textSecondary)
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text("-\(exercise.burned) kcal")
+                            .font(DesignSystem.Typography.bodyBold)
+                            .foregroundStyle(colors.neonOrange)
+                        Text(exercise.intensity)
+                            .font(DesignSystem.Typography.caption2)
+                            .foregroundStyle(exercise.color)
+                    }
+                }
+                .padding(DesignSystem.Spacing.md)
+                .background(
+                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                        .fill(colors.backgroundCard)
+                        .overlay(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                            .strokeBorder(exercise.color.opacity(0.2)))
+                )
+                .padding(.horizontal)
+                .opacity(animateIn ? 1 : 0)
+                .offset(x: animateIn ? 0 : 30)
+                .animation(.spring(response: 0.5).delay(Double(exercises.firstIndex(where: { $0.name == exercise.name }) ?? 0) * 0.1), value: animateIn)
+            }
+        }
+    }
+    
+    private func getMealSuggestions(for calories: Int) -> [(name: String, description: String, calories: Int, protein: Int, carbs: Int, fat: Int)] {
+        if calories >= 500 {
+            return [
+                ("Rajma Chawal", "Kidney beans with steamed rice + salad", 380, 15, 55, 10),
+                ("Paneer Tikka Wrap", "Grilled paneer in whole wheat wrap", 420, 22, 40, 18),
+                ("Chicken Biryani (small)", "Spiced rice with chicken + raita", 450, 25, 50, 15),
+            ]
+        } else if calories >= 300 {
+            return [
+                ("Dal Tadka + 1 Roti", "Yellow lentils with tempered spices", 280, 12, 40, 8),
+                ("Vegetable Upma", "Semolina with mixed vegetables", 250, 8, 38, 9),
+                ("Grilled Chicken Salad", "Mixed greens with tandoori chicken", 300, 30, 15, 12),
+            ]
+        } else if calories >= 150 {
+            return [
+                ("Fruit Chaat", "Mixed fruits with chaat masala", 120, 2, 28, 1),
+                ("Roasted Chana", "Spiced roasted chickpeas", 150, 8, 22, 3),
+                ("Banana + Peanut Butter", "Medium banana with 1 tbsp PB", 180, 5, 25, 8),
+            ]
+        } else {
+            return [
+                ("Green Tea + 2 Biscuits", "Light snack", 80, 1, 15, 2),
+                ("A Small Handful of Almonds", "10-12 almonds", 70, 3, 2, 6),
+                ("Buttermilk (Chaas)", "Spiced buttermilk", 40, 2, 4, 1),
+            ]
+        }
+    }
+    
+    private func getExerciseSuggestions(for calories: Int) -> [(name: String, icon: String, color: Color, duration: String, burned: Int, intensity: String)] {
+        [
+            ("Walking", "figure.walk", colors.neonGreen, "\(calories / 5) min brisk walk", calories, "Low intensity"),
+            ("Running", "figure.run", colors.neonRed, "\(calories / 12) min jog", calories, "High intensity"),
+            ("Cycling", "bicycle", colors.neonBlue, "\(calories / 8) min cycling", calories, "Medium intensity"),
+            ("Swimming", "figure.pool.swim", colors.neonBlue, "\(calories / 10) min swim", calories, "Full body"),
+            ("Yoga", "figure.yoga", colors.neonPurple, "\(calories / 4) min yoga", calories, "Low + flexibility"),
+            ("Dancing", "figure.dance", colors.neonYellow, "\(calories / 7) min dancing", calories, "Fun cardio"),
+        ]
+    }
+}
+
+// MARK: - Activity Detail View
+
+struct ActivityDetailView: View {
+    @Environment(\.dismiss) var dismiss
+    @Environment(\.theme) var colors
+    
+    let moveCal: Int, moveGoal: Int
+    let exerciseMin: Int, exerciseGoal: Int
+    let standHr: Int, standGoal: Int
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: DesignSystem.Spacing.xl) {
+                    // Large stacked rings
+                    ZStack {
+                        ActivityRing(progress: min(Double(moveCal) / Double(moveGoal), 1.0), color: colors.neonRed, size: 240, lineWidth: 22)
+                        ActivityRing(progress: min(Double(exerciseMin) / Double(exerciseGoal), 1.0), color: colors.neonBlue, size: 186, lineWidth: 22)
+                        ActivityRing(progress: min(Double(standHr) / Double(standGoal), 1.0), color: colors.neonYellow, size: 132, lineWidth: 22)
+                    }
+                    .frame(width: 260, height: 260)
+                    .padding(.top, DesignSystem.Spacing.xl)
+                    
+                    // Detailed stats
+                    VStack(spacing: DesignSystem.Spacing.md) {
+                        activityDetailRow(icon: "flame.fill", label: "MOVE", current: moveCal, goal: moveGoal, unit: "kcal", color: colors.neonRed, message: moveCal >= moveGoal ? "Goal reached! 🎉" : "\(moveGoal - moveCal) kcal to go")
+                        Divider().background(colors.cardBorder)
+                        activityDetailRow(icon: "figure.run", label: "EXERCISE", current: exerciseMin, goal: exerciseGoal, unit: "min", color: colors.neonBlue, message: exerciseMin >= exerciseGoal ? "Active day! 💪" : "Get moving for \(exerciseGoal - exerciseMin) more min")
+                        Divider().background(colors.cardBorder)
+                        activityDetailRow(icon: "figure.stand", label: "STAND", current: standHr, goal: standGoal, unit: "hrs", color: colors.neonYellow, message: standHr >= standGoal ? "Standing strong! 🧍" : "Stand up \(standGoal - standHr) more hours")
+                    }
+                    .themedCard()
+                }
+                .padding()
+            }
+            .background(colors.background.ignoresSafeArea())
+            .navigationTitle("Activity")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                        .foregroundStyle(colors.neonRed)
+                }
+            }
+        }
+    }
+    
+    private func activityDetailRow(icon: String, label: String, current: Int, goal: Int, unit: String, color: Color, message: String) -> some View {
+        HStack {
+            Image(systemName: icon)
+                .font(.system(size: 20))
+                .foregroundStyle(color)
+                .frame(width: 40, height: 40)
+                .background(Circle().fill(color.opacity(0.15)))
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(label)
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .foregroundStyle(color)
+                    .tracking(1)
+                Text(message)
+                    .font(DesignSystem.Typography.caption)
+                    .foregroundStyle(colors.textSecondary)
+            }
+            
+            Spacer()
+            
+            VStack(alignment: .trailing, spacing: 2) {
+                HStack(alignment: .bottom, spacing: 2) {
+                    Text("\(current)")
+                        .font(DesignSystem.Typography.headline)
+                        .foregroundStyle(colors.textPrimary)
+                    Text("/ \(goal) \(unit)")
+                        .font(DesignSystem.Typography.caption2)
+                        .foregroundStyle(colors.textTertiary)
+                }
+                Text("\(min(Int(Double(current) / Double(goal) * 100), 100))%")
+                    .font(DesignSystem.Typography.captionBold)
+                    .foregroundStyle(color)
+            }
+        }
     }
 }

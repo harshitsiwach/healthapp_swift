@@ -71,7 +71,30 @@ struct SettingsView: View {
                             }
                         }
                         .buttonStyle(.plain)
-                        
+
+                        // Medical Passport
+                        NavigationLink(destination: MedicalPassportView()) {
+                            GlassCard {
+                                HStack {
+                                    Image(systemName: "heart.text.square.fill")
+                                        .foregroundStyle(colors.neonRed)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("Medical Passport")
+                                            .font(.system(.headline, design: .rounded))
+                                            .fontWeight(.bold)
+                                            .foregroundStyle(colors.textPrimary)
+                                        Text("Your portable health profile & QR code")
+                                            .font(.system(.caption, design: .rounded))
+                                            .foregroundStyle(colors.textSecondary)
+                                    }
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .foregroundStyle(colors.textSecondary)
+                                }
+                            }
+                        }
+                        .buttonStyle(.plain)
+
                         // AI Data Management
                         GlassCard {
                             VStack(alignment: .leading, spacing: 12) {
