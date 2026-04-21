@@ -19,17 +19,20 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
     
     private let appleBackend: AppleFoundationBackend
     private let gemmaBackend: GemmaLocalBackend
+    private let medgemmaBackend: MedGemmaBackend
     private let safetyFilter: HealthSafetyFilter
     private let telemetry: AITelemetry
     
     init(
         appleBackend: AppleFoundationBackend? = nil,
         gemmaBackend: GemmaLocalBackend? = nil,
+        medgemmaBackend: MedGemmaBackend? = nil,
         safetyFilter: HealthSafetyFilter? = nil,
         telemetry: AITelemetry? = nil
     ) {
         self.appleBackend = appleBackend ?? AppleFoundationBackend()
         self.gemmaBackend = gemmaBackend ?? GemmaLocalBackend()
+        self.medgemmaBackend = medgemmaBackend ?? MedGemmaBackend()
         self.safetyFilter = safetyFilter ?? HealthSafetyFilter()
         self.telemetry = telemetry ?? AITelemetry()
     }
@@ -50,10 +53,30 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
                     try? await gemmaBackend.prepare()
                 }
                 return gemmaBackend
+            case .medgemma:
+                if case .degraded = await medgemmaBackend.healthCheck() {
+                    try? await medgemmaBackend.prepare()
+                }
+                return medgemmaBackend
             }
         }
         
-        // Priority 1: Gemma local
+        // Route medical tasks to MedGemma
+        let medicalTasks: [AITask] = [.medicalDocQA, .reportSummary, .healthCaution, .nutritionSummary]
+        if medicalTasks.contains(task) {
+            let medgemmaHealth = await medgemmaBackend.healthCheck()
+            switch medgemmaHealth {
+            case .healthy:
+                return medgemmaBackend
+            case .degraded:
+                try? await medgemmaBackend.prepare()
+                return medgemmaBackend
+            default:
+                break
+            }
+        }
+        
+        // Priority 1: Gemma local for general tasks
         let gemmaHealth = await gemmaBackend.healthCheck()
         switch gemmaHealth {
         case .healthy:

@@ -106,8 +106,9 @@ struct AIChatView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Picker("Model", selection: $viewModel.selectedBackend) {
+                        Text("Gemma (General)").tag(AIBackendID.gemmaLocal)
+                        Text("MedGemma (Medical)").tag(AIBackendID.medgemma)
                         Text("Apple (Local)").tag(AIBackendID.appleFoundation)
-                        Text("Gemma (On-Device)").tag(AIBackendID.gemmaLocal)
                     }
                     .pickerStyle(.menu)
                     .tint(.primary)

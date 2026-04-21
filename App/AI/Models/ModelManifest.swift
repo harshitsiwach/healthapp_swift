@@ -60,6 +60,41 @@ struct ModelManifest: Codable, Identifiable {
         license: "Gemma"
     )
     
+    static let medgemma_4b = ModelManifest(
+        id: "medgemma_4b_q4",
+        displayName: "MedGemma 4B",
+        runtime: "llama_cpp",
+        version: "1.0.0",
+        quantization: "q4_K_M",
+        fileSizeBytes: 2_500_000_000,
+        checksumSHA256: "",
+        supportsVision: false,
+        supportsToolCalling: false,
+        contextWindow: 8192,
+        minIOSVersion: "18.0",
+        downloadURL: "https://huggingface.co/google/medgemma-4b-it-GGUF/resolve/main/medgemma-4b-it-q4_K_M.gguf",
+        license: "Gemma"
+    )
+    
+    static let medgemma_2b = ModelManifest(
+        id: "medgemma_2b_q4",
+        displayName: "MedGemma 2B",
+        runtime: "llama_cpp",
+        version: "1.0.0",
+        quantization: "q4_K_M",
+        fileSizeBytes: 1_500_000_000,
+        checksumSHA256: "",
+        supportsVision: false,
+        supportsToolCalling: false,
+        contextWindow: 8192,
+        minIOSVersion: "18.0",
+        downloadURL: "https://huggingface.co/google/medgemma-2b-it-GGUF/resolve/main/medgemma-2b-it-q4_K_M.gguf",
+        license: "Gemma"
+    )
+    
+    static let allRecommended: [ModelManifest] = [gemma4_default, medgemma_4b, medgemma_2b]
+
+    
 
 }
 

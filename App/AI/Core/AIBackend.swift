@@ -39,6 +39,7 @@ struct AITokenEvent: Sendable {
 enum AIBackendID: String, Codable {
     case appleFoundation = "apple_foundation"
     case gemmaLocal = "gemma_local"
+    case medgemma = "medgemma"
 }
 
 // MARK: - Backend Attribution

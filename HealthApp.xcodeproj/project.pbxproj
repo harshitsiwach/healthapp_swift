@@ -41,6 +41,7 @@
 		84734C52C22EA20C8453D1D8 /* AddIntegrationActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3487A90417601ED2C801882E /* AddIntegrationActionSheet.swift */; };
 		8B26DDA8ECD3543511F8E0DD /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9C8F3791FEE14ED7136594 /* CameraView.swift */; };
 		97FFDB5925D6BE638F37D04F /* GemmaLocalBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27C1F9734FAFA7E969FE0F9 /* GemmaLocalBackend.swift */; };
+		MG22345678901234567890AB /* MedGemmaBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = MG12345678901234567890AB /* MedGemmaBackend.swift */; };
 		8E353C9A6B58A85C2844BA17 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523A181E8564A4C52D75ED76 /* NotificationManager.swift */; };
 		95838D65AA9D76D121886D72 /* AIChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C214C2CAC8B71F134EC3982F /* AIChatViewModel.swift */; };
 		994D179B72EA0B5652BD1E53 /* CircularProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C58F9E3EBDA19424BE2AD3 /* CircularProgressView.swift */; };
@@ -106,6 +107,7 @@
 		1259CABF1CC37F333C4E239C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		1555427F5C06E515DCE156B7 /* AIRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIRequest.swift; sourceTree = "<group>"; };
 		B27C1F9734FAFA7E969FE0F9 /* GemmaLocalBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GemmaLocalBackend.swift; sourceTree = "<group>"; };
+		MG12345678901234567890AB /* MedGemmaBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedGemmaBackend.swift; sourceTree = "<group>"; };
 		1FEE3B9DE303144A628B81F3 /* CalendarRemindersPermissionsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CalendarRemindersPermissionsView.swift; sourceTree = "<group>"; };
 		200F35CC93DBFFB3D69C0DB9 /* PermissionsService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PermissionsService.swift; sourceTree = "<group>"; };
 		60AD8EAB1DCBCE69B9C31459 /* SharedModelContainer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SharedModelContainer.swift; sourceTree = "<group>"; };
@@ -276,6 +278,7 @@
 				2BE64E117D9CC2CA55D381C1 /* AppleFoundationBackend.swift */,
 				52C25A45732EB4CF9D110DCF /* GeminiService.swift */,
 				B27C1F9734FAFA7E969FE0F9 /* GemmaLocalBackend.swift */,
+				MG12345678901234567890AB /* MedGemmaBackend.swift */,
 				EA6060DF97BCC9276983843B /* LlamaCppEngine.swift */,
 			);
 			path = Backends;
@@ -735,6 +738,7 @@
 				2B60B1E639D399E8B11888C1 /* AppleFoundationBackend.swift in Sources */,
 				48709E06B6B14BDFD8DC8C91 /* GeminiService.swift in Sources */,
 				97FFDB5925D6BE638F37D04F /* GemmaLocalBackend.swift in Sources */,
+				MG22345678901234567890AB /* MedGemmaBackend.swift in Sources */,
 				C6313335FF283BA91636749C /* AIBackend.swift in Sources */,
 				FA0657C670F672396CCDFBBE /* AIOrchestrator.swift in Sources */,
 				DC990DFA91C495656FBB0D5B /* AIRequest.swift in Sources */,
