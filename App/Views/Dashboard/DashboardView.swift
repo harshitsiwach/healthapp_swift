@@ -758,8 +758,8 @@ struct DashboardView: View {
                 }
                 .buttonStyle(.scaleButton)
 
-                NavigationLink(destination: WeeklyStatsView()) {
-                    quickActionLabel(icon: "chart.bar.fill", title: "Weekly Stats", color: colors.neonBlue)
+                NavigationLink(destination: MealPlanView()) {
+                    quickActionLabel(icon: "fork.knife.circle", title: "Meal Plans", color: colors.neonGreen)
                 }
                 .buttonStyle(.scaleButton)
             }

@@ -90,6 +90,10 @@
 		D568BCAD957055F5FF9AAB6D /* MedicalPassportEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB6E5DD8E24AEABE6A76A47F /* MedicalPassportEditView.swift */; };
 		E51F92C45C8DA58A14374E32 /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EEA78C58822AE3D21655E8 /* QRCodeView.swift */; };
 		C690C100FF535A7FD758003F /* VaccinationTrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD37E41417196D8D418D2B6 /* VaccinationTrackerView.swift */; };
+		D2E3F4A5B6C7D8E9F0A1B2C3 /* UserMealPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B6C7D8E9F0A1B2 /* UserMealPreferences.swift */; };
+		F4A5B6C7D8E9F0A1B2C3D4E5 /* MealPlanEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F4A5B6C7D8E9F0A1B2C3D4 /* MealPlanEngine.swift */; };
+		B6C7D8E9F0A1B2C3D4E5F6A7 /* MealPlanSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B6C7D8E9F0A1B2C3D4E5F6 /* MealPlanSetupView.swift */; };
+		D8E9F0A1B2C3D4E5F6A7B8C9 /* MealPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D8E9F0A1B2C3D4E5F6A7B8 /* MealPlanView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -205,6 +209,10 @@
 		CB6E5DD8E24AEABE6A76A47F /* MedicalPassportEditView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MedicalPassportEditView.swift; sourceTree = "<group>"; };
 		66EEA78C58822AE3D21655E8 /* QRCodeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
 		DCD37E41417196D8D418D2B6 /* VaccinationTrackerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaccinationTrackerView.swift; sourceTree = "<group>"; };
+		C1D2E3F4A5B6C7D8E9F0A1B2 /* UserMealPreferences.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserMealPreferences.swift; sourceTree = "<group>"; };
+		E3F4A5B6C7D8E9F0A1B2C3D4 /* MealPlanEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MealPlanEngine.swift; sourceTree = "<group>"; };
+		A5B6C7D8E9F0A1B2C3D4E5F6 /* MealPlanSetupView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MealPlanSetupView.swift; sourceTree = "<group>"; };
+		C7D8E9F0A1B2C3D4E5F6A7B8 /* MealPlanView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MealPlanView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -402,16 +410,17 @@
 		sourceTree = "<group>";
 	};
 	850AC29570F7158B78F6156E /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				A0056960BC6D86AC627BA7BE /* DailyLog.swift */,
-				49B33A9A3364944C244DAD77 /* HealthCalculations.swift */,
-				C150B888F77C0F120F197164 /* UserProfile.swift */,
-				B5F6B8336FEC0A7B62DF3865 /* MedicalPassport.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
+		isa = PBXGroup;
+		children = (
+			A0056960BC6D86AC627BA7BE /* DailyLog.swift */,
+			49B33A9A3364944C244DAD77 /* HealthCalculations.swift */,
+			C150B888F77C0F120F197164 /* UserProfile.swift */,
+			B5F6B8336FEC0A7B62DF3865 /* MedicalPassport.swift */,
+			C1D2E3F4A5B6C7D8E9F0A1B2 /* UserMealPreferences.swift */,
+		);
+		path = Models;
+		sourceTree = "<group>";
+	};
 		86CB596F4262675AD8C726B7 /* Calendar */ = {
 			isa = PBXGroup;
 			children = (
@@ -442,28 +451,29 @@
 			path = WeeklyStats;
 			sourceTree = "<group>";
 		};
-	92C3A2C241F145AEB8B89346 /* Views */ = {
-		isa = PBXGroup;
-		children = (
-			75E2236807CF57ACF2D8F2D7 /* Camera */,
-			0B3493FE385DC31291ABAAF3 /* Components */,
-			C588C78D810FF4D0D916658A /* Dashboard */,
-			B0D39DD0B11DEB4145E9BC2E /* Health */,
-			75EF2F6A03B5E71C8AF32965 /* MealIdeas */,
-			FBAAECCE416325889B5BF04F /* Onboarding */,
-			F44EF5064F66ABF588531F63 /* Progress */,
-			6C61E0122A38CE9EF646CDAB /* Settings */,
-			8F246FFF1F3CB10FE35BB2CD /* WeeklyStats */,
-			3E9DFD313A7F764405F76048 /* Chat */,
-			5B6B820C1BFA01A325D5C7BE /* Home */,
-			A24D42FF9860D6FE3888247A /* Nutrition */,
-			E559EE20446E7C35DCFC1822 /* MedicalReports */,
-			AA11BB22CC33DD44EE55FF66 /* MedicalPassport */,
-			A0A3CC5D56FA5ED979E5B6A3 /* HuggingFaceModelBrowser.swift */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
+92C3A2C241F145AEB8B89346 /* Views */ = {
+	isa = PBXGroup;
+	children = (
+		75E2236807CF57ACF2D8F2D7 /* Camera */,
+		0B3493FE385DC31291ABAAF3 /* Components */,
+		C588C78D810FF4D0D916658A /* Dashboard */,
+		B0D39DD0B11DEB4145E9BC2E /* Health */,
+		75EF2F6A03B5E71C8AF32965 /* MealIdeas */,
+		FBAAECCE416325889B5BF04F /* Onboarding */,
+		F44EF5064F66ABF588531F63 /* Progress */,
+		6C61E0122A38CE9EF646CDAB /* Settings */,
+		8F246FFF1F3CB10FE35BB2CD /* WeeklyStats */,
+		3E9DFD313A7F764405F76048 /* Chat */,
+		5B6B820C1BFA01A325D5C7BE /* Home */,
+		A24D42FF9860D6FE3888247A /* Nutrition */,
+		E559EE20446E7C35DCFC1822 /* MedicalReports */,
+		AA11BB22CC33DD44EE55FF66 /* MedicalPassport */,
+		MP56789012345678901234567 /* MealPlans */,
+		A0A3CC5D56FA5ED979E5B6A3 /* HuggingFaceModelBrowser.swift */,
+	);
+	path = Views;
+	sourceTree = "<group>";
+};
 		A24D42FF9860D6FE3888247A /* Nutrition */ = {
 			isa = PBXGroup;
 			children = (
@@ -571,14 +581,15 @@
 			path = Core;
 			sourceTree = "<group>";
 		};
-		EA46F9385196E7474A0AAA9D /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				523A181E8564A4C52D75ED76 /* NotificationManager.swift */,
-			);
-			path = Services;
-			sourceTree = "<group>";
-		};
+	EA46F9385196E7474A0AAA9D /* Services */ = {
+		isa = PBXGroup;
+		children = (
+			523A181E8564A4C52D75ED76 /* NotificationManager.swift */,
+			E3F4A5B6C7D8E9F0A1B2C3D4 /* MealPlanEngine.swift */,
+		);
+		path = Services;
+		sourceTree = "<group>";
+	};
 		ED3FD1B836108BC524CF5C36 /* Retrieval */ = {
 			isa = PBXGroup;
 			children = (
@@ -641,6 +652,16 @@
 		);
 		name = MedicalPassport;
 		path = MedicalPassport;
+		sourceTree = "<group>";
+	};
+	MP56789012345678901234567 /* MealPlans */ = {
+		isa = PBXGroup;
+		children = (
+			A5B6C7D8E9F0A1B2C3D4E5F6 /* MealPlanSetupView.swift */,
+			C7D8E9F0A1B2C3D4E5F6A7B8 /* MealPlanView.swift */,
+		);
+		name = MealPlans;
+		path = MealPlans;
 		sourceTree = "<group>";
 	};
 /* End PBXGroup section */
@@ -788,6 +809,10 @@
 			D568BCAD957055F5FF9AAB6D /* MedicalPassportEditView.swift in Sources */,
 			E51F92C45C8DA58A14374E32 /* QRCodeView.swift in Sources */,
 			C690C100FF535A7FD758003F /* VaccinationTrackerView.swift in Sources */,
+			D2E3F4A5B6C7D8E9F0A1B2C3 /* UserMealPreferences.swift in Sources */,
+			F4A5B6C7D8E9F0A1B2C3D4E5 /* MealPlanEngine.swift in Sources */,
+			B6C7D8E9F0A1B2C3D4E5F6A7 /* MealPlanSetupView.swift in Sources */,
+			D8E9F0A1B2C3D4E5F6A7B8C9 /* MealPlanView.swift in Sources */,
 			8158DDA0159805AE7FCBCF79 /* NativeCalendarEventView.swift in Sources */,
 				84734C52C22EA20C8453D1D8 /* AddIntegrationActionSheet.swift in Sources */,
 				58CDAC2CAE44778BB1616DF9 /* NotificationService.swift in Sources */,
