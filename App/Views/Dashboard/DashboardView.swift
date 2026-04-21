@@ -28,6 +28,7 @@ struct DashboardView: View {
     @AppStorage("hydration_date") private var hydrationDate: String = ""
     
     // Simulated health data
+    @State private var heartRateTimer: Timer?
     @State private var heartRate = 72
     @State private var pulseData: [Double] = [68, 70, 72, 69, 71, 73, 70, 68, 72, 74, 71, 69, 73, 72, 70, 71, 73, 72, 70, 68]
     
@@ -249,13 +250,17 @@ struct DashboardView: View {
                 withAnimation(DesignSystem.Anim.spring.delay(0.1)) {
                     animateOnAppear = true
                 }
-                Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
+                heartRateTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
                     withAnimation(.smooth) {
                         heartRate = Int.random(in: 65...85)
                         pulseData.removeFirst()
                         pulseData.append(Double(heartRate) + Double.random(in: -5...5))
                     }
                 }
+            }
+            .onDisappear {
+                heartRateTimer?.invalidate()
+                heartRateTimer = nil
             }
         }
     }

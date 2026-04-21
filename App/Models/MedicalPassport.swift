@@ -5,7 +5,7 @@ import SwiftData
 
 @Model
 final class MedicalPassport {
-    var id: UUID
+    @Attribute(.unique) var id: UUID
     var createdAt: Date
     var updatedAt: Date
     

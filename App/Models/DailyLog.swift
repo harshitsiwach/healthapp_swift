@@ -3,7 +3,7 @@ import SwiftData
 
 @Model
 final class DailyLog {
-    var id: UUID
+    @Attribute(.unique) var id: UUID
     var date: String // YYYY-MM-DD
     var foodName: String?
     var estimatedCalories: Int
