@@ -758,13 +758,25 @@ struct DashboardView: View {
     private var quickActionsRow: some View {
         VStack(spacing: DesignSystem.Spacing.sm) {
             HStack(spacing: DesignSystem.Spacing.sm) {
-                NavigationLink(destination: MedicalReportScannerView()) {
-                    quickActionLabel(icon: "doc.text.viewfinder", title: "Scan Report", color: colors.neonPurple)
+                NavigationLink(destination: MealPlanView()) {
+                    quickActionLabel(icon: "fork.knife.circle", title: "Meal Plans", color: colors.neonGreen)
                 }
                 .buttonStyle(.scaleButton)
 
-                NavigationLink(destination: MealPlanView()) {
-                    quickActionLabel(icon: "fork.knife.circle", title: "Meal Plans", color: colors.neonGreen)
+                NavigationLink(destination: GroceryListView()) {
+                    quickActionLabel(icon: "cart.fill", title: "Grocery List", color: colors.neonOrange)
+                }
+                .buttonStyle(.scaleButton)
+            }
+            
+            HStack(spacing: DesignSystem.Spacing.sm) {
+                NavigationLink(destination: FastingTrackerView()) {
+                    quickActionLabel(icon: "timer", title: "Fasting", color: colors.neonPurple)
+                }
+                .buttonStyle(.scaleButton)
+                
+                NavigationLink(destination: BodyMeasurementsView()) {
+                    quickActionLabel(icon: "figure", title: "Body Stats", color: colors.neonBlue)
                 }
                 .buttonStyle(.scaleButton)
             }
@@ -772,17 +784,14 @@ struct DashboardView: View {
             HStack(spacing: DesignSystem.Spacing.sm) {
                 Button {
                     Haptic.impact(.light)
-                    showingModelBrowser = true
-                } label: {
-                    quickActionLabel(icon: "arrow.down.circle.dotted", title: "Browse AI Models", color: colors.neonPurple)
-                }
-                .buttonStyle(.scaleButton)
-                
-                Button {
-                    Haptic.impact(.light)
                     showingMedicalPassport = true
                 } label: {
                     quickActionLabel(icon: "heart.text.square.fill", title: "Medical Passport", color: colors.neonRed)
+                }
+                .buttonStyle(.scaleButton)
+                
+                NavigationLink(destination: WaterReminderView()) {
+                    quickActionLabel(icon: "drop.fill", title: "Water Reminder", color: colors.neonBlue)
                 }
                 .buttonStyle(.scaleButton)
             }

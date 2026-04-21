@@ -95,6 +95,10 @@
 		F4A5B6C7D8E9F0A1B2C3D4E5 /* MealPlanEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F4A5B6C7D8E9F0A1B2C3D4 /* MealPlanEngine.swift */; };
 		B6C7D8E9F0A1B2C3D4E5F6A7 /* MealPlanSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B6C7D8E9F0A1B2C3D4E5F6 /* MealPlanSetupView.swift */; };
 		D8E9F0A1B2C3D4E5F6A7B8C9 /* MealPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D8E9F0A1B2C3D4E5F6A7B8 /* MealPlanView.swift */; };
+		FT2222222222222222222222 /* FastingTrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FT1111111111111111111111 /* FastingTrackerView.swift */; };
+		BM2222222222222222222222 /* BodyMeasurementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BM1111111111111111111111 /* BodyMeasurementsView.swift */; };
+		RM2222222222222222222222 /* RemindersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = RM1111111111111111111111 /* RemindersView.swift */; };
+		GL2222222222222222222222 /* GroceryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = GL1111111111111111111111 /* GroceryListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -215,6 +219,10 @@
 		E3F4A5B6C7D8E9F0A1B2C3D4 /* MealPlanEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MealPlanEngine.swift; sourceTree = "<group>"; };
 		A5B6C7D8E9F0A1B2C3D4E5F6 /* MealPlanSetupView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MealPlanSetupView.swift; sourceTree = "<group>"; };
 		C7D8E9F0A1B2C3D4E5F6A7B8 /* MealPlanView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MealPlanView.swift; sourceTree = "<group>"; };
+		FT1111111111111111111111 /* FastingTrackerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FastingTrackerView.swift; sourceTree = "<group>"; };
+		BM1111111111111111111111 /* BodyMeasurementsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BodyMeasurementsView.swift; sourceTree = "<group>"; };
+		RM1111111111111111111111 /* RemindersView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RemindersView.swift; sourceTree = "<group>"; };
+		GL1111111111111111111111 /* GroceryListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GroceryListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -513,6 +521,9 @@
 				CCCAB383EE86840B0633787F /* AppleHealthTabView.swift */,
 				D56262BA86337B04C186E507 /* HealthContainerView.swift */,
 				EF587C7FCA315D31841F6D51 /* HRVStressSheet.swift */,
+				FT1111111111111111111111 /* FastingTrackerView.swift */,
+				BM1111111111111111111111 /* BodyMeasurementsView.swift */,
+				RM1111111111111111111111 /* RemindersView.swift */,
 			);
 			path = Health;
 			sourceTree = "<group>";
@@ -662,6 +673,7 @@
 		children = (
 			A5B6C7D8E9F0A1B2C3D4E5F6 /* MealPlanSetupView.swift */,
 			C7D8E9F0A1B2C3D4E5F6A7B8 /* MealPlanView.swift */,
+			GL1111111111111111111111 /* GroceryListView.swift */,
 		);
 		name = MealPlans;
 		path = MealPlans;
@@ -823,6 +835,10 @@
 				14E13F8BFE98A8CF41E79A1C /* ReminderService.swift in Sources */,
 				B3BB565415A9A87B93A71D0F /* AppLogo.swift in Sources */,
 				C9C2554DDA341D5E1C5DBA08 /* HealthContainerView.swift in Sources */,
+				FT2222222222222222222222 /* FastingTrackerView.swift in Sources */,
+				BM2222222222222222222222 /* BodyMeasurementsView.swift in Sources */,
+				RM2222222222222222222222 /* RemindersView.swift in Sources */,
+				GL2222222222222222222222 /* GroceryListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
