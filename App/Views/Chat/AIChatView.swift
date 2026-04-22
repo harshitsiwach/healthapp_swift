@@ -113,6 +113,14 @@ struct AIChatView: View {
                     .pickerStyle(.menu)
                     .tint(.primary)
                 }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        isInputFocused = false
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(colors.neonBlue)
+                }
             }
         }
     }

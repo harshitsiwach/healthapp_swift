@@ -7,7 +7,10 @@ final class ModelStore: ObservableObject {
     @Published var installState: ModelInstallState = .notInstalled
     @Published var downloadProgress: Double = 0
     @Published var installedManifest: ModelManifest?
-    @Published var availableModels: [ModelManifest] = [ModelManifest.gemma4_default]
+    @Published var availableModels: [ModelManifest] = [
+        ModelManifest.gemma4_default,
+        ModelManifest.medgemma_4b
+    ]
     
     private let fileManager = FileManager.default
     
@@ -23,19 +26,24 @@ final class ModelStore: ObservableObject {
     }
     
     func checkInstalledModel() {
-        let modelDir = modelsDirectory.appendingPathComponent(ModelManifest.gemma4_default.id)
-        let modelFile = modelDir.appendingPathComponent("model.bin")
-        let manifestFile = modelDir.appendingPathComponent("manifest.json")
-        
-        if fileManager.fileExists(atPath: modelFile.path) && fileManager.fileExists(atPath: manifestFile.path) {
-            if let data = try? Data(contentsOf: manifestFile),
-               let manifest = try? JSONDecoder().decode(ModelManifest.self, from: data) {
-                installedManifest = manifest
-                installState = .ready
+        // Check each known model in the catalog
+        for manifest in availableModels {
+            let modelDir = modelsDirectory.appendingPathComponent(manifest.id)
+            let modelFile = modelDir.appendingPathComponent("model.bin")
+            let manifestFile = modelDir.appendingPathComponent("manifest.json")
+            
+            if fileManager.fileExists(atPath: modelFile.path) && fileManager.fileExists(atPath: manifestFile.path) {
+                if let data = try? Data(contentsOf: manifestFile),
+                   let loaded = try? JSONDecoder().decode(ModelManifest.self, from: data) {
+                    installedManifest = loaded
+                    installState = .ready
+                    return  // Found first installed model
+                }
             }
-        } else {
-            installState = .notInstalled
         }
+        // No installed model found
+        installedManifest = nil
+        installState = .notInstalled
     }
     
     func deleteModel(_ manifest: ModelManifest) {
