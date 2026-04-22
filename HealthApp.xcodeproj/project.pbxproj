@@ -101,6 +101,7 @@
 		GL2222222222222222222222 /* GroceryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = GL1111111111111111111111 /* GroceryListView.swift */; };
 		BC2222222222222222222222 /* BarcodeScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1111111111111111111111 /* BarcodeScannerView.swift */; };
 		WR2222222222222222222222 /* WeeklyReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = WR1111111111111111111111 /* WeeklyReportView.swift */; };
+		MB9999999999999999999999 /* MealPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MP9999999999999999999999 /* MealPhotoView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -227,6 +228,7 @@
 		GL1111111111111111111111 /* GroceryListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GroceryListView.swift; sourceTree = "<group>"; };
 		BC1111111111111111111111 /* BarcodeScannerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BarcodeScannerView.swift; sourceTree = "<group>"; };
 		WR1111111111111111111111 /* WeeklyReportView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WeeklyReportView.swift; sourceTree = "<group>"; };
+		MP9999999999999999999999 /* MealPhotoView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MealPhotoView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -380,6 +382,7 @@
 				EE9C8F3791FEE14ED7136594 /* CameraView.swift */,
 				B7678CD4482FC52BAF2B001C /* FoodLoggingSheet.swift */,
 				BC1111111111111111111111 /* BarcodeScannerView.swift */,
+				MP9999999999999999999999 /* MealPhotoView.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -846,6 +849,7 @@
 				RM2222222222222222222222 /* RemindersView.swift in Sources */,
 				GL2222222222222222222222 /* GroceryListView.swift in Sources */,
 				BC2222222222222222222222 /* BarcodeScannerView.swift in Sources */,
+				MB9999999999999999999999 /* MealPhotoView.swift in Sources */,
 				WR2222222222222222222222 /* WeeklyReportView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

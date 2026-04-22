@@ -787,8 +787,8 @@ struct DashboardView: View {
                 }
                 .buttonStyle(.scaleButton)
                 
-                NavigationLink(destination: WeeklyReportView()) {
-                    quickActionLabel(icon: "doc.text.fill", title: "Weekly Report", color: colors.neonBlue)
+                NavigationLink(destination: MealPhotoView()) {
+                    quickActionLabel(icon: "camera.macro", title: "AI Meal Photo", color: colors.neonPurple)
                 }
                 .buttonStyle(.scaleButton)
             }
