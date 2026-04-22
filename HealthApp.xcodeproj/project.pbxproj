@@ -99,6 +99,8 @@
 		BM2222222222222222222222 /* BodyMeasurementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BM1111111111111111111111 /* BodyMeasurementsView.swift */; };
 		RM2222222222222222222222 /* RemindersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = RM1111111111111111111111 /* RemindersView.swift */; };
 		GL2222222222222222222222 /* GroceryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = GL1111111111111111111111 /* GroceryListView.swift */; };
+		BC2222222222222222222222 /* BarcodeScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1111111111111111111111 /* BarcodeScannerView.swift */; };
+		WR2222222222222222222222 /* WeeklyReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = WR1111111111111111111111 /* WeeklyReportView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -223,6 +225,8 @@
 		BM1111111111111111111111 /* BodyMeasurementsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BodyMeasurementsView.swift; sourceTree = "<group>"; };
 		RM1111111111111111111111 /* RemindersView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RemindersView.swift; sourceTree = "<group>"; };
 		GL1111111111111111111111 /* GroceryListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GroceryListView.swift; sourceTree = "<group>"; };
+		BC1111111111111111111111 /* BarcodeScannerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BarcodeScannerView.swift; sourceTree = "<group>"; };
+		WR1111111111111111111111 /* WeeklyReportView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WeeklyReportView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -375,6 +379,7 @@
 			children = (
 				EE9C8F3791FEE14ED7136594 /* CameraView.swift */,
 				B7678CD4482FC52BAF2B001C /* FoodLoggingSheet.swift */,
+				BC1111111111111111111111 /* BarcodeScannerView.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -458,6 +463,7 @@
 			isa = PBXGroup;
 			children = (
 				6E7EAF020E0BA41356D50708 /* WeeklyStatsView.swift */,
+				WR1111111111111111111111 /* WeeklyReportView.swift */,
 			);
 			path = WeeklyStats;
 			sourceTree = "<group>";
@@ -839,6 +845,8 @@
 				BM2222222222222222222222 /* BodyMeasurementsView.swift in Sources */,
 				RM2222222222222222222222 /* RemindersView.swift in Sources */,
 				GL2222222222222222222222 /* GroceryListView.swift in Sources */,
+				BC2222222222222222222222 /* BarcodeScannerView.swift in Sources */,
+				WR2222222222222222222222 /* WeeklyReportView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

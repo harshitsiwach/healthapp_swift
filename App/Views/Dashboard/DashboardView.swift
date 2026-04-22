@@ -782,6 +782,18 @@ struct DashboardView: View {
             }
             
             HStack(spacing: DesignSystem.Spacing.sm) {
+                NavigationLink(destination: BarcodeScannerView()) {
+                    quickActionLabel(icon: "barcode.viewfinder", title: "Scan Barcode", color: colors.neonGreen)
+                }
+                .buttonStyle(.scaleButton)
+                
+                NavigationLink(destination: WeeklyReportView()) {
+                    quickActionLabel(icon: "doc.text.fill", title: "Weekly Report", color: colors.neonBlue)
+                }
+                .buttonStyle(.scaleButton)
+            }
+            
+            HStack(spacing: DesignSystem.Spacing.sm) {
                 Button {
                     Haptic.impact(.light)
                     showingMedicalPassport = true
