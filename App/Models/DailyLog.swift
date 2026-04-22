@@ -15,7 +15,7 @@ final class DailyLog {
     
     // Health metrics
     var steps: Int?
-    var sleepHours: Int?
+    var sleepHours: Double?
     var sleepMinutes: Int?
     var heartRate: Int?
     var waterML: Int?
@@ -32,7 +32,7 @@ final class DailyLog {
         goalCompleted: Int? = nil,
         imageUri: String? = nil,
         steps: Int? = nil,
-        sleepHours: Int? = nil,
+        sleepHours: Double? = nil,
         sleepMinutes: Int? = nil,
         heartRate: Int? = nil,
         waterML: Int? = nil,

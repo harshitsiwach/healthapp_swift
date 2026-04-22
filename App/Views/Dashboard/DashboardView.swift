@@ -85,7 +85,7 @@ struct DashboardView: View {
         todayLog?.steps ?? 0
     }
     
-    private var loggedSleepHours: Int {
+    private var loggedSleepHours: Double {
         todayLog?.sleepHours ?? 0
     }
     
@@ -207,7 +207,7 @@ struct DashboardView: View {
             }
             .sheet(isPresented: $showingSleepSheet) {
                 SleepLoggingSheet(
-                    hours: loggedSleepHours,
+                    hours: Int(loggedSleepHours),
                     minutes: loggedSleepMinutes,
                     colors: colors
                 ) { hours, minutes in
@@ -429,7 +429,7 @@ struct DashboardView: View {
                 
                 // Sleep quality bars (animated from data)
                 HStack(spacing: 3) {
-                    let totalMinutes = loggedSleepHours * 60 + loggedSleepMinutes
+                    let totalMinutes = Int(loggedSleepHours * 60) + loggedSleepMinutes
                     let qualityBars = min(8, max(1, totalMinutes / 60))
                     ForEach(0..<8, id: \.self) { i in
                         RoundedRectangle(cornerRadius: 2)
@@ -782,6 +782,11 @@ struct DashboardView: View {
             }
             
             HStack(spacing: DesignSystem.Spacing.sm) {
+                NavigationLink(destination: HealthSyncView()) {
+                    quickActionLabel(icon: "heart.ring.fill", title: "Health Sync", color: colors.neonRed)
+                }
+                .buttonStyle(.scaleButton)
+                
                 NavigationLink(destination: BarcodeScannerView()) {
                     quickActionLabel(icon: "barcode.viewfinder", title: "Scan Barcode", color: colors.neonGreen)
                 }
@@ -926,10 +931,10 @@ struct DashboardView: View {
     
     private func saveSleep(hours: Int, minutes: Int) {
         if let log = todayLog {
-            log.sleepHours = hours
+            log.sleepHours = Double(hours) + Double(minutes) / 60.0
             log.sleepMinutes = minutes
         } else {
-            let log = DailyLog(date: selectedDateString, sleepHours: hours, sleepMinutes: minutes)
+            let log = DailyLog(date: selectedDateString, sleepHours: Double(hours) + Double(minutes) / 60.0, sleepMinutes: minutes)
             modelContext.insert(log)
         }
         try? modelContext.save()
