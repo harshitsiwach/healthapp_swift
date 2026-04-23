@@ -92,6 +92,12 @@ dependencies {
     implementation("com.patrykandpatrick.vico:compose:2.0.0-alpha.15")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
+    // TensorFlow Lite for local AI
+    implementation("org.tensorflow:tensorflow-lite:2.14.0")
+    implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
+    implementation("org.tensorflow:tensorflow-lite-gpu:2.14.0")
+    implementation("org.tensorflow:tensorflow-lite-task-text:0.4.4")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

@@ -58,6 +58,7 @@ import com.aihealthappoffline.android.ui.screens.MealPlannerScreen
 import com.aihealthappoffline.android.ui.screens.SettingsScreen
 import com.aihealthappoffline.android.ui.screens.SleepScreen
 import com.aihealthappoffline.android.ui.screens.WeightScreen
+import com.aihealthappoffline.android.ui.screens.AIModelScreen
 import com.aihealthappoffline.android.ui.screens.onboarding.OnboardingScreen
 import com.aihealthappoffline.android.ui.theme.HealthAppTheme
 import com.aihealthappoffline.android.viewmodels.DashboardViewModel
@@ -209,10 +210,15 @@ fun MainApp(navController: NavHostController, sharedViewModel: DashboardViewMode
             }
             composable(Screen.FoodLog.route) { FoodLogScreen() }
             composable(Screen.Chat.route) { ChatScreen() }
-            composable(Screen.Settings.route) { SettingsScreen() }
+            composable(Screen.Settings.route) { 
+                SettingsScreen(
+                    onNavigateToAIModels = { navController.navigate("aimodels") }
+                ) 
+            }
             composable("weight") { WeightScreen() }
             composable("sleep") { SleepScreen() }
             composable("mealplanner") { MealPlannerScreen() }
+            composable("aimodels") { AIModelScreen() }
         }
     }
 }

@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -35,7 +36,10 @@ import com.aihealthappoffline.android.ui.theme.NeonGreen
 import com.aihealthappoffline.android.viewmodels.SettingsViewModel
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel = viewModel()) {
+fun SettingsScreen(
+    viewModel: SettingsViewModel = viewModel(),
+    onNavigateToAIModels: (() -> Unit)? = null
+) {
     val profile by viewModel.profile.collectAsState()
     val isPrivacyMode by viewModel.privacyMode.collectAsState()
 
@@ -114,6 +118,16 @@ fun SettingsScreen(viewModel: SettingsViewModel = viewModel()) {
             title = "Edit Profile",
             subtitle = "Update your health data",
             onClick = { }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // AI Models
+        SettingsItem(
+            icon = Icons.Filled.Psychology,
+            title = "AI Models",
+            subtitle = "Download local AI models",
+            onClick = { onNavigateToAIModels?.invoke() }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
