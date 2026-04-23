@@ -14,7 +14,9 @@ class SettingsViewModel(
     private val repository: HealthRepository = HealthRepository(
         HealthAppApplication.database.userProfileDao(),
         HealthAppApplication.database.dailyLogDao(),
-        HealthAppApplication.database.indianFoodDao()
+        HealthAppApplication.database.indianFoodDao(),
+        HealthAppApplication.database.weightDao(),
+        HealthAppApplication.database.sleepDao()
     )
 ) : ViewModel() {
 
