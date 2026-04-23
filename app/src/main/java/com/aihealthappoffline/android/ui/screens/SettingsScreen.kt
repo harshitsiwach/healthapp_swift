@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Psychology
@@ -122,12 +123,21 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // AI Models
+        // Family & Period
         SettingsItem(
-            icon = Icons.Filled.Psychology,
-            title = "AI Models",
-            subtitle = "Download local AI models",
+            icon = Icons.Filled.Person,
+            title = "Family Profiles",
+            subtitle = "Track family members health",
             onClick = { onNavigateToAIModels?.invoke() }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SettingsItem(
+            icon = Icons.Filled.Favorite,
+            title = "Period Tracking",
+            subtitle = "Track menstrual cycles",
+            onClick = { }
         )
 
         Spacer(modifier = Modifier.height(24.dp))

@@ -53,12 +53,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.aihealthappoffline.android.ui.screens.ChatScreen
 import com.aihealthappoffline.android.ui.screens.DashboardScreen
+import com.aihealthappoffline.android.ui.screens.FamilyProfilesScreen
 import com.aihealthappoffline.android.ui.screens.FoodLogScreen
 import com.aihealthappoffline.android.ui.screens.MealPlannerScreen
+import com.aihealthappoffline.android.ui.screens.PeriodTrackingScreen
 import com.aihealthappoffline.android.ui.screens.SettingsScreen
 import com.aihealthappoffline.android.ui.screens.SleepScreen
 import com.aihealthappoffline.android.ui.screens.WeightScreen
-import com.aihealthappoffline.android.ui.screens.AIModelScreen
 import com.aihealthappoffline.android.ui.screens.onboarding.OnboardingScreen
 import com.aihealthappoffline.android.ui.theme.HealthAppTheme
 import com.aihealthappoffline.android.viewmodels.DashboardViewModel
@@ -212,13 +213,14 @@ fun MainApp(navController: NavHostController, sharedViewModel: DashboardViewMode
             composable(Screen.Chat.route) { ChatScreen() }
             composable(Screen.Settings.route) { 
                 SettingsScreen(
-                    onNavigateToAIModels = { navController.navigate("aimodels") }
+                    onNavigateToAIModels = { navController.navigate("family") }
                 ) 
             }
             composable("weight") { WeightScreen() }
             composable("sleep") { SleepScreen() }
             composable("mealplanner") { MealPlannerScreen() }
-            composable("aimodels") { AIModelScreen() }
+            composable("family") { FamilyProfilesScreen() }
+            composable("period") { PeriodTrackingScreen() }
         }
     }
 }
