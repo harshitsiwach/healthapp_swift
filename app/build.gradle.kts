@@ -86,11 +86,17 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
     implementation("androidx.camera:camera-view:$cameraxVersion")
 
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("com.patrykandpatrick.vico:compose:2.0.0-alpha.15")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+    // Android Glance for widgets (disabled for now)
+    // implementation("androidx.glance:glance-appwidget:1.0.0")
+    // implementation("androidx.glance:glance-material3:1.0.0")
 
     // TensorFlow Lite for local AI
     implementation("org.tensorflow:tensorflow-lite:2.14.0")
