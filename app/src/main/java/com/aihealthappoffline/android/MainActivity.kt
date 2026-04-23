@@ -59,6 +59,7 @@ import com.aihealthappoffline.android.ui.screens.MealPlannerScreen
 import com.aihealthappoffline.android.ui.screens.PeriodTrackingScreen
 import com.aihealthappoffline.android.ui.screens.SettingsScreen
 import com.aihealthappoffline.android.ui.screens.SleepScreen
+import com.aihealthappoffline.android.ui.screens.SyncSettingsScreen
 import com.aihealthappoffline.android.ui.screens.WeightScreen
 import com.aihealthappoffline.android.ui.screens.onboarding.OnboardingScreen
 import com.aihealthappoffline.android.ui.theme.HealthAppTheme
@@ -213,7 +214,8 @@ fun MainApp(navController: NavHostController, sharedViewModel: DashboardViewMode
             composable(Screen.Chat.route) { ChatScreen() }
             composable(Screen.Settings.route) { 
                 SettingsScreen(
-                    onNavigateToAIModels = { navController.navigate("family") }
+                    onNavigateToAIModels = { navController.navigate("family") },
+                    onNavigateToSync = { navController.navigate("sync") }
                 ) 
             }
             composable("weight") { WeightScreen() }
@@ -221,6 +223,7 @@ fun MainApp(navController: NavHostController, sharedViewModel: DashboardViewMode
             composable("mealplanner") { MealPlannerScreen() }
             composable("family") { FamilyProfilesScreen() }
             composable("period") { PeriodTrackingScreen() }
+            composable("sync") { SyncSettingsScreen() }
         }
     }
 }

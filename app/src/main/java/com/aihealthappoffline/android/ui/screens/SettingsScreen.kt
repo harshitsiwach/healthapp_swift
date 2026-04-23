@@ -39,7 +39,8 @@ import com.aihealthappoffline.android.viewmodels.SettingsViewModel
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel = viewModel(),
-    onNavigateToAIModels: (() -> Unit)? = null
+    onNavigateToAIModels: (() -> Unit)? = null,
+    onNavigateToSync: (() -> Unit)? = null
 ) {
     val profile by viewModel.profile.collectAsState()
     val isPrivacyMode by viewModel.privacyMode.collectAsState()
@@ -123,12 +124,11 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Family & Period
         SettingsItem(
             icon = Icons.Filled.Person,
             title = "Family Profiles",
             subtitle = "Track family members health",
-            onClick = { onNavigateToAIModels?.invoke() }
+            onClick = { }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -138,6 +138,16 @@ fun SettingsScreen(
             title = "Period Tracking",
             subtitle = "Track menstrual cycles",
             onClick = { }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Sync
+        SettingsItem(
+            icon = Icons.Filled.CloudOff,
+            title = "Sync & Connect",
+            subtitle = "Connect calendar, reminders",
+            onClick = { onNavigateToSync?.invoke() }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
