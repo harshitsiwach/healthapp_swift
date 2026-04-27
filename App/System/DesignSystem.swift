@@ -141,16 +141,33 @@ struct ThemedGlassCard: ViewModifier {
     var padding: CGFloat = DesignSystem.Spacing.md
     
     func body(content: Content) -> some View {
-        content
-            .padding(padding)
-            .background(
-                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large, style: .continuous)
-                    .fill(colors.backgroundCard)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large, style: .continuous)
-                            .strokeBorder(colors.cardBorder, lineWidth: 1)
-                    )
-            )
+        if #available(iOS 26, *) {
+            content
+                .padding(padding)
+                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large, style: .continuous))
+        } else if #available(iOS 18, *) {
+            content
+                .padding(padding)
+                .background(
+                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large, style: .continuous)
+                        .fill(.regularMaterial)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large, style: .continuous)
+                                .strokeBorder(colors.cardBorder, lineWidth: 1)
+                        )
+                )
+        } else {
+            content
+                .padding(padding)
+                .background(
+                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large, style: .continuous)
+                        .fill(colors.backgroundCard)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large, style: .continuous)
+                                .strokeBorder(colors.cardBorder, lineWidth: 1)
+                        )
+                )
+        }
     }
 }
 

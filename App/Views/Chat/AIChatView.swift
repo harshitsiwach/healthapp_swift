@@ -33,6 +33,10 @@ struct AIChatView: View {
                     // Input Area
                     VStack(spacing: 8) {
                         if viewModel.isGenerating {
+                            TypingIndicatorView(color: colors.neonBlue)
+                                .frame(height: 30)
+                                .padding(.vertical, 4)
+                            
                             Button(action: {
                                 viewModel.stopGenerating()
                             }) {
@@ -189,5 +193,30 @@ struct MessageBubbleOverlay: View {
     var body: some View {
         RoundedRectangle(cornerRadius: 20)
             .stroke(isUser ? Color.white.opacity(0.2) : Color.white.opacity(0.3), lineWidth: 0.5)
+    }
+}
+
+struct TypingIndicatorView: View {
+    let color: Color
+    @State private var animationOffset: CGFloat = 0
+    
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<3, id: \.self) { index in
+                Circle()
+                    .fill(color)
+                    .frame(width: 8, height: 8)
+                    .scaleEffect(animationOffset == CGFloat(index) ? 1.2 : 0.8)
+                    .animation(
+                        .easeInOut(duration: 0.4)
+                        .repeatForever(autoreverses: true)
+                        .delay(Double(index) * 0.15),
+                        value: animationOffset
+                    )
+            }
+        }
+        .onAppear {
+            animationOffset = 1
+        }
     }
 }
