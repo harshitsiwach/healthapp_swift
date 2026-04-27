@@ -87,6 +87,7 @@ struct DashboardView: View {
     @State private var showingModelBrowser = false
     @State private var showingCalorieSuggestions = false
     @State private var showingMedicalPassport = false
+    @State private var isRefreshing = false
     
     // Hydration tracking (persisted per day)
     @AppStorage("hydration_ml") private var hydrationML: Int = 0
@@ -963,15 +964,43 @@ struct DashboardView: View {
                 .themedCard()
             } else {
                 ForEach(Array(logsForDate.enumerated()), id: \.element.id) { _, log in
-                    Button {
-                        Haptic.selection()
-                        showingMealEdit = log
-                    } label: {
-                        mealRow(log: log)
-                    }
-                    .buttonStyle(.plain)
+                    mealRowWithActions(log: log)
                 }
             }
+        }
+    }
+    
+    private func mealRowWithActions(log: DailyLog) -> some View {
+        Button {
+            Haptic.selection()
+            showingMealEdit = log
+        } label: {
+            mealRow(log: log)
+        }
+        .buttonStyle(.plain)
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button(role: .destructive) {
+                deleteMealLog(log)
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
+        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+            Button {
+                Haptic.selection()
+                showingMealEdit = log
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+            .tint(colors.neonBlue)
+        }
+    }
+    
+    private func deleteMealLog(_ log: DailyLog) {
+        withAnimation {
+            modelContext.delete(log)
+            try? modelContext.save()
+            Haptic.notification(.success)
         }
     }
     

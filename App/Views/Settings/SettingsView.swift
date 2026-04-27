@@ -16,13 +16,23 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                colors.background.ignoresSafeArea()
+                // Gradient background
+                LinearGradient(
+                    colors: [
+                        colors.background,
+                        colors.neonBlue.opacity(0.02),
+                        colors.neonPurple.opacity(0.02)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
                 
                 ScrollView {
                     VStack(spacing: 20) {
-                        // Profile Summary
+                        // Enhanced Profile Summary
                         if let profile = profile {
-                            profileCard(profile)
+                            enhancedProfileCard(profile)
                         }
                         
                         // Notification Time
@@ -208,6 +218,73 @@ struct SettingsView: View {
                         .fontWeight(.heavy)
                         .foregroundStyle(profile.healthScore >= 70 ? colors.neonGreen : colors.neonOrange)
                     Text("Score")
+                        .font(.system(.caption2, design: .rounded))
+                        .foregroundStyle(colors.textSecondary)
+                }
+            }
+        }
+    }
+    
+    // MARK: - Enhanced Profile Card
+    
+    private func enhancedProfileCard(_ profile: UserProfile) -> some View {
+        GlassCard {
+            HStack(spacing: 16) {
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [colors.neonBlue, colors.neonPurple],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 64, height: 64)
+                        .shadow(color: colors.neonBlue.opacity(0.3), radius: 10)
+                    
+                    Text(String(profile.gender.prefix(1)))
+                        .font(.system(.title, design: .rounded))
+                        .fontWeight(.heavy)
+                        .foregroundStyle(.white)
+                }
+                
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("\(profile.goal.capitalized) Mode")
+                        .font(.system(.headline, design: .rounded))
+                        .fontWeight(.bold)
+                        .foregroundStyle(colors.textPrimary)
+                    
+                    HStack(spacing: 8) {
+                        Label("\(profile.calculatedDailyCalories)", systemImage: "flame.fill")
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(colors.neonOrange)
+                        
+                        Text("•")
+                            .foregroundStyle(colors.textTertiary)
+                        
+                        Text(profile.dietaryPreference.capitalized)
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(colors.textSecondary)
+                    }
+                    
+                    HStack(spacing: 4) {
+                        Image(systemName: "flame.fill")
+                            .font(.caption2)
+                            .foregroundStyle(colors.neonOrange)
+                        Text("\(profile.streakCount) day streak")
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(colors.textSecondary)
+                    }
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("\(profile.healthScore)")
+                        .font(.system(size: 32, weight: .heavy, design: .rounded))
+                        .foregroundStyle(profile.healthScore >= 70 ? colors.neonGreen : colors.neonOrange)
+                        .contentTransition(.numericText())
+                    Text("Health")
                         .font(.system(.caption2, design: .rounded))
                         .foregroundStyle(colors.textSecondary)
                 }

@@ -29,19 +29,42 @@ struct OnboardingView: View {
     
     var body: some View {
         ZStack {
-            colors.background.ignoresSafeArea()
+            // Gradient background
+            LinearGradient(
+                colors: [
+                    colors.background,
+                    colors.neonBlue.opacity(0.05),
+                    colors.neonPurple.opacity(0.05)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Progress indicators
-                HStack(spacing: 8) {
+                // Enhanced Progress indicators
+                HStack(spacing: 10) {
                     ForEach(1...4, id: \.self) { step in
                         Capsule()
-                            .fill(step <= currentStep ? AnyShapeStyle(colors.neonBlue.gradient) : AnyShapeStyle(Color.gray.opacity(0.2)))
-                            .frame(height: 4)
+                            .fill(
+                                step <= currentStep 
+                                    ? LinearGradient(
+                                        colors: [colors.neonBlue, colors.neonPurple],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                      )
+                                    : LinearGradient(
+                                        colors: [Color.gray.opacity(0.2), Color.gray.opacity(0.1)],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                      )
+                            )
+                            .frame(height: step == currentStep ? 6 : 4)
+                            .animation(.spring(response: 0.4, dampingFraction: 0.7), value: currentStep)
                     }
                 }
-                .padding(.horizontal, 24)
-                .padding(.top, 16)
+                .padding(.horizontal, 32)
+                .padding(.top, 20)
                 
                 // Content
                 TabView(selection: $currentStep) {
