@@ -127,14 +127,16 @@ struct ContentView: View {
                         Circle()
                             .fill(colors.neonBlue.gradient)
                             .frame(width: 56, height: 56)
-                            .shadow(color: colors.neonBlue.opacity(0.3), radius: 10, x: 0, y: 5)
+                            .shadow(color: colors.neonBlue.opacity(0.5), radius: 12, x: 0, y: 4)
+                            .shadow(color: colors.neonBlue.opacity(0.2), radius: 20, x: 0, y: 8)
                         
                         Image(systemName: "plus")
                             .font(.system(size: 24, weight: .bold))
                             .foregroundStyle(.white)
                     }
                 }
-                .offset(y: -4) // Align with tab bar icons
+                .buttonStyle(FABButtonStyle())
+                .offset(y: -4)
             }
             .ignoresSafeArea(.keyboard)
         }

@@ -1059,6 +1059,18 @@ extension View {
     }
 }
 
+// MARK: - FAB Button Style
+
+struct FABButtonStyle: ButtonStyle {
+    @State private var isPressed = false
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
+    }
+}
+
 // MARK: - Symbol Effect (iOS 18+)
 
 @available(iOS 18.0, *)
