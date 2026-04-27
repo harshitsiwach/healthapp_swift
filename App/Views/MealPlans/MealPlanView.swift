@@ -141,11 +141,11 @@ struct MealPlanView: View {
     // MARK: - Day Selector
     
     private var daySelector: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 6) {
             ForEach(0..<7, id: \.self) { i in
                 Button {
                     Haptic.selection()
-                    withAnimation(.spring(response: 0.3)) { selectedDay = i }
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) { selectedDay = i }
                 } label: {
                     VStack(spacing: 4) {
                         Text(days[i])
@@ -158,11 +158,23 @@ struct MealPlanView: View {
                     }
                     .foregroundStyle(selectedDay == i ? .white : colors.textSecondary)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
-                            .fill(selectedDay == i ? colors.neonGreen : colors.backgroundElevated)
-                    )
+                    .padding(.vertical, 10)
+                    .background {
+                        if selectedDay == i {
+                            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [colors.neonGreen, colors.neonBlue],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .shadow(color: colors.neonGreen.opacity(0.3), radius: 6)
+                        } else {
+                            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                                .fill(colors.backgroundElevated)
+                        }
+                    }
                 }
                 .buttonStyle(.scaleButton)
             }
@@ -259,12 +271,22 @@ struct MealPlanView: View {
             }
         }
         .padding(DesignSystem.Spacing.md)
-        .background(
+        .background {
             RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
                 .fill(colors.backgroundCard)
-                .overlay(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
-                    .strokeBorder(mealTypeColor(meal.type).opacity(0.2)))
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [mealTypeColor(meal.type).opacity(0.3), mealTypeColor(meal.type).opacity(0.1)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
         )
+        .shadow(color: mealTypeColor(meal.type).opacity(0.1), radius: 8, y: 4)
     }
     
     private func mealTypeColor(_ type: String) -> Color {

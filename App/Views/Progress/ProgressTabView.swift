@@ -21,46 +21,75 @@ struct ProgressTabView: View {
             ZStack {
                 colors.background.ignoresSafeArea()
                 
+                // Animated gradient background
+                LinearGradient(
+                    colors: [colors.neonBlue.opacity(0.05), colors.neonPurple.opacity(0.05)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
                 ScrollView {
                     VStack(spacing: 24) {
-                        // Month Navigation
+                        // Month Navigation with glass effect
                         HStack {
                             Button {
-                                withAnimation {
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                                     selectedMonth = calendar.date(byAdding: .month, value: -1, to: selectedMonth) ?? selectedMonth
                                 }
                             } label: {
                                 Image(systemName: "chevron.left")
                                     .font(.headline)
-                                    .foregroundStyle(.primary)
-                                    .padding(10)
-                                    .background(.ultraThinMaterial, in: Circle())
+                                    .foregroundStyle(colors.neonBlue)
+                                    .padding(12)
+                                    .background {
+                                        if #available(iOS 26, *) {
+                                            Circle()
+                                                .glassEffect(.regular.interactive())
+                                        } else {
+                                            Circle()
+                                                .fill(.ultraThinMaterial)
+                                        }
+                                    }
                             }
+                            .buttonStyle(.scaleButton)
                             
                             Spacer()
                             
                             Text(monthYearString)
                                 .font(.system(.title2, design: .rounded))
                                 .fontWeight(.heavy)
+                                .foregroundStyle(colors.textPrimary)
+                                .scaleEffect(selectedMonth == Date() ? 1.0 : 0.95)
+                                .animation(.spring(response: 0.3), value: selectedMonth)
                             
                             Spacer()
                             
                             Button {
-                                withAnimation {
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                                     selectedMonth = calendar.date(byAdding: .month, value: 1, to: selectedMonth) ?? selectedMonth
                                 }
                             } label: {
                                 Image(systemName: "chevron.right")
                                     .font(.headline)
-                                    .foregroundStyle(.primary)
-                                    .padding(10)
-                                    .background(.ultraThinMaterial, in: Circle())
+                                    .foregroundStyle(colors.neonBlue)
+                                    .padding(12)
+                                    .background {
+                                        if #available(iOS 26, *) {
+                                            Circle()
+                                                .glassEffect(.regular.interactive())
+                                        } else {
+                                            Circle()
+                                                .fill(.ultraThinMaterial)
+                                        }
+                                    }
                             }
+                            .buttonStyle(.scaleButton)
                         }
                         .padding(.horizontal, 4)
                         
-                        // Calendar Grid
-                        GlassCard(material: .regularMaterial) {
+                        // Calendar Grid with enhanced styling
+                        GlassCard {
                             calendarGrid
                         }
                         
@@ -122,17 +151,24 @@ struct ProgressTabView: View {
                             }
                         }
                         
-                        // Monthly Score
-                        GlassCard(material: .regularMaterial, cornerRadius: 24) {
-                            VStack(spacing: 12) {
-                                Text("Monthly Consistency")
-                                    .font(.system(.headline, design: .rounded))
-                                    .fontWeight(.bold)
+                        // Monthly Score with enhanced styling
+                        GlassCard(cornerRadius: 24) {
+                            VStack(spacing: 16) {
+                                HStack {
+                                    Image(systemName: "chart.line.uptrend.xyaxis")
+                                        .font(.title2)
+                                        .foregroundStyle(colors.neonBlue)
+                                    Text("Monthly Consistency")
+                                        .font(.system(.headline, design: .rounded))
+                                        .fontWeight(.bold)
+                                }
                                 
                                 let score = monthlyScore
                                 Text(String(format: "%.1f", score))
                                     .font(.system(size: 56, weight: .heavy, design: .rounded))
-                                    .foregroundStyle(score >= 7 ? .green : score >= 4 ? .orange : .red)
+                                    .foregroundStyle(score >= 7 ? colors.neonGreen : score >= 4 ? colors.neonYellow : colors.neonRed)
+                                    .contentTransition(.numericText())
+                                    .symbolEffect(.bounce, isActive: score >= 7)
                                 
                                 Text("out of 10")
                                     .font(.system(.subheadline, design: .rounded))
@@ -140,16 +176,16 @@ struct ProgressTabView: View {
                                 
                                 HStack(spacing: 20) {
                                     HStack(spacing: 6) {
-                                        Circle().fill(.green).frame(width: 10, height: 10)
+                                        Circle().fill(colors.neonGreen).frame(width: 10, height: 10)
                                         Text("\(greenDays) days completed")
                                             .font(.system(.caption, design: .rounded))
-                                            .foregroundStyle(.secondary)
+                                            .foregroundStyle(colors.textSecondary)
                                     }
                                     HStack(spacing: 6) {
-                                        Circle().fill(.red).frame(width: 10, height: 10)
+                                        Circle().fill(colors.neonRed).frame(width: 10, height: 10)
                                         Text("\(redDays) days missed")
                                             .font(.system(.caption, design: .rounded))
-                                            .foregroundStyle(.secondary)
+                                            .foregroundStyle(colors.textSecondary)
                                     }
                                 }
                             }
@@ -245,22 +281,32 @@ struct ProgressTabView: View {
         let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
         
         return Button(action: {
-            withAnimation {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                 selectedDate = date
             }
         }) {
             ZStack {
                 if isSelected {
-                    Circle().fill(Color.blue)
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [colors.neonBlue, colors.neonPurple],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .shadow(color: colors.neonBlue.opacity(0.4), radius: 8)
                 } else if isToday {
-                    Circle().stroke(Color.blue, lineWidth: 2)
+                    Circle()
+                        .stroke(colors.neonBlue, lineWidth: 2)
+                        .shadow(color: colors.neonBlue.opacity(0.3), radius: 4)
                 }
                 
                 VStack(spacing: 2) {
                     Text("\(day)")
                         .font(.system(.subheadline, design: .rounded))
                         .fontWeight(isSelected ? .bold : .medium)
-                        .foregroundStyle(isSelected ? .white : (isToday ? .blue : .primary))
+                        .foregroundStyle(isSelected ? .white : (isToday ? colors.neonBlue : colors.textPrimary))
                     
                     if goalCompleted != nil {
                         Circle()

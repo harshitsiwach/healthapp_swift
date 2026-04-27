@@ -79,13 +79,14 @@ struct AIChatView: View {
                                     Circle()
                                         .fill(viewModel.currentInput.isEmpty ? colors.textTertiary.opacity(0.3) : colors.neonBlue)
                                         .frame(width: 44, height: 44)
+                                        .shadow(color: viewModel.currentInput.isEmpty ? .clear : colors.neonBlue.opacity(0.3), radius: 6)
                                     
                                     Image(systemName: "arrow.up")
                                         .font(.system(size: 20, weight: .bold))
                                         .foregroundColor(viewModel.currentInput.isEmpty ? .white.opacity(0.5) : .white)
                                 }
-                                .scaleEffect(isInputFocused ? 1.05 : 1.0)
-                                .animation(.spring(), value: isInputFocused)
+                                .scaleEffect(isInputFocused ? 1.1 : 1.0)
+                                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isInputFocused)
                             }
                             .disabled(viewModel.currentInput.isEmpty || viewModel.isGenerating)
                         }
