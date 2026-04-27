@@ -116,6 +116,7 @@ struct ContentView: View {
                     .tag(3)
             }
             .tint(colors.neonBlue)
+            .tabViewStyle(.automatic)
             
             // Floating Action Button (FAB)
             VStack {
