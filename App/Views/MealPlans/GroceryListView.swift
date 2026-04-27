@@ -34,11 +34,20 @@ struct GroceryListView: View {
                         Haptic.selection()
                         addItem()
                     } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 24))
-                            .foregroundStyle(colors.neonGreen)
+                        let isEmpty = newItem.trimmingCharacters(in: .whitespaces).isEmpty
+                        ZStack {
+                            Circle()
+                                .fill(isEmpty ? Color.gray.opacity(0.3) : colors.neonGreen)
+                                .frame(width: 36, height: 36)
+                                .shadow(color: isEmpty ? .clear : colors.neonGreen.opacity(0.4), radius: 6)
+                            
+                            Image(systemName: "plus")
+                                .font(.system(size: 18, weight: .bold))
+                                .foregroundStyle(.white)
+                        }
                     }
                     .disabled(newItem.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .buttonStyle(.scaleButton)
                 }
                 .padding(DesignSystem.Spacing.md)
                 .background(
@@ -52,15 +61,23 @@ struct GroceryListView: View {
                 Button {
                     generateFromMealPlan()
                 } label: {
-                    Label("Generate from Meal Plan", systemImage: "wand.and.stars")
-                        .font(DesignSystem.Typography.subheadline)
-                        .foregroundStyle(colors.neonPurple)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(
-                            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
-                                .strokeBorder(colors.neonPurple.opacity(0.3), lineWidth: 1)
-                        )
+                    HStack {
+                        Image(systemName: "wand.and.stars")
+                            .font(.system(size: 14, weight: .semibold))
+                        Text("Generate from Meal Plan")
+                            .font(DesignSystem.Typography.subheadline.bold())
+                    }
+                    .foregroundStyle(colors.neonPurple)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background {
+                        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                            .fill(colors.neonPurple.opacity(0.1))
+                    }
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                            .strokeBorder(colors.neonPurple.opacity(0.3), lineWidth: 1)
+                    )
                 }
                 .buttonStyle(.scaleButton)
                 .padding(.horizontal)
