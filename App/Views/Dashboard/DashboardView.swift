@@ -1,11 +1,76 @@
 import SwiftUI
 import SwiftData
+import Charts
 
 struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var profiles: [UserProfile]
     @Query(sort: \DailyLog.date, order: .reverse) private var allLogs: [DailyLog]
     @StateObject private var themeManager = ThemeManager()
+    
+    private struct DayCalories: Identifiable {
+        let id = UUID()
+        let day: String
+        let calories: Int
+    }
+    
+    private struct WeeklyCaloriesChartView: View {
+        let data: [DayCalories]
+        let colors: DesignSystem.ThemeColors
+        
+        var body: some View {
+            if #available(iOS 17.0, *) {
+                Chart(data) { item in
+                    BarMark(
+                        x: .value("Day", item.day),
+                        y: .value("Calories", item.calories)
+                    )
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [colors.neonGreen, colors.neonBlue],
+                            startPoint: .bottom,
+                            endPoint: .top
+                        )
+                    )
+                    .cornerRadius(6)
+                }
+                .chartYAxis {
+                    AxisMarks(position: .leading) { _ in
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [4]))
+                            .foregroundStyle(colors.textTertiary.opacity(0.3))
+                        AxisValueLabel()
+                            .font(.caption2)
+                            .foregroundStyle(colors.textSecondary)
+                    }
+                }
+                .chartXAxis {
+                    AxisMarks { _ in
+                        AxisValueLabel()
+                            .font(.caption2)
+                            .foregroundStyle(colors.textSecondary)
+                    }
+                }
+            } else {
+                // iOS 16 fallback
+                HStack(alignment: .bottom, spacing: 4) {
+                    ForEach(data) { item in
+                        VStack {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(LinearGradient(
+                                    colors: [colors.neonGreen, colors.neonBlue],
+                                    startPoint: .bottom,
+                                    endPoint: .top
+                                ))
+                                .frame(height: CGFloat(max(item.calories / 20, 20)))
+                            Text(item.day.prefix(3))
+                                .font(.caption2)
+                                .foregroundStyle(colors.textSecondary)
+                        }
+                    }
+                }
+            }
+        }
+    }
     
     @State private var selectedDate = Date()
     @State private var showingMealEdit: DailyLog?
@@ -149,6 +214,9 @@ struct DashboardView: View {
                         }
                         
                         activityRingsCard
+                            .staggeredEntrance(index: 3)
+                        
+                        weeklyCaloriesChartCard
                             .staggeredEntrance(index: 3)
                         
                         calorieCard
@@ -572,6 +640,47 @@ struct DashboardView: View {
     private var standHr: Int { 0 } // Will connect to HealthKit
     private var standGoal: Int { 12 }
     private var standProgress: Double { min(Double(standHr) / Double(standGoal), 1.0) }
+    
+    // MARK: - Weekly Calories Chart
+    
+    private var weeklyCaloriesData: [DayCalories] {
+        let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        let today = Calendar.current.component(.weekday, from: Date())
+        
+        // Generate sample data based on recent logs - for demo purposes
+        return days.enumerated().map { index, day in
+            let isToday = index + 2 == today // Calendar weekday: 1=Sunday
+            let calories: Int
+            if isToday {
+                calories = consumedCalories
+            } else {
+                // Randomize for demo - in production, fetch from logs
+                calories = Int.random(in: 1500...2500)
+            }
+            return DayCalories(day: day, calories: calories)
+        }
+    }
+    
+    private var weeklyCaloriesChartCard: some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
+            HStack {
+                Image(systemName: "chart.bar.fill")
+                    .font(.system(size: 14))
+                    .foregroundStyle(colors.neonGreen)
+                Text("Weekly Calories")
+                    .font(DesignSystem.Typography.subheadline)
+                    .foregroundStyle(colors.textSecondary)
+                Spacer()
+                Text("Last 7 days")
+                    .font(.caption2)
+                    .foregroundStyle(colors.textTertiary)
+            }
+            
+            WeeklyCaloriesChartView(data: weeklyCaloriesData, colors: colors)
+                .frame(height: 120)
+        }
+        .themedCard()
+    }
     
     // MARK: - Calorie Card
     

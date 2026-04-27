@@ -921,3 +921,142 @@ extension View {
         modifier(GlowPulse(color: color))
     }
 }
+
+// MARK: - Liquid Glass (iOS 26+) with iOS 18 Fallback
+
+struct LiquidGlassModifier: ViewModifier {
+    var cornerRadius: CGFloat
+    var isInteractive: Bool
+    var tint: Color?
+    
+    func body(content: Content) -> some View {
+        if #available(iOS 26, *) {
+            if let tint = tint {
+                if isInteractive {
+                    content
+                        .padding()
+                        .glassEffect(.regular.tint(tint).interactive(), in: RoundedRectangle(cornerRadius: cornerRadius))
+                } else {
+                    content
+                        .padding()
+                        .glassEffect(.regular.tint(tint), in: RoundedRectangle(cornerRadius: cornerRadius))
+                }
+            } else {
+                if isInteractive {
+                    content
+                        .padding()
+                        .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: cornerRadius))
+                } else {
+                    content
+                        .padding()
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+                }
+            }
+        } else if #available(iOS 18, *) {
+            content
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
+                .overlay(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .stroke(.white.opacity(0.2), lineWidth: 0.5)
+                )
+        } else {
+            content
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
+                .overlay(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .stroke(.white.opacity(0.1), lineWidth: 0.5)
+                )
+        }
+    }
+}
+
+struct LiquidGlassContainer<Content: View>: View {
+    let content: Content
+    let spacing: CGFloat
+    
+    init(spacing: CGFloat = 16, @ViewBuilder content: () -> Content) {
+        self.spacing = spacing
+        self.content = content()
+    }
+    
+    var body: some View {
+        if #available(iOS 26, *) {
+            GlassEffectContainer(spacing: spacing) {
+                content
+            }
+        } else {
+            VStack(spacing: spacing) {
+                content
+            }
+        }
+    }
+}
+
+struct GlassButtonStyle: ButtonStyle {
+    var isProminent: Bool = false
+    var tintColor: Color?
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
+            .foregroundStyle(.white)
+            .background {
+                if #available(iOS 26, *) {
+                    if isProminent {
+                        configuration.label
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 12)
+                            .background {
+                                if let tint = tintColor {
+                                    RoundedRectangle(cornerRadius: 14)
+                                        .fill(tint.gradient)
+                                } else {
+                                    RoundedRectangle(cornerRadius: 14)
+                                        .fill(Color.accentColor.gradient)
+                                }
+                            }
+                    } else {
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(.regularMaterial)
+                    }
+                } else {
+                    RoundedRectangle(cornerRadius: 14)
+                        .fill(.ultraThinMaterial)
+                }
+            }
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
+    }
+}
+
+extension ButtonStyle where Self == GlassButtonStyle {
+    static var glass: GlassButtonStyle { GlassButtonStyle() }
+    static var glassProminent: GlassButtonStyle { GlassButtonStyle(isProminent: true) }
+}
+
+extension View {
+    func liquidGlass(cornerRadius: CGFloat = 20, interactive: Bool = false, tint: Color? = nil) -> some View {
+        modifier(LiquidGlassModifier(cornerRadius: cornerRadius, isInteractive: interactive, tint: tint))
+    }
+}
+
+// MARK: - Symbol Effect (iOS 18+)
+
+@available(iOS 18.0, *)
+struct SymbolEffectModifier: ViewModifier {
+    let isActive: Bool
+    
+    func body(content: Content) -> some View {
+        content
+            .symbolEffect(.bounce, isActive: isActive)
+    }
+}
+
+extension View {
+    @available(iOS 18.0, *)
+    func bounceEffect(isActive: Bool) -> some View {
+        modifier(SymbolEffectModifier(isActive: isActive))
+    }
+}
