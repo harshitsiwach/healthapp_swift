@@ -106,7 +106,12 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
     
     // MARK: - Generate
     
+    // MARK: - Generate
+    
     nonisolated func generate(_ request: AIRequest) async throws -> AIResponse {
+        await MainActor.run { isGenerating = true }
+        defer { Task { @MainActor in isGenerating = false } }
+        
         // Pre-generation safety check
         let safetyResult = await safetyFilter.checkInput(request.userPrompt, task: request.task)
         if case .blocked(let category) = safetyResult {
@@ -161,23 +166,48 @@ final class AIOrchestrator: ObservableObject, AIOrchestrating {
     nonisolated func stream(_ request: AIRequest) -> AsyncThrowingStream<AITokenEvent, Error> {
         AsyncThrowingStream { continuation in
             Task {
-                let backend = try await activeBackend(for: request.task)
+                await MainActor.run { isGenerating = true }
                 
                 do {
+                    // Pre-generation safety check
+                    let safetyResult = await safetyFilter.checkInput(request.userPrompt, task: request.task)
+                    if case .blocked(let category) = safetyResult {
+                        throw AIError.safetyTriggered(category: category)
+                    }
+                    
+                    let backend = try await activeBackend(for: request.task)
+                    
                     // Ensure backend is prepared
                     try await backend.prepare()
                     
                     let stream = backend.stream(request)
+                    var fullResponse = ""
                     
                     for try await event in stream {
+                        fullResponse += event.token
+                        
+                        // Post-generation safety check on chunks is hard, but we can check periodically or at the end
+                        // For now, we yield the token
                         continuation.yield(event)
+                        
                         if event.isComplete {
+                            // Final safety check
+                            let outputSafety = await safetyFilter.checkOutput(fullResponse, task: request.task)
+                            if case .blocked(let category) = outputSafety {
+                                continuation.finish(throwing: AIError.safetyTriggered(category: category))
+                                return
+                            }
+                            
+                            await MainActor.run { isGenerating = false }
                             continuation.finish()
                             return
                         }
                     }
+                    
+                    await MainActor.run { isGenerating = false }
                     continuation.finish()
                 } catch {
+                    await MainActor.run { isGenerating = false }
                     continuation.finish(throwing: error)
                 }
             }

@@ -91,16 +91,13 @@ final class AppleFoundationBackend: AIBackend {
         if #available(iOS 26, *) {
             guard let session = session else { throw AIError.noBackendAvailable }
             
-            // Note: Since FoundationModels strictly supports string outputs via respond(to:) and streaming,
-            // or specific @Generable schema for types, we will just pass the user prompt for standard tasks.
-            
             let startTime = Date()
             
-            let responseString: String
+            // Build full prompt including system instructions and context
+            let fullPrompt = buildFullPrompt(for: request)
             
-            // Simple string response
-            let response = try await session.respond(to: request.userPrompt)
-            responseString = response.content
+            let response = try await session.respond(to: fullPrompt)
+            let responseString = response.content
             
             let endTime = Date()
             let latencyMs = Double(endTime.timeIntervalSince(startTime) * 1000)
@@ -113,15 +110,14 @@ final class AppleFoundationBackend: AIBackend {
                     isOnDevice: true
                 ),
                 metadata: AIResponseMetadata(
-                    timeToFirstTokenMs: latencyMs, // Approximate for non-streaming
+                    timeToFirstTokenMs: latencyMs * 0.2, // Rough estimate
                     totalLatencyMs: latencyMs,
-                    tokensIn: 0, // Not explicitly tracked in simple response
+                    tokensIn: 0,
                     tokensOut: 0,
                     wasCancelled: false,
                     failureReason: nil
                 )
             )
-            
         }
         #endif
         
@@ -143,14 +139,16 @@ final class AppleFoundationBackend: AIBackend {
                         return
                     }
                     
+                    let fullPrompt = buildFullPrompt(for: request)
+                    let startTime = Date()
+                    
                     do {
-                        let stream = session.streamResponse(to: request.userPrompt)
+                        let stream = session.streamResponse(to: fullPrompt)
                         var index = 0
                         var lastContent = ""
                         
                         for try await snapshot in stream {
                             let fullContent = snapshot.content
-                            // Calculate delta
                             let delta = String(fullContent.suffix(fullContent.count - lastContent.count))
                             
                             if !delta.isEmpty {
@@ -158,18 +156,18 @@ final class AppleFoundationBackend: AIBackend {
                                     token: delta,
                                     isComplete: false,
                                     tokenIndex: index,
-                                    elapsedMs: 0
+                                    elapsedMs: Date().timeIntervalSince(startTime) * 1000
                                 ))
                                 index += 1
                                 lastContent = fullContent
                             }
                         }
-                        // Send final completion event
+                        
                         continuation.yield(AITokenEvent(
                             token: "",
                             isComplete: true,
                             tokenIndex: index,
-                            elapsedMs: 0
+                            elapsedMs: Date().timeIntervalSince(startTime) * 1000
                         ))
                         continuation.finish()
                     } catch {
@@ -184,6 +182,22 @@ final class AppleFoundationBackend: AIBackend {
             }
         }
     }
+    
+    private func buildFullPrompt(for request: AIRequest) -> String {
+        var prompt = ""
+        if let system = request.systemPrompt {
+            prompt += "Instructions: \(system)\n\n"
+        }
+        
+        if !request.retrievedContext.isEmpty {
+            let context = request.retrievedContext.map { $0.text }.joined(separator: "\n")
+            prompt += "Context:\n\(context)\n\n"
+        }
+        
+        prompt += "User: \(request.userPrompt)"
+        return prompt
+    }
+
     
     func cancelCurrentGeneration() {
         #if canImport(FoundationModels)

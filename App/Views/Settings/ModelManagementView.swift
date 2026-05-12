@@ -4,6 +4,7 @@ struct ModelManagementView: View {
     @Environment(\.theme) var colors
     @StateObject private var store = ModelStore()
     @StateObject private var downloader = ModelDownloader()
+    @AppStorage("huggingFaceToken") private var hfToken = ""
     
     var body: some View {
         ZStack {
@@ -11,6 +12,28 @@ struct ModelManagementView: View {
             
             ScrollView {
                 VStack(spacing: 20) {
+                    // HuggingFace Token Input
+                    GlassCard(material: .thinMaterial) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: "key.fill")
+                                    .foregroundStyle(colors.neonBlue)
+                                Text("HuggingFace Access Token")
+                                    .font(.system(.subheadline, design: .rounded))
+                                    .fontWeight(.bold)
+                            }
+                            
+                            SecureField("hf_...", text: $hfToken)
+                                .textFieldStyle(.plain)
+                                .padding(10)
+                                .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 8))
+                                .foregroundStyle(colors.textPrimary)
+                            
+                            Text("Required for downloading Google Gemma models. Get yours at huggingface.co/settings/tokens")
+                                .font(.system(.caption, design: .rounded))
+                                .foregroundStyle(colors.textSecondary)
+                        }
+                    }
                     // Gemma 4 On-Device Header
                     GlassCard(material: .regularMaterial) {
                         VStack(alignment: .leading, spacing: 12) {
@@ -156,7 +179,7 @@ struct ModelManagementView: View {
                     case .notInstalled, .failed:
                         Button {
                             Task {
-                                await downloader.download(manifest: manifest, to: store)
+                                await downloader.download(manifest: manifest, to: store, token: hfToken)
                             }
                         } label: {
                             Text("Download Gemma 4")

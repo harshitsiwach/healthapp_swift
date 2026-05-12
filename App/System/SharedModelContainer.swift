@@ -11,11 +11,23 @@ extension ModelContainer {
         // App Group container for sharing between app and widget
         let appGroupID = "group.com.aihealthappoffline.shared"
         
-        let modelConfiguration = ModelConfiguration(
-            schema: schema,
-            groupContainer: .identifier(appGroupID),
-            cloudKitDatabase: .none
-        )
+        // Fallback to local storage if the App Group is not available (common during testing/simulator)
+        let modelConfiguration: ModelConfiguration
+        
+        // We check if the app group container exists on disk to avoid the SwiftData crash
+        if FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupID) != nil {
+            modelConfiguration = ModelConfiguration(
+                schema: schema,
+                groupContainer: .identifier(appGroupID),
+                cloudKitDatabase: .none
+            )
+        } else {
+            // Fallback: This will not share data with the widget, but it will STOP the crash.
+            modelConfiguration = ModelConfiguration(
+                schema: schema,
+                cloudKitDatabase: .none
+            )
+        }
         
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])

@@ -8,8 +8,8 @@ final class ModelStore: ObservableObject {
     @Published var downloadProgress: Double = 0
     @Published var installedManifest: ModelManifest?
     @Published var availableModels: [ModelManifest] = [
-        ModelManifest.gemma4_default,
-        ModelManifest.medgemma_4b
+        ModelManifest.gemma2_default,
+        ModelManifest.medgemma_2b
     ]
     
     private let fileManager = FileManager.default

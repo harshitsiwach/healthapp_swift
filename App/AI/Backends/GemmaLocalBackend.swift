@@ -6,7 +6,7 @@ import Foundation
 final class GemmaLocalBackend: AIBackend {
     let id: String = "gemma_local"
     let displayName: String = "Gemma 4 (On-Device)"
-    let supportsVision: Bool = true
+    let supportsVision: Bool = false
     let supportsToolCalling: Bool = false
     let maxContextWindow: Int? = 8192
     

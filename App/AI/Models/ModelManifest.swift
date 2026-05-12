@@ -44,35 +44,19 @@ struct ModelManifest: Codable, Identifiable {
         case license
     }
     
-    static let gemma4_default = ModelManifest(
-        id: "gemma_4_2b_q4",
-        displayName: "Gemma 4 2B",
+    static let gemma2_default = ModelManifest(
+        id: "gemma_2_2b_it_q4",
+        displayName: "Gemma 2 2B",
         runtime: "llama_cpp",
-        version: "1.0.0",
+        version: "2.0.0",
         quantization: "q4_K_M",
-        fileSizeBytes: 1_500_000_000,
-        checksumSHA256: "",
-        supportsVision: true,
-        supportsToolCalling: false,
-        contextWindow: 8192,
-        minIOSVersion: "18.0",
-        downloadURL: "https://huggingface.co/google/gemma-4-2b-GGUF/resolve/main/gemma-4-2b-q4_K_M.gguf",
-        license: "Gemma"
-    )
-    
-    static let medgemma_4b = ModelManifest(
-        id: "medgemma_4b_q4",
-        displayName: "MedGemma 4B",
-        runtime: "llama_cpp",
-        version: "1.0.0",
-        quantization: "q4_K_M",
-        fileSizeBytes: 2_500_000_000,
+        fileSizeBytes: 1_600_000_000,
         checksumSHA256: "",
         supportsVision: false,
         supportsToolCalling: false,
         contextWindow: 8192,
         minIOSVersion: "18.0",
-        downloadURL: "https://huggingface.co/google/medgemma-4b-it-GGUF/resolve/main/medgemma-4b-it-q4_K_M.gguf",
+        downloadURL: "https://huggingface.co/bartowski/gemma-2-2b-it-GGUF/resolve/main/gemma-2-2b-it-Q4_K_M.gguf",
         license: "Gemma"
     )
     
@@ -88,11 +72,11 @@ struct ModelManifest: Codable, Identifiable {
         supportsToolCalling: false,
         contextWindow: 8192,
         minIOSVersion: "18.0",
-        downloadURL: "https://huggingface.co/google/medgemma-2b-it-GGUF/resolve/main/medgemma-2b-it-q4_K_M.gguf",
+        downloadURL: "https://huggingface.co/bartowski/MedGemma-2b-it-GGUF/resolve/main/MedGemma-2b-it-Q4_K_M.gguf",
         license: "Gemma"
     )
     
-    static let allRecommended: [ModelManifest] = [gemma4_default, medgemma_4b, medgemma_2b]
+    static let allRecommended: [ModelManifest] = [gemma2_default, medgemma_2b]
 
     
 
