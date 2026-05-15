@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>HealthApp needs full access to your calendar to schedule appointments and display your upcoming health events.</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>HealthApp needs write access to your calendar to add doctor appointments and follow-up visits.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>HealthApp uses your camera to scan food and extract nutrition facts.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>HealthApp reads your steps, heart rate, sleep, and weight to provide personalized AI nutrition feedback and contextual health summaries.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>HealthApp writes nutrition data to Apple Health to keep your daily macro and calorie logs synced across all your apps.</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>HealthApp needs access to your reminders to save and sync medication, hydration, and habit schedules.</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>com.aihealthappoffline.logMeal</string>
+		<string>com.aihealthappoffline.logFood</string>
+		<string>com.aihealthappoffline.checkCalories</string>
+		<string>com.aihealthappoffline.logWater</string>
+	</array>
+	<key>UILaunchScreen</key>
+	<dict/>
+</dict>
+</plist>

@@ -1,0 +1,42 @@
+# Xcode
+#
+build/
+DerivedData/
+*.hmap
+*.ipa
+*.playground
+
+# Swift Package Manager
+#
+.build/
+.swiftpm/
+
+# User-specific Xcode settings
+#
+xcuserdata/
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+
+# AI Models (Large Files)
+#
+*.gguf
+*.bin
+*.mlmodel
+*.safetensors
+gemma-2-2b-it-Q4_K_M.gguf
+
+# Other
+#
+.DS_Store
+*.swp
+*.lock
+*.rb
+*.sh
+switch_packages.rb
+clean_pbxproj.rb
+inspect_pbxproj.rb
+bump_ios.rb
+link_local_swiftllama.rb
+SwiftLlama/
